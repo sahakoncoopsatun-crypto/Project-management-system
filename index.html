@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบริหารจัดการโครงการและเกียรติบัตรออนไลน์ - สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Sarabun, Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Sarabun', 'Prompt', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .heading-font {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+
+        .official-font,
+        .print-area,
+        .print-area *,
+        #proposalPrintPreviewBox,
+        #proposalPrintPreviewBox *,
+        #reportA4Container,
+        #reportA4Container *,
+        #annualReportContainer,
+        #annualReportContainer * {
+            font-family: 'Sarabun', 'TH Sarabun PSK', 'TH Sarabun IT9', 'THSarabunPSK', sans-serif !important;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .print-area, .print-area * {
+                visibility: visible;
+                font-family: 'Sarabun', 'TH Sarabun PSK', 'TH Sarabun IT9', 'THSarabunPSK', sans-serif !important;
+            }
+
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: #ffffff !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 20mm 15mm 20mm 25mm; /* 25mm left binding margin */
+            }
+
+            @page cert-landscape {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            .cert-print-mode {
+                page: cert-landscape;
+            }
+        }
+
+        .binding-margin {
+            padding-left: 25mm;
+            padding-right: 15mm;
+            padding-top: 20mm;
+            padding-bottom: 20mm;
+        }
+
+        .cert-bg-classic {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+            border: 8px double #1e3a8a;
+        }
+
+        .cert-bg-gold {
+            background: radial-gradient(circle, #fffdf0 0%, #fef3c7 100%);
+            border: 8px double #b45309;
+        }
+
+        .cert-bg-thai {
+            background-color: #fafaf9;
+            background-image: radial-gradient(#d97706 0.5px, transparent 0.5px), radial-gradient(#d97706 0.5px, #fafaf9 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0,10px 10px;
+            border: 8px double #78350f;
+        }
+
+        .cert-bg-minimal {
+            background: #ffffff;
+            border: 3px solid #334155;
+        }
+
+        .cert-inner-border {
+            border: 2px solid #b91c1c;
+            padding: 24px;
+        }
+
+        .official-indent {
+            text-indent: 2.5em;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-blue-900 text-white shadow-lg no-print" id="mainHeader">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-1 rounded-full shadow w-12 h-12 flex items-center justify-center overflow-hidden" id="headerLogoContainer">
+                    <img id="headerLogoImg" src="https://placehold.co/100x100/1e3a8a/ffffff?text=ORG" alt="Org Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold heading-font leading-tight" id="headerOrgName">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h1>
+                    <p class="text-xs text-blue-200">ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ (สอ.สธสต.)</p>
+                </div>
+            </div>
+
+            <!-- Fiscal Year & System Actions Bar -->
+            <div class="flex items-center space-x-3 text-xs flex-wrap justify-center md:justify-end gap-y-2">
+                <div class="bg-blue-950 px-3 py-1.5 rounded-lg border border-amber-400/60 flex items-center gap-2 shadow-inner">
+                    <i class="fa-solid fa-calendar-check text-amber-400"></i>
+                    <span class="font-bold text-amber-200">ปีงบประมาณ:</span>
+                    <select id="fiscalYearSelect" onchange="changeFiscalYear(this.value)" class="bg-blue-900 text-white font-bold text-xs rounded border border-blue-700 p-1 focus:outline-none focus:ring-1 focus:ring-amber-400">
+                        <option value="2569" selected>2569 (1 ต.ค. 68 - 30 ก.ย. 69)</option>
+                        <option value="2568">2568 (1 ต.ค. 67 - 30 ก.ย. 68)</option>
+                        <option value="2570">2570 (1 ต.ค. 69 - 30 ก.ย. 70)</option>
+                    </select>
+                </div>
+
+                <button onclick="openDatabaseGuideModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 shadow transition">
+                    <i class="fa-solid fa-database"></i> เชื่อมต่อฐานข้อมูล
+                </button>
+                <button onclick="copyPublicPortalLink()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-2 rounded-lg font-bold flex items-center gap-1.5 shadow transition">
+                    <i class="fa-solid fa-link"></i> คัดลอกลิงก์สำหรับสมาชิก
+                </button>
+                <div class="bg-blue-950 px-3 py-2 rounded-lg border border-blue-700 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-green-400"></i>
+                    <span>ผู้ดูแลระบบ</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="publicPortalNotice" class="bg-emerald-700 text-white py-2 px-4 text-center text-xs font-semibold shadow-md hidden no-print">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <span><i class="fa-solid fa-globe"></i> คุณกำลังเข้าใช้งานในโหมดระบบบริการสมาชิก (Member Portal)</span>
+            <button onclick="exitPublicPortalMode()" class="bg-emerald-900 hover:bg-emerald-950 text-white px-3 py-1 rounded text-xs">
+                <i class="fa-solid fa-right-to-bracket"></i> กลับสู่ระบบผู้ดูแล
+            </button>
+        </div>
+    </div>
+
+    <nav class="bg-blue-800 text-white shadow border-t border-blue-700 no-print sticky top-0 z-40" id="mainNavBar">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between font-medium text-sm overflow-visible">
+            <div class="flex items-center space-x-1 py-1 flex-wrap md:flex-nowrap">
+                <!-- 1. แดชบอร์ดภาพรวม -->
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2.5 hover:bg-blue-700/80 flex items-center gap-2 border-b-2 border-amber-400 text-amber-300 font-semibold whitespace-nowrap transition rounded-t-lg">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>แดชบอร์ดภาพรวม</span>
+                </button>
+
+                <!-- 2. กลุ่มบริหารจัดการโครงการ -->
+                <div class="relative nav-dropdown-container">
+                    <button onclick="toggleNavDropdown('dropdown-projects', event)" id="parent-nav-projects" class="nav-parent-btn px-4 py-2.5 hover:bg-blue-700/80 flex items-center gap-2 border-b-2 border-transparent text-white whitespace-nowrap transition rounded-t-lg">
+                        <i class="fa-solid fa-folder-tree text-amber-300"></i>
+                        <span>บริหารจัดการโครงการ</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1 opacity-80"></i>
+                    </button>
+                    <div id="dropdown-projects" class="nav-dropdown-menu hidden absolute top-full left-0 mt-1 w-64 bg-blue-900 border border-blue-700 rounded-b-xl shadow-2xl z-50 py-2 text-xs">
+                        <button onclick="switchTab('unified-cycle')" id="tab-unified-cycle" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center justify-between border-l-4 border-transparent hover:border-amber-400 transition text-amber-200 font-bold">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-arrows-spin text-amber-400"></i> การจัดการโครงการครบวงจร</span>
+                            <span class="bg-amber-400 text-blue-950 text-[10px] px-1.5 py-0.5 rounded font-extrabold">Workflow</span>
+                        </button>
+                        <button onclick="switchTab('projects')" id="tab-projects" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center gap-2 border-l-4 border-transparent hover:border-amber-400 transition text-gray-100">
+                            <i class="fa-solid fa-folder-plus text-blue-300"></i> รายการโครงการทั้งหมด
+                        </button>
+                        <button onclick="switchTab('participants')" id="tab-participants" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center gap-2 border-l-4 border-transparent hover:border-amber-400 transition text-gray-100">
+                            <i class="fa-solid fa-users text-blue-300"></i> รายชื่อผู้เข้าร่วมโครงการ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. กลุ่มรายงาน & เกียรติบัตร -->
+                <div class="relative nav-dropdown-container">
+                    <button onclick="toggleNavDropdown('dropdown-reports', event)" id="parent-nav-reports" class="nav-parent-btn px-4 py-2.5 hover:bg-blue-700/80 flex items-center gap-2 border-b-2 border-transparent text-white whitespace-nowrap transition rounded-t-lg">
+                        <i class="fa-solid fa-file-signature text-amber-300"></i>
+                        <span>รายงาน & เกียรติบัตร</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1 opacity-80"></i>
+                    </button>
+                    <div id="dropdown-reports" class="nav-dropdown-menu hidden absolute top-full left-0 mt-1 w-72 bg-blue-900 border border-blue-700 rounded-b-xl shadow-2xl z-50 py-2 text-xs">
+                        <button onclick="switchTab('report-a4')" id="tab-report-a4" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center gap-2 border-l-4 border-transparent hover:border-amber-400 transition text-gray-100">
+                            <i class="fa-solid fa-file-invoice text-blue-300"></i> รายงาน 6 ส่วน (สารบรรณ)
+                        </button>
+                        <button onclick="switchTab('annual-report')" id="tab-annual-report" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center justify-between border-l-4 border-transparent hover:border-amber-400 transition text-amber-200 font-bold">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-chart-line text-emerald-400"></i> รายงานสรุปประจำปีตามยุทธศาสตร์</span>
+                            <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">สิ้นปี</span>
+                        </button>
+                        <button onclick="switchTab('media')" id="tab-media" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center gap-2 border-l-4 border-transparent hover:border-amber-400 transition text-gray-100">
+                            <i class="fa-solid fa-images text-blue-300"></i> ภาพกิจกรรม & ผลประเมิน
+                        </button>
+                        <button onclick="switchTab('cert-config')" id="tab-cert-config" class="tab-btn w-full text-left px-4 py-2.5 hover:bg-blue-800 flex items-center gap-2 border-l-4 border-transparent hover:border-amber-400 transition text-gray-100">
+                            <i class="fa-solid fa-award text-amber-400"></i> ตั้งค่าเกียรติบัตร & ผู้ลงนาม
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. ระบบบริการสมาชิก -->
+                <button onclick="switchTab('member-portal')" id="tab-member-portal" class="tab-btn px-4 py-2.5 hover:bg-blue-700/80 flex items-center gap-2 border-b-2 border-transparent text-emerald-300 font-bold whitespace-nowrap transition rounded-t-lg">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>ระบบบริการสมาชิก</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 no-print">
+
+        <!-- Custom Notification Toast -->
+        <div id="toastNotification" class="hidden mb-4 p-4 rounded-lg shadow-md flex items-center justify-between transition-all">
+            <div class="flex items-center space-x-3">
+                <i id="toastIcon" class="text-xl"></i>
+                <span id="toastMessage" class="text-sm font-medium"></span>
+            </div>
+            <button onclick="closeToast()" class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <section id="view-dashboard" class="space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">แดชบอร์ดสรุปการบริหารโครงการ</h2>
+                    <p class="text-sm text-gray-500">ภาพรวมโครงการ ประสิทธิภาพ และงบประมาณ <span id="dashFyLabel" class="font-bold text-blue-800">ปีงบประมาณ 2569</span></p>
+                </div>
+                <button onclick="openNewProjectModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium shadow flex items-center gap-2 transition">
+                    <i class="fa-solid fa-plus"></i> เขียนโครงการใหม่
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase">โครงการในปีงบประมาณ</p>
+                        <p class="text-2xl font-bold text-blue-900 mt-1" id="stat-total-projects">0</p>
+                        <p class="text-xs text-blue-600 mt-1"><i class="fa-solid fa-folder"></i> รวมทุกประเภทโครงการ</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase">ผู้เข้าร่วมสะสม</p>
+                        <p class="text-2xl font-bold text-emerald-700 mt-1" id="stat-total-participants">0</p>
+                        <p class="text-xs text-emerald-600 mt-1"><i class="fa-solid fa-user-check"></i> รวมทุกประเภทสมาชิก</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase">งบประมาณอนุมัติรวม</p>
+                        <p class="text-2xl font-bold text-purple-900 mt-1" id="stat-total-budget">฿0</p>
+                        <p class="text-xs text-purple-600 mt-1" id="stat-actual-budget">ใช้จ่ายจริง: ฿0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase">เกียรติบัตรที่ออกแล้ว</p>
+                        <p class="text-2xl font-bold text-amber-600 mt-1" id="stat-issued-certs">0</p>
+                        <p class="text-xs text-amber-600 mt-1"><i class="fa-solid fa-award"></i> รันเลขที่อ้างอิง สอ.สธสต.</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Project Selector -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b gap-3">
+                    <h3 class="text-lg font-bold text-blue-900 heading-font">เลือกโครงการเพื่อทำรายการบริหารจัดการ</h3>
+                    <div class="w-full sm:w-auto">
+                        <select id="activeProjectSelect" onchange="changeActiveProject(this.value)" class="w-full sm:w-80 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 font-medium">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="activeProjectSummary" class="mt-6 space-y-4">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </section>
+
+        <section id="view-unified-cycle" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-800 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span class="bg-amber-400 text-blue-950 font-bold text-xs px-2.5 py-1 rounded-md uppercase tracking-wider">Complete Workflow</span>
+                    <h2 class="text-2xl font-bold heading-font mt-1" id="unifiedProjTitle">การจัดการโครงการครบวงจรในหน้าเดียว</h2>
+                    <p class="text-xs text-blue-200 mt-1">เขียนโครงการ ➔ ดำเนินการ/ลงทะเบียน ➔ บันทึกผลการดำเนินการ ➔ พิมพ์รายงานรูปเล่มสารบรรณ & เกียรติบัตร</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="switchTab('report-a4')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-bold px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> พิมพ์รูปเล่มรายงานสารบรรณ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unified Step Tabs Header -->
+            <div class="bg-white rounded-xl border border-gray-200 p-2 shadow-sm flex flex-wrap gap-2 text-sm font-semibold">
+                <button onclick="setUnifiedStep(1)" id="un-step-btn-1" class="un-step-btn flex-1 min-w-[150px] py-2.5 px-3 rounded-lg text-center bg-blue-50 text-blue-900 border border-blue-200 flex items-center justify-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-blue-700 text-white text-xs flex items-center justify-center">1</span>
+                    <span>เขียนโครงการตามแบบมาตรฐาน</span>
+                </button>
+                <button onclick="setUnifiedStep(2)" id="un-step-btn-2" class="un-step-btn flex-1 min-w-[150px] py-2.5 px-3 rounded-lg text-center bg-gray-50 text-gray-600 flex items-center justify-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs flex items-center justify-center">2</span>
+                    <span>ดำเนินการ & ลงทะเบียน</span>
+                </button>
+                <button onclick="setUnifiedStep(3)" id="un-step-btn-3" class="un-step-btn flex-1 min-w-[150px] py-2.5 px-3 rounded-lg text-center bg-gray-50 text-gray-600 flex items-center justify-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs flex items-center justify-center">3</span>
+                    <span>บันทึกผลการดำเนินการ</span>
+                </button>
+                <button onclick="setUnifiedStep(4)" id="un-step-btn-4" class="un-step-btn flex-1 min-w-[150px] py-2.5 px-3 rounded-lg text-center bg-gray-50 text-gray-600 flex items-center justify-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs flex items-center justify-center">4</span>
+                    <span>พิมพ์รายงาน & เกียรติบัตร</span>
+                </button>
+            </div>
+
+            <div id="un-step-panel-1" class="un-step-panel bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-blue-900 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pen text-blue-700"></i> ขั้นที่ ๑: รายละเอียดข้อเสนอโครงการ (อ้างอิงตามรูปแบบมาตรฐาน สอ.สธสต.)
+                </h3>
+                <form id="unifiedProposalForm" onsubmit="saveUnifiedProposal(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">ชื่อโครงการ หรือ กิจกรรม *</label>
+                            <input type="text" id="unProjTitle" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">ปีงบประมาณ *</label>
+                            <select id="unProjFiscalYear" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm bg-white font-bold text-blue-900">
+                                <option value="2569">2569 (1 ต.ค. 68 - 30 ก.ย. 69)</option>
+                                <option value="2568">2568 (1 ต.ค. 67 - 30 ก.ย. 68)</option>
+                                <option value="2570">2570 (1 ต.ค. 69 - 30 ก.ย. 70)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Plan & Work Plan Configuration -->
+                    <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3">
+                        <h4 class="text-xs font-bold text-indigo-950 heading-font"><i class="fa-solid fa-bullseye text-indigo-700"></i> การเชื่อมโยงยุทธศาสตร์ แผนงาน และกลยุทธ์องค์กร</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-indigo-900 mb-1">แผนยุทธศาสตร์ (Strategic Plan) *</label>
+                                <input type="text" id="unProjStrategicGoal" placeholder="เช่น ยุทธศาสตร์ที่ 1: การส่งเสริมสวัสดิการและคุณภาพชีวิตสมาชิกอย่างยั่งยืน" class="w-full border rounded-lg p-2 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-indigo-900 mb-1">แผนงาน (Work Plan) *</label>
+                                <input type="text" id="unProjWorkPlan" placeholder="เช่น แผนงานศึกษาและพัฒนาบุคลากร/สมาชิก" class="w-full border rounded-lg p-2 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-indigo-900 mb-1">กลยุทธ์ (Strategy) *</label>
+                                <input type="text" id="unProjStrategy" placeholder="เช่น กลยุทธ์ที่ 1.2: การเพิ่มพูนความรู้ด้านกฎหมายและธรรมาภิบาล" class="w-full border rounded-lg p-2 bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Taxonomy Selectors -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-blue-50/60 p-4 rounded-xl border border-blue-100">
+                        <div>
+                            <label class="block text-xs font-bold text-blue-900 mb-1">📌 จำแนกตามวัตถุประสงค์ (Purpose)</label>
+                            <select id="unProjPurpose" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs bg-white">
+                                <option value="โครงการงานประจำ / งานตามภารกิจ (Routine)">โครงการงานประจำ / งานตามภารกิจ (Routine)</option>
+                                <option value="โครงการพัฒนา / นวัตกรรม (Development)">โครงการพัฒนา / นวัตกรรม (Development)</option>
+                                <option value="โครงการแก้ไขปัญหา / เร่งด่วน (Corrective)">โครงการแก้ไขปัญหา / เร่งด่วน (Corrective)</option>
+                                <option value="โครงการเพื่อสังคม / บริการชุมชน (CSR)">โครงการเพื่อสังคม / บริการชุมชน (CSR)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-blue-900 mb-1">💰 จำแนกตามประเภทงบประมาณ (Budget Type)</label>
+                            <select id="unProjBudgetType" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs bg-white">
+                                <option value="โครงการดำเนินงาน (OpEx - ค่าใช้จ่ายทั่วไป/จัดงาน)">โครงการดำเนินงาน (OpEx - ค่าใช้จ่ายทั่วไป/จัดงาน)</option>
+                                <option value="โครงการลงทุนสินทรัพย์ (CapEx - ซื้อ/สร้าง/ระบบ)">โครงการลงทุนสินทรัพย์ (CapEx - ซื้อ/สร้าง/ระบบ)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-blue-900 mb-1">🎯 จำแนกตามรูปแบบกิจกรรม (Activity Format)</label>
+                            <select id="unProjActivityType" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs bg-white">
+                                <option value="กิจกรรมอบรม / ถ่ายทอดความรู้ (Training)">กิจกรรมอบรม / ถ่ายทอดความรู้ (Training)</option>
+                                <option value="กิจกรรมประชุม / เสวนา (Meeting)">กิจกรรมประชุม / เสวนา (Meeting)</option>
+                                <option value="กิจกรรมประชาสัมพันธ์ / การตลาด (PR & Campaign)">กิจกรรมประชาสัมพันธ์ / การตลาด (PR & Campaign)</option>
+                                <option value="กิจกรรมเชื่อมความสัมพันธ์ / นันทนาการ (Team Building)">กิจกรรมเชื่อมความสัมพันธ์ / นันทนาการ (Team Building)</option>
+                                <option value="กิจกรรมสำรวจ / เก็บรวบรวมข้อมูล (Survey & Research)">กิจกรรมสำรวจ / เก็บรวบรวมข้อมูล (Survey & Research)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๑. หลักการและเหตุผล</label>
+                            <textarea id="unProjRationale" rows="3" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="พิมพ์หลักการและเหตุผลประกอบการจัดทำโครงการ..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๒. วัตถุประสงค์</label>
+                            <textarea id="unProjObjectives" rows="3" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="พิมพ์วัตถุประสงค์ของการจัดทำโครงการเป็นข้อๆ..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๓. เป้าหมาย (เชิงปริมาณ/เชิงคุณภาพ)</label>
+                            <textarea id="unProjTargetOutcomes" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="เช่น สมาชิกเข้าอบรมจำนวน 100 คน..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๔. ระยะเวลาดำเนินการ (วันที่ และ เวลา)</label>
+                            <input type="text" id="unProjDate" placeholder="เช่น วันที่ 11 กรกฎาคม พ.ศ. 2569 เวลา 08.30 - 16.30 น." class="w-full border border-gray-300 rounded-lg p-2.5 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๕. สถานที่ (ณ...)</label>
+                            <input type="text" id="unProjLocation" placeholder="เช่น ณ ห้องประชุมมั่งคั่ง สหกรณ์ฯ" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">๖. วิธีการดำเนินการโครงการ (ระบุเป็นข้อๆ)</label>
+                        <textarea id="unProjMethodology" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="เช่น ๑. เสนออนุมัติโครงการ ๒. ประชาสัมพันธ์และรับลงทะเบียน ๓. จัดกิจกรรมอบรม..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">๗. ผู้รับผิดชอบโครงการ</label>
+                        <input type="text" id="unProjResponsibleUnit" placeholder="เช่น คณะกรรมการศึกษาและประชาสัมพันธ์ สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs">
+                    </div>
+
+                    <!-- Budget Section matching PDF Format -->
+                    <div class="bg-amber-50/60 p-4 rounded-xl border border-amber-200 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-amber-900 heading-font"><i class="fa-solid fa-coins"></i> ๘. งบประมาณ และ รายละเอียดการใช้จ่าย</h4>
+                            <button type="button" onclick="addBudgetItemRow()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded text-xs font-semibold">
+                                + เพิ่มรายการงบประมาณ
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block font-semibold text-amber-900 mb-1">แหล่งงบประมาณ (ใช้จ่ายจาก)</label>
+                                <input type="text" id="unProjBudgetSource" placeholder="เช่น งบประมาณประจำปี 2569 ของ สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด" class="w-full border rounded p-2 bg-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-amber-900 mb-1">งบประมาณรวมอนุมัติ (บาท)</label>
+                                <input type="number" id="unProjBudgetApproved" onchange="recalculateBudgets()" required class="w-full border rounded p-2 bg-white font-bold text-blue-900">
+                            </div>
+                        </div>
+
+                        <!-- Budget Items Table -->
+                        <div class="overflow-x-auto bg-white rounded-lg border border-amber-200 p-2">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-amber-100 text-amber-900 font-bold">
+                                    <tr>
+                                        <th class="p-1.5 w-12 text-center">ลำดับ</th>
+                                        <th class="p-1.5">รายการค่าใช้จ่าย</th>
+                                        <th class="p-1.5 w-32 text-right">จำนวนเงิน (บาท)</th>
+                                        <th class="p-1.5 w-12 text-center">ลบ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="budgetItemsTableBody" class="divide-y divide-gray-100">
+                                    <!-- Dynamic Budget Items -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-amber-50 font-bold text-amber-950">
+                                        <td colspan="2" class="p-2 text-right">รวมทั้งสิ้น:</td>
+                                        <td class="p-2 text-right text-sm font-extrabold text-blue-900" id="budgetItemTotalDisplay">0.00</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="p-1.5 text-xs text-amber-900 font-semibold bg-amber-100/50">
+                                            ตัวหนังสือ: <span id="budgetItemTotalThaiText" class="font-bold underline">zero Baht</span><br>
+                                            <span class="text-[10px] text-gray-500 font-normal">* หมายเหตุ: งบประมาณสามารถถัวเฉลี่ยได้ทุกรายการ</span>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">๙. ผลที่คาดว่าจะได้รับ</label>
+                            <textarea id="unProjExpectedOutcomes" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="เช่น สมาชิกมีความรู้ความเข้าใจบทบาทตามกฎหมายสหกรณ์เพิ่มขึ้น..."></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">คำสั่งแต่งตั้งคณะกรรมการ/คณะทำงานจัดงาน</label>
+                            <textarea id="unProjCommitteeOrder" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-xs" placeholder="เช่น คำสั่ง สอ.สธสต. ที่ 05/2569 เรื่อง แต่งตั้งคณะทำงานจัดงานอบรมประจำปี..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Proposal Signers Configuration matching PDF Structure -->
+                    <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="text-xs font-bold text-blue-950 heading-font"><i class="fa-solid fa-signature"></i> ผู้รับผิดชอบและผู้ลงนามในตัวโครงการ (๑๐.ผู้เขียน / ๑๑.ผู้เสนอ / ๑๒.ผู้เห็นชอบ / ๑๓.ผู้อนุมัติ)</h4>
+                                <p class="text-[11px] text-blue-800">กำหนดชื่อ นามสกุล และตำแหน่งของผู้ลงนามตามแบบขออนุมัติโครงการมาตรฐาน สอ.สธสต.</p>
+                            </div>
+                            <button type="button" onclick="addProposalSignerField()" class="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+                                <i class="fa-solid fa-plus"></i> เพิ่มผู้ลงนาม
+                            </button>
+                        </div>
+
+                        <div id="proposalSignersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                            <!-- Dynamic Proposal Signers -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3 border-t">
+                        <span class="text-xs text-gray-500"><i class="fa-solid fa-circle-check text-emerald-600"></i> ข้อมูลจะถูกประมวลผลไปยังเอกสารโครงการ A4 และรายงานสารบรรณอัตโนมัติ</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="openProposalPrintModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-print"></i> พิมพ์แบบเสนออนุมัติโครงการ (A4)
+                            </button>
+                            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow">
+                                <i class="fa-solid fa-save"></i> บันทึกข้อมูลโครงการ
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="un-step-panel-2" class="un-step-panel bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b gap-2">
+                    <h3 class="text-lg font-bold text-blue-900 flex items-center gap-2">
+                        <i class="fa-solid fa-users-line text-blue-700"></i> ขั้นที่ ๒: การดำเนินการ & การลงทะเบียนผู้เข้าร่วมโครงการ
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openSignatureSheetModal()" class="bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-signature"></i> พิมพ์ใบเซ็นชื่อ (A4)
+                        </button>
+                        <button onclick="simulateGoogleFormSync()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrows-rotate"></i> ดึงรายชื่อจาก Google Forms
+                        </button>
+                        <button onclick="openAddParticipantModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i> พิมพ์เพิ่มรายชื่อหน้างาน (Walk-in)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-blue-50 text-blue-900 font-bold border-b">
+                            <tr>
+                                <th class="p-2.5 text-center w-12">ลำดับ</th>
+                                <th class="p-2.5">ชื่อ - สกุล</th>
+                                <th class="p-2.5">ตำแหน่ง</th>
+                                <th class="p-2.5">เลขสมาชิก / บัตรประชาชน</th>
+                                <th class="p-2.5">ประเภทผู้เข้าร่วม</th>
+                                <th class="p-2.5 text-center">เลขที่เกียรติบัตร</th>
+                                <th class="p-2.5 text-center">สถานะเช็คอิน</th>
+                                <th class="p-2.5 text-center">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unStep2ParticipantTableBody" class="divide-y divide-gray-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="un-step-panel-3" class="un-step-panel bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden">
+                <h3 class="text-lg font-bold text-blue-900 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-blue-700"></i> ขั้นที่ ๓: บันทึกผลการดำเนินการ / งบประมาณ / ภาพกิจกรรม
+                </h3>
+                
+                <!-- Detailed Itemized Budget Breakdown vs Actual Spending -->
+                <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200 space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <h4 class="font-bold text-sm text-amber-950 flex items-center gap-2">
+                                <i class="fa-solid fa-coins text-amber-600"></i> สรุปผลการใช้จ่ายงบประมาณจำแนกตามรายการ (ดึงจากเสนอขออนุมัติโครงการ)
+                            </h4>
+                            <p class="text-xs text-amber-800">ระบุจำนวนเงินเบิกจ่ายจริงในแต่ละรายการเพื่อเปรียบเทียบผลต่างกับงบอนุมัติ</p>
+                        </div>
+                        <div class="bg-white px-3 py-1.5 rounded-lg border border-amber-300 text-xs">
+                            <span class="text-gray-600 font-semibold">งบอนุมัติรวม: </span>
+                            <span class="font-bold text-blue-900" id="step3ApprovedTotalDisplay">฿0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto bg-white rounded-lg border border-amber-200 p-2">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-amber-100 text-amber-950 font-bold border-b">
+                                <tr>
+                                    <th class="p-2 text-center w-10">ลำดับ</th>
+                                    <th class="p-2">รายการค่าใช้จ่าย</th>
+                                    <th class="p-2 text-right w-36">๑. งบอนุมัติ (บาท)</th>
+                                    <th class="p-2 text-right w-36">๒. ใช้จ่ายจริง (บาท)</th>
+                                    <th class="p-2 text-right w-32">คงเหลือ/ผลต่าง (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unStep3BudgetTableBody" class="divide-y divide-gray-100">
+                                <!-- Dynamic itemized budget execution -->
+                            </tbody>
+                            <tfoot class="bg-amber-50 font-bold text-amber-950 border-t border-amber-200">
+                                <tr>
+                                    <td colspan="2" class="p-2 text-right">รวมงบประมาณทั้งสิ้น:</td>
+                                    <td class="p-2 text-right text-blue-900 font-extrabold" id="step3TotalApprovedSum">0.00</td>
+                                    <td class="p-2 text-right text-emerald-700 font-extrabold" id="step3TotalActualSum">0.00</td>
+                                    <td class="p-2 text-right font-extrabold" id="step3TotalBalanceSum">0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="space-y-4 bg-gray-50 p-4 rounded-xl border">
+                    <h4 class="font-bold text-sm text-gray-800"><i class="fa-solid fa-image text-blue-500"></i> อัปโหลดภาพกิจกรรม ( Gallery )</h4>
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="file" accept="image/*" id="unPhotoFileInput" onchange="handlePhotoFileUpload(event)" class="text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-800 hover:file:bg-blue-200">
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="url" id="unAddPhotoUrl" placeholder="หรือระบุ URL รูปภาพกิจกรรม..." class="flex-1 border rounded-lg p-2 text-xs bg-white">
+                            <button onclick="addProjectPhoto()" class="bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-semibold">เพิ่มรูปภาพ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h4 class="font-bold text-sm text-gray-800 mb-2"><i class="fa-solid fa-images"></i> แกลเลอรีภาพกิจกรรมปัจจุบัน</h4>
+                    <div id="unMediaGalleryGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="un-step-panel-4" class="un-step-panel bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden">
+                <h3 class="text-lg font-bold text-blue-900 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-print text-blue-700"></i> ขั้นที่ ๔: ออกรายงานสารบรรณ 6 ส่วน & พิมพ์เกียรติบัตรออนไลน์
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-5 rounded-xl border border-blue-200 text-center space-y-3">
+                        <i class="fa-solid fa-file-invoice text-4xl text-blue-800"></i>
+                        <h4 class="font-bold text-blue-900 text-base">รูปเล่มรายงาน 6 ส่วน ตามระเบียบงานสารบรรณ</h4>
+                        <p class="text-xs text-gray-600">พิมพ์รูปเล่ม A4 ครบถ้วน (หน้าปก, คำนำ, สารบัญ, บันทึกข้อความ, แบบประเมิน, ภาคผนวก)</p>
+                        <button onclick="switchTab('report-a4')" class="bg-blue-800 hover:bg-blue-900 text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow w-full">
+                            เปิดหน้าดูและพิมพ์รายงาน A4
+                        </button>
+                    </div>
+
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-200 text-center space-y-3">
+                        <i class="fa-solid fa-award text-4xl text-amber-600"></i>
+                        <h4 class="font-bold text-amber-900 text-base">เกียรติบัตรออนไลน์ประจำโครงการ</h4>
+                        <p class="text-xs text-gray-600">ตั้งค่าพื้นหลังเกียรติบัตร โลโก้ ลายเซ็นภาพถ่าย และจัดการรายชื่อผู้ลงนาม</p>
+                        <button onclick="switchTab('cert-config')" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow w-full">
+                            ตั้งค่า & พิมพ์เกียรติบัตร
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-projects" class="space-y-6 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">รายการโครงการทั้งหมด</h2>
+                    <p class="text-sm text-gray-500">จัดการโครงการ แผนงาน ยุทธศาสตร์ และประเภทงบประมาณ</p>
+                </div>
+                <button onclick="openNewProjectModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium shadow flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> เพิ่มโครงการใหม่
+                </button>
+            </div>
+
+            <div id="projectsListContainer" class="grid grid-cols-1 gap-4">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <section id="view-participants" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">บริหารจัดการรายชื่อผู้เข้าร่วมโครงการ</h2>
+                    <p class="text-sm text-gray-500">รายชื่อจาก Google Forms, Walk-in และการรันเลขที่เกียรติบัตร สอ.สธสต.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openSignatureSheetModal()" class="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-signature"></i> พิมพ์ใบลงทะเบียน/ใบเซ็นชื่อ (A4)
+                    </button>
+                    <button onclick="simulateGoogleFormSync()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate"></i> เชื่อมโยง Google Forms
+                    </button>
+                    <button onclick="openAddParticipantModal()" class="bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> เพิ่มรายชื่อ Walk-in
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-blue-50 text-blue-900 font-bold border-b">
+                            <tr>
+                                <th class="p-3 text-center w-12">ลำดับ</th>
+                                <th class="p-3">ชื่อ - นามสกุล</th>
+                                <th class="p-3">ตำแหน่ง</th>
+                                <th class="p-3">เลขสมาชิก / บัตรประชาชน</th>
+                                <th class="p-3">ประเภทผู้เข้าร่วม</th>
+                                <th class="p-3 text-center">เลขที่เกียรติบัตร</th>
+                                <th class="p-3 text-center">คะแนน Pre-Test</th>
+                                <th class="p-3 text-center">คะแนน Post-Test</th>
+                                <th class="p-3 text-center">เช็คอิน</th>
+                                <th class="p-3 text-center">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participantsTableBody" class="divide-y divide-gray-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-report-a4" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">รายงานผลการดำเนินงาน ๖ ส่วน (ระเบียบงานสารบรรณ)</h2>
+                    <p class="text-sm text-gray-500">รูปแบบกระดาษ A4 เว้นขอบสันเล่ม 25mm ครบถ้วนตามระเบียบหนังสือราชการ</p>
+                </div>
+                <button onclick="window.print()" class="bg-blue-800 hover:bg-blue-900 text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i> พิมพ์รูปเล่มรายงานสารบรรณ (A4)
+                </button>
+            </div>
+
+            <!-- Printable Booklet Container -->
+            <div id="reportA4Container" class="bg-white p-8 sm:p-12 border border-gray-300 shadow-xl max-w-4xl mx-auto rounded-xl print-area space-y-12 binding-margin">
+                <!-- Dynamic Booklet Contents Rendered JS -->
+            </div>
+        </section>
+
+        <section id="view-annual-report" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">รายงานสรุปประจำปีตามแผนยุทธศาสตร์และแผนงาน</h2>
+                    <p class="text-sm text-gray-500">สรุปผลการดำเนินงาน ภาพรวมงบประมาณ และตัวชี้วัดประจำปีงบประมาณ</p>
+                </div>
+                <button onclick="window.print()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-lg text-xs font-bold shadow flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf"></i> พิมพ์รายงานสรุปยุทธศาสตร์ประจำปี (A4)
+                </button>
+            </div>
+
+            <div id="annualReportContainer" class="bg-white p-8 sm:p-12 border border-gray-300 shadow-xl max-w-4xl mx-auto rounded-xl print-area space-y-8 binding-margin">
+                <!-- Dynamic Annual Report Content -->
+            </div>
+        </section>
+
+        <section id="view-media" class="space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 heading-font">ภาพกิจกรรม & ผลการประเมินโครงการ</h2>
+                <p class="text-sm text-gray-500">จัดการรูปภาพกิจกรรมและสรุปผลคะแนน Pre-Test / Post-Test</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-blue-900 border-b pb-2"><i class="fa-solid fa-camera"></i> คลังภาพบรรยากาศกิจกรรม</h3>
+                <div id="mediaGalleryContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <section id="view-cert-config" class="space-y-6 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 heading-font">ตั้งค่ารูปแบบเกียรติบัตร โลโก้ & ผู้ลงนาม</h2>
+                    <p class="text-sm text-gray-500">อัปโหลดภาพโลโก้องค์กร/เกียรติบัตร และอัปโหลดไฟล์ลายเซ็นดิจิทัล</p>
+                </div>
+                <button onclick="window.print()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร (Landscape A4)
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Controls Sidebar -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-5">
+                    <!-- Logos Separated Configuration with File Upload -->
+                    <div class="space-y-3 bg-blue-50/60 p-3.5 rounded-xl border border-blue-100">
+                        <h4 class="text-xs font-bold text-blue-900 uppercase flex items-center gap-1.5"><i class="fa-solid fa-icons"></i> 1. อัปโหลดตราองค์กร & ตราเกียรติบัตร</h4>
+                        
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-semibold text-gray-700">ตราโลโก้องค์กร (Org Logo - รายงาน/หัวกระดาษ)</label>
+                            <input type="file" accept="image/*" onchange="uploadOrgLogoFile(event)" class="w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-bold file:bg-blue-100 file:text-blue-800 hover:file:bg-blue-200">
+                            <input type="url" id="orgLogoUrlInput" onchange="updateOrgLogo(this.value)" value="https://placehold.co/120x120/1e3a8a/ffffff?text=ORG" class="w-full border rounded p-1 text-[11px] bg-white mt-1" placeholder="หรือวาง URL รูปภาพ...">
+                        </div>
+
+                        <div class="space-y-1 pt-2 border-t">
+                            <label class="block text-[11px] font-semibold text-amber-900">ตราโลโก้เกียรติบัตร (Cert Logo - เฉพาะเกียรติบัตร)</label>
+                            <input type="file" accept="image/*" onchange="uploadCertLogoFile(event)" class="w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-bold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200">
+                            <input type="url" id="certLogoUrlInput" onchange="updateCertLogo(this.value)" value="https://placehold.co/120x120/b45309/ffffff?text=CERT" class="w-full border rounded p-1 text-[11px] bg-white mt-1" placeholder="หรือวาง URL รูปภาพ...">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-700 uppercase mb-2">2. รูปแบบพื้นหลังเกียรติบัตร</h4>
+                        <select id="certBgStyleSelect" onchange="changeCertBgStyle(this.value)" class="w-full border rounded-lg p-2 text-xs bg-gray-50 font-medium">
+                            <option value="classic">Classic Navy (ขอบน้ำเงินมาตรฐาน)</option>
+                            <option value="gold">Royal Gold (ลายทองหรูหรา)</option>
+                            <option value="thai">Thai Traditional (ลายไทยขอบทอง)</option>
+                            <option value="minimal">Minimalist (เรียบหรูสากล)</option>
+                        </select>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-xs font-bold text-gray-700 uppercase">3. ผู้ลงนามเกียรติบัตร & ลายเซ็นภาพถ่าย</h4>
+                            <button onclick="addCertSigner()" class="bg-blue-700 hover:bg-blue-800 text-white px-2.5 py-1 rounded text-xs font-semibold">
+                                + เพิ่มผู้ลงนาม
+                            </button>
+                        </div>
+                        <div id="certSignersConfigList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                            <!-- Dynamic Signers Inputs with Signature Image Upload -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Landscape Preview with Certificate Number on Top Left -->
+                <div class="lg:col-span-2 bg-gray-200 p-4 rounded-xl flex items-center justify-center overflow-x-auto shadow-inner">
+                    <div id="certPreviewCard" class="bg-white w-[297mm] h-[210mm] min-w-[700px] min-h-[490px] p-8 flex flex-col justify-between text-center relative shadow-2xl transition-all cert-bg-classic print-area cert-print-mode">
+                        <div class="cert-inner-border h-full flex flex-col justify-between relative">
+                            
+                            <!-- Certificate Header with Cert No on Top Left -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-start text-xs text-gray-600 mb-1">
+                                    <!-- Certificate Number placed at Top Left -->
+                                    <div class="text-left font-mono font-bold text-blue-900 bg-blue-50/80 px-2.5 py-1 rounded border border-blue-200">
+                                        เลขที่เกียรติบัตร: <span id="previewCertNo">สอ.สธสต.69/0001</span>
+                                    </div>
+                                    <div class="text-right text-[11px] text-gray-500 pt-1">
+                                        ให้ไว้ ณ วันที่ <span id="previewCertDate">11 กรกฎาคม พ.ศ. 2569</span>
+                                    </div>
+                                </div>
+
+                                <img id="previewCertLogo" src="https://placehold.co/120x120/b45309/ffffff?text=CERT" class="w-16 h-16 object-contain mx-auto" alt="Cert Logo">
+                                <h3 class="text-lg font-bold text-blue-900 heading-font" id="previewCertOrg">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <h1 class="text-3xl font-extrabold text-amber-600 heading-font tracking-wider">เกียรติบัตรออนไลน์</h1>
+                            </div>
+
+                            <div class="space-y-2 my-2">
+                                <p class="text-xs text-gray-600">ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า</p>
+                                <h2 class="text-2xl font-bold text-blue-950 underline decoration-amber-500 underline-offset-8" id="previewCertName">นายดำรงค์ เหล่ทองคำ</h2>
+                                <p class="text-xs text-gray-700 max-w-xl mx-auto leading-relaxed mt-2" id="previewCertBody">
+                                    ได้ผ่านการเข้าร่วมอบรมและผ่านเกณฑ์การทดสอบประเมินความรู้ ใน<br>
+                                    <strong class="text-blue-900 text-sm" id="previewCertProjTitle">"โครงการพัฒนาสมาชิก สู่ความเข้าใจในบทบาทและหน้าที่ตามกฎหมายสหกรณ์"</strong>
+                                </p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div id="previewCertSignersGrid" class="flex justify-around items-end pt-1">
+                                    <!-- Dynamic Signers Preview with Signatures -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-member-portal" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-8 rounded-2xl shadow-xl text-center space-y-3">
+                <i class="fa-solid fa-award text-5xl text-amber-300 animate-bounce"></i>
+                <h2 class="text-3xl font-bold heading-font">ระบบบริการสมาชิก: สืบค้นประวัติ & พิมพ์เกียรติบัตรออนไลน์</h2>
+                <p class="text-xs text-emerald-100 max-w-xl mx-auto">สืบค้นประวัติการเข้าร่วมกิจกรรมและสั่งพิมพ์เกียรติบัตรออนไลน์ด้วยตนเอง สะดวก รวดเร็ว ตลอด 24 ชั่วโมง</p>
+            </div>
+
+            <!-- Search Card -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-md max-w-2xl mx-auto space-y-4">
+                <label class="block text-sm font-bold text-gray-800">กรอกชื่อ-นามสกุล หรือ เลขสมาชิก / เลขบัตรประชาชน</label>
+                <div class="flex gap-2">
+                    <input type="text" id="memberSearchInput" placeholder="เช่น นายดำรงค์ เหล่ทองคำ หรือ สตูล-00001..." class="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500">
+                    <button onclick="performMemberSearch()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow transition">
+                        <i class="fa-solid fa-magnifying-glass"></i> สืบค้น
+                    </button>
+                </div>
+            </div>
+
+            <!-- Member Search Results -->
+            <div id="memberSearchResults" class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm max-w-4xl mx-auto hidden space-y-4">
+                <h3 class="text-lg font-bold text-emerald-900 border-b pb-3" id="memberSearchHeader">ประวัติการเข้าร่วมกิจกรรม</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-emerald-50 text-emerald-900 font-bold border-b">
+                            <tr>
+                                <th class="p-3">วันที่จัดงาน</th>
+                                <th class="p-3">ชื่อโครงการ / กิจกรรม</th>
+                                <th class="p-3">ประเภท</th>
+                                <th class="p-3 text-center">สถานะการเข้าร่วม</th>
+                                <th class="p-3 text-center">พิมพ์เกียรติบัตร</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberSearchTableBody" class="divide-y divide-gray-100">
+                            <!-- Dynamic Member Activities -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: Database Guide & Endpoint Config -->
+    <div id="databaseGuideModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-emerald-900 flex items-center gap-2"><i class="fa-solid fa-database"></i> เชื่อมต่อฐานข้อมูล Google Sheets / Web App</h3>
+                <button onclick="closeModal('databaseGuideModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
+                <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                    <p class="font-bold text-emerald-900 mb-1">สถานะการเชื่อมต่อปัจจุบัน:</p>
+                    <p id="dbConnectionStatusText" class="text-emerald-700 font-semibold"><i class="fa-solid fa-circle-check"></i> พร้อมใช้งาน (โหมดจำลองฐานข้อมูลในตัวเครื่อง / Local Storage Sync)</p>
+                </div>
+
+                <label class="block font-bold text-gray-800">ระบุ Google Apps Script Web App URL เพื่อซิงค์ออนไลน์:</label>
+                <div class="flex gap-2">
+                    <input type="url" id="googleWebAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border rounded-lg p-2 text-xs">
+                    <button onclick="saveDatabaseEndpoint()" class="bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs">บันทึก URL</button>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-lg border space-y-2">
+                    <p class="font-bold text-gray-800">วิธีการติดตั้ง Google Apps Script ใน Google Sheets:</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-gray-600">
+                        <li>เปิด Google Sheets ใหม่ใน Google Drive</li>
+                        <li>ไปที่เมนู <strong class="text-gray-800">ส่วนขยาย ➔ Apps Script</strong></li>
+                        <li>ก๊อบปี้โค้ด API จากปุ่มด้านล่างไปวางใน Apps Script แล้วกด <strong class="text-gray-800">Deploy as Web App (Anyone)</strong></li>
+                    </ol>
+                    <button onclick="copyAppsScriptTemplate()" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded text-[11px] shadow">
+                        <i class="fa-solid fa-copy"></i> คัดลอกโค้ด Google Apps Script
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-right pt-2 border-t">
+                <button onclick="closeModal('databaseGuideModal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-xs font-semibold">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Signature Sheet Print View -->
+    <div id="signatureSheetModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-purple-900"><i class="fa-solid fa-file-signature"></i> พิมพ์ใบลงทะเบียน/ใบเซ็นชื่อ (A4)</h3>
+                <button onclick="closeModal('signatureSheetModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-xs font-semibold text-gray-700">กรองพิมพ์ตามประเภทผู้เข้าร่วม:</label>
+                <select id="sigFilterType" onchange="renderSignatureSheetPrint()" class="w-full border rounded-lg p-2 text-xs font-medium">
+                    <option value="ALL">แสดงผู้เข้าร่วมทุกประเภท</option>
+                    <option value="สมาชิก">เฉพาะ สมาชิกสามัญ</option>
+                    <option value="สมาชิกสมทบ">เฉพาะ สมาชิกสมทบ</option>
+                    <option value="วิทยากร/ผู้ทรงคุณวุฒิ">เฉพาะ วิทยากร/ผู้ทรงคุณวุฒิ</option>
+                    <option value="บุคคลภายนอก/ประชาชนทั่วไป">เฉพาะ บุคคลภายนอก/ประชาชนทั่วไป</option>
+                </select>
+
+                <div id="sigSheetPreviewBox" class="bg-white border p-6 rounded shadow-inner text-xs binding-margin print-area">
+                    <!-- Dynamic Signature Sheet Render -->
+                </div>
+            </div>
+
+            <div class="flex justify-between border-t pt-3">
+                <button onclick="closeModal('signatureSheetModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ปิด</button>
+                <button onclick="window.print()" class="bg-purple-700 text-white px-5 py-2 rounded-lg text-xs font-bold shadow"><i class="fa-solid fa-print"></i> พิมพ์ใบเซ็นชื่อ A4</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Proposal Print View matching "รูปแบบ การเขียนโครงการ.pdf" -->
+    <div id="proposalPrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-amber-900"><i class="fa-solid fa-file-contract"></i> แบบเสนอขออนุมัติโครงการ (A4 - รูปแบบมาตรฐาน สอ.สธสต.)</h3>
+                <button onclick="closeModal('proposalPrintModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div id="proposalPrintPreviewBox" class="bg-white border p-6 sm:p-10 rounded shadow-inner text-xs binding-margin print-area space-y-4 official-font">
+                <!-- Dynamic Proposal Document Render matching attached PDF -->
+            </div>
+
+            <div class="flex justify-between border-t pt-3">
+                <button onclick="closeModal('proposalPrintModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ปิด</button>
+                <button onclick="window.print()" class="bg-amber-600 text-white px-5 py-2 rounded-lg text-xs font-bold shadow"><i class="fa-solid fa-print"></i> พิมพ์แบบเสนออนุมัติโครงการ A4</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Walk-in Participant Modal -->
+    <div id="addParticipantModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-blue-900"><i class="fa-solid fa-user-plus"></i> เพิ่มรายชื่อผู้เข้าร่วมหน้างาน (Walk-in)</h3>
+                <button onclick="closeModal('addParticipantModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <form onsubmit="saveNewParticipant(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ชื่อ - นามสกุล *</label>
+                    <input type="text" id="partNameInput" required class="w-full border rounded-lg p-2 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ตำแหน่ง *</label>
+                    <input type="text" id="partPosInput" required placeholder="เช่น พยาบาลวิชาชีพชำนาญการ / สมาชิก..." class="w-full border rounded-lg p-2 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">เลขสมาชิก หรือ เลขบัตรประชาชน *</label>
+                    <input type="text" id="partCodeInput" required class="w-full border rounded-lg p-2 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ประเภทผู้เข้าร่วม *</label>
+                    <select id="partTypeSelect" onchange="toggleCustomPartType(this.value)" class="w-full border rounded-lg p-2 text-xs bg-white font-medium">
+                        <option value="สมาชิก">สมาชิกสามัญ</option>
+                        <option value="สมาชิกสมทบ">สมาชิกสมทบ</option>
+                        <option value="วิทยากร/ผู้ทรงคุณวุฒิ">วิทยากร/ผู้ทรงคุณวุฒิ</option>
+                        <option value="บุคคลภายนอก/ประชาชนทั่วไป">บุคคลภายนอก/ประชาชนทั่วไป</option>
+                        <option value="CUSTOM">ระบุอื่นๆ...</option>
+                    </select>
+                </div>
+
+                <div id="customPartTypeContainer" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ระบุประเภทอื่นๆ</label>
+                    <input type="text" id="customPartTypeInput" placeholder="ระบุประเภทผู้เข้าร่วม..." class="w-full border rounded-lg p-2 text-xs">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button type="button" onclick="closeModal('addParticipantModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ยกเลิก</button>
+                    <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow">บันทึกรายชื่อ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentFiscalYear = "2569";
+        let activeProjectId = "proj-1";
+
+        let globalOrgLogoUrl = "https://placehold.co/120x120/1e3a8a/ffffff?text=ORG";
+        let globalCertLogoUrl = "https://placehold.co/120x120/b45309/ffffff?text=CERT";
+
+        // Thai Baht Text Converter Function
+        function thaiBahtText(numStr) {
+            let num = parseFloat(numStr);
+            if (isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
+            num = num.toFixed(2);
+            const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+            const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+            
+            let [baht, satang] = num.split('.');
+            let bahtStr = "";
+            
+            let len = baht.length;
+            for (let i = 0; i < len; i++) {
+                let digit = parseInt(baht[i]);
+                let pos = len - i - 1;
+                if (digit !== 0) {
+                    if (pos % 6 === 1 && digit === 1) bahtStr += "";
+                    else if (pos % 6 === 1 && digit === 2) bahtStr += "ยี่";
+                    else if (pos % 6 === 0 && digit === 1 && len > 1 && i > 0) bahtStr += "เอ็ด";
+                    else bahtStr += numbers[digit];
+                    bahtStr += units[pos % 6];
+                    if (pos % 6 === 0 && pos > 0) bahtStr += "ล้าน";
+                }
+            }
+            bahtStr += "บาท";
+            if (satang === "00" || !satang) {
+                bahtStr += "ถ้วน";
+            } else {
+                let s1 = parseInt(satang[0]);
+                let s2 = parseInt(satang[1]);
+                if (s1 > 0) {
+                    if (s1 === 2) bahtStr += "ยี่สิบ";
+                    else if (s1 === 1) bahtStr += "สิบ";
+                    else bahtStr += numbers[s1] + "สิบ";
+                }
+                if (s2 > 0) {
+                    if (s2 === 1 && s1 > 0) bahtStr += "เอ็ด";
+                    else bahtStr += numbers[s2];
+                }
+                bahtStr += "สตางค์";
+            }
+            return bahtStr;
+        }
+
+        // Global State Projects Dataset
+        let projectsState = [
+            {
+                id: "proj-1",
+                fiscalYear: "2569",
+                title: "โครงการพัฒนาสมาชิก สู่ความเข้าใจในบทบาทและหน้าที่ตามกฎหมายสหกรณ์ ประจำปี 2569",
+                strategicGoal: "ยุทธศาสตร์ที่ 1: การส่งเสริมสวัสดิการและคุณภาพชีวิตสมาชิกอย่างยั่งยืน",
+                workPlan: "แผนงานศึกษาและพัฒนาบุคลากร/สมาชิก ประจำปี 2569",
+                strategy: "กลยุทธ์ที่ 1.2: การเพิ่มพูนความรู้ด้านกฎหมาย ข้อบังคับ และธรรมาภิบาล",
+                purpose: "โครงการงานประจำ / งานตามภารกิจ (Routine)",
+                budgetType: "โครงการดำเนินงาน (OpEx - ค่าใช้จ่ายทั่วไป/จัดงาน)",
+                activityType: "กิจกรรมอบรม / ถ่ายทอดความรู้ (Training)",
+                hasTest: true,
+                budgetSource: "งบประมาณประจำปี 2569 ของ สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด",
+                budgetApproved: 94000,
+                budgetActual: 60535,
+                budgetItems: [
+                    { name: "ค่าวิทยากรและผู้บรรยายพิเศษ", amount: 25000, actualAmount: 18000 },
+                    { name: "ค่าอาหารกลางวันและอาหารว่างผู้เข้าร่วมอบรม", amount: 45000, actualAmount: 32535 },
+                    { name: "ค่าจัดทำเอกสาร วัสดุอุปกรณ์ และเกียรติบัตร", amount: 14000, actualAmount: 6000 },
+                    { name: "ค่าใช้จ่ายสถานที่และยานพาหนะ", amount: 10000, actualAmount: 4000 }
+                ],
+                date: "11 กรกฎาคม พ.ศ. 2569 เวลา 08.30 - 16.30 น.",
+                location: "ณ ห้องประชุมมั่งคั่ง สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด",
+                rationale: "เพื่อให้สมาชิกสหกรณ์ได้รับความรู้ ความเข้าใจเกี่ยวกับกฎหมาย ระเบียบ ข้อบังคับ และสิทธิหน้าที่ของสมาชิกในการมีส่วนร่วมบริหารสหกรณ์อย่างโปร่งใส มีคุณธรรม และสร้างความเข้มแข็งใหักับองค์กร",
+                objectives: "1. เพื่อให้สมาชิกมีความรู้ความเข้าใจเกี่ยวกับกฎหมาย และข้อบังคับสหกรณ์\n2. เพื่อสร้างความตระหนักรู้ในบทบาทและหน้าที่ของตนเองในการบริหารงานสหกรณ์อย่างโปร่งใส\n3. เพื่อสร้างความสัมพันธ์อันดีระหว่างสมาชิก คณะกรรมการ และฝ่ายจัดการ",
+                methodology: "1. เสนอขออนุมัติโครงการและแต่งตั้งคณะทำงาน\n2. ประชาสัมพันธ์และรับลงทะเบียนสมาชิกเข้าร่วมโครงการ\n3. จัดกิจกรรมอบรม บรรยายข้อกฎหมาย และแลกเปลี่ยนความคิดเห็น\n4. ประเมินผลความรู้ สรุปรายงาน และออกเกียรติบัตรออนไลน์",
+                responsibleUnit: "คณะกรรมการศึกษาและประชาสัมพันธ์ สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด",
+                targetOutcomes: "สมาชิกจำนวนไม่น้อยกว่า 100 คน ได้รับการถ่ายทอดความรู้กฎหมายสหกรณ์ มีความเข้าใจระดับดีมากไม่ต่ำกว่าร้อยละ 85",
+                expectedOutcomes: "สมาชิกมีความรู้ความเข้าใจเกี่ยวกับกฎหมายและระเบียบสหกรณ์ สามารถมีส่วนร่วมบริหารองค์กรด้วยความโปร่งใสตามหลักธรรมาภิบาล",
+                committeeOrder: "คำสั่ง สอ.สธสต. ที่ 05/2569 เรื่อง แต่งตั้งคณะทำงานจัดโครงการพัฒนาสมาชิก ประจำปี 2569",
+                signers: [
+                    { name: "นางสาวมูนา สตูลสาธารณสุข", position: "เจ้าหน้าที่ฝ่ายจัดการ", role: "๑๐. ผู้เขียนโครงการ", signatureUrl: "https://placehold.co/150x50/transparent/1e3a8a?text=Writer" },
+                    { name: "นายประพันธ์ ด้วยกาแด", position: "ประธานกรรมการศึกษาและประชาสัมพันธ์", role: "๑๑. ผู้เสนอโครงการ", signatureUrl: "https://placehold.co/150x50/transparent/1e3a8a?text=P.Duekade" },
+                    { name: "นายดำรงค์ เหล่ทองคำ", position: "ผู้จัดการ สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด", role: "๑๒. ผู้เห็นชอบโครงการ", signatureUrl: "https://placehold.co/150x50/transparent/b45309?text=D.Lethongkham" },
+                    { name: "นายสมชาย ใจดี", position: "ประธานกรรมการดำเนินการ", role: "๑๓. ผู้อนุมัติโครงการ", signatureUrl: "https://placehold.co/150x50/transparent/047857?text=S.Jaidee" }
+                ],
+                gallery: [
+                    { url: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop&q=60", caption: "พิธีเปิดการอบรมโครงการพัฒนาสมาชิกประจำปี 2569" },
+                    { url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=500&auto=format&fit=crop&q=60", caption: "บรรยากาศสมาชิกเข้าร่วมฟังการบรรยายข้อกฎหมายสหกรณ์" }
+                ],
+                participants: [
+                    { id: "p1", certNo: "สอ.สธสต.69/0001", name: "นายดำรงค์ เหล่ทองคำ", position: "ผู้จัดการสหกรณ์ฯ", code: "1-9099-00123-45-1", memberType: "สมาชิก", preTest: 60, postTest: 95, checkedIn: true },
+                    { id: "p2", certNo: "สอ.สธสต.69/0002", name: "นายประพันธ์ ด้วยกาแด", position: "พยาบาลวิชาชีพชำนาญการพิเศษ", code: "สตูล-00002", memberType: "สมาชิก", preTest: 70, postTest: 90, checkedIn: true },
+                    { id: "p3", certNo: "สอ.สธสต.69/0003", name: "นางสาวมูนา สตูลสาธารณสุข", position: "นักวิชาการสาธารณสุขชำนาญการ", code: "สตูล-00086", memberType: "สมาชิกสมทบ", preTest: 50, postTest: 85, checkedIn: true },
+                    { id: "p4", certNo: "สอ.สธสต.69/0004", name: "นายอับดุลเลาะห์ อามีน", position: "อัยการอาวุโส / วิทยากรพิเศษ", code: "3-9001-00822-11-0", memberType: "วิทยากร/ผู้ทรงคุณวุฒิ", preTest: 40, postTest: 80, checkedIn: true }
+                ]
+            }
+        ];
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-dropdown-container')) {
+                closeAllNavDropdowns();
+            }
+        });
+
+        function toggleNavDropdown(dropdownId, event) {
+            if (event) event.stopPropagation();
+            const target = document.getElementById(dropdownId);
+            if (!target) return;
+            const isHidden = target.classList.contains('hidden');
+            closeAllNavDropdowns();
+            if (isHidden) {
+                target.classList.remove('hidden');
+            }
+        }
+
+        function closeAllNavDropdowns() {
+            document.querySelectorAll('.nav-dropdown-menu').forEach(el => el.classList.add('hidden'));
+        }
+
+        function switchTab(tabId) {
+            const views = ['dashboard', 'unified-cycle', 'projects', 'participants', 'report-a4', 'annual-report', 'media', 'cert-config', 'member-portal'];
+            
+            views.forEach(v => {
+                const viewEl = document.getElementById(`view-${v}`);
+                if (viewEl) viewEl.classList.add('hidden');
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            closeAllNavDropdowns();
+
+            // Render views dynamically
+            if (tabId === 'dashboard') renderDashboardView();
+            if (tabId === 'unified-cycle') renderUnifiedCycleView();
+            if (tabId === 'projects') renderProjectsView();
+            if (tabId === 'participants') renderParticipantsView();
+            if (tabId === 'report-a4') renderReportA4View();
+            if (tabId === 'annual-report') renderAnnualReportView();
+            if (tabId === 'media') renderMediaView();
+            if (tabId === 'cert-config') renderCertConfigView();
+            if (tabId === 'member-portal') renderMemberPortalView();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeFiscalYear(year) {
+            currentFiscalYear = year;
+            document.getElementById('dashFyLabel').innerText = `ปีงบประมาณ ${currentFiscalYear}`;
+            
+            const availProjs = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+            if (availProjs.length > 0) {
+                activeProjectId = availProjs[0].id;
+            }
+
+            renderDashboardView();
+            showToast(`สลับการแสดงผลข้อมูลเป็น ปีงบประมาณ ${currentFiscalYear}`, 'info');
+        }
+
+        function getActiveProject() {
+            return projectsState.find(p => p.id === activeProjectId) || projectsState[0];
+        }
+
+        function changeActiveProject(projId) {
+            activeProjectId = projId;
+            renderDashboardView();
+            renderUnifiedCycleView();
+            showToast(`เลือกสลับโครงการ: ${getActiveProject().title}`, 'info');
+        }
+
+        function generateNextCertNo(fiscalYear) {
+            const shortYear = fiscalYear.slice(-2);
+            let maxSequence = 0;
+
+            projectsState.forEach(p => {
+                if (p.fiscalYear === fiscalYear && p.participants) {
+                    p.participants.forEach(part => {
+                        if (part.certNo && part.certNo.startsWith(`สอ.สธสต.${shortYear}/`)) {
+                            const seq = parseInt(part.certNo.split('/')[1]) || 0;
+                            if (seq > maxSequence) maxSequence = seq;
+                        }
+                    });
+                }
+            });
+
+            const nextSeq = String(maxSequence + 1).padStart(4, '0');
+            return `สอ.สธสต.${shortYear}/${nextSeq}`;
+        }
+
+        function renderDashboardView() {
+            const fyProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+            
+            let totalParticipants = 0;
+            let totalApprovedBudget = 0;
+            let totalActualBudget = 0;
+            let totalCerts = 0;
+
+            fyProjects.forEach(p => {
+                totalParticipants += p.participants ? p.participants.length : 0;
+                totalApprovedBudget += p.budgetApproved || 0;
+                totalActualBudget += p.budgetActual || 0;
+                if (p.participants) {
+                    totalCerts += p.participants.filter(pt => pt.certNo).length;
+                }
+            });
+
+            document.getElementById('stat-total-projects').innerText = fyProjects.length;
+            document.getElementById('stat-total-participants').innerText = totalParticipants;
+            document.getElementById('stat-total-budget').innerText = `฿${totalApprovedBudget.toLocaleString()}`;
+            document.getElementById('stat-actual-budget').innerText = `ใช้จ่ายจริง: ฿${totalActualBudget.toLocaleString()}`;
+            document.getElementById('stat-issued-certs').innerText = totalCerts;
+
+            const selectEl = document.getElementById('activeProjectSelect');
+            selectEl.innerHTML = '';
+            fyProjects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = p.title;
+                if (p.id === activeProjectId) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+
+            const proj = getActiveProject();
+            const summaryBox = document.getElementById('activeProjectSummary');
+            if (proj) {
+                summaryBox.innerHTML = `
+                    <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200 space-y-3">
+                        <div class="flex flex-wrap gap-2 text-[11px] font-bold">
+                            <span class="bg-blue-800 text-white px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-bullseye"></i> ${proj.purpose}</span>
+                            <span class="bg-purple-800 text-white px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-wallet"></i> ${proj.budgetType}</span>
+                            <span class="bg-amber-600 text-white px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-tag"></i> ${proj.activityType}</span>
+                        </div>
+                        <h4 class="text-base font-bold text-blue-950 heading-font">${proj.title}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-gray-700 pt-2 border-t border-blue-200">
+                            <div><strong>วันที่จัด:</strong> ${proj.date}</div>
+                            <div><strong>สถานที่:</strong> ${proj.location}</div>
+                            <div><strong>ผู้เข้าร่วมสะสม:</strong> ${proj.participants.length} คน</div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="switchTab('unified-cycle')" class="bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrows-spin"></i> ไปหน้าจัดการครบวงจร
+                            </button>
+                            <button onclick="switchTab('report-a4')" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-invoice"></i> ดูรายงาน A4 สารบรรณ
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function setUnifiedStep(stepNum) {
+            document.querySelectorAll('.un-step-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.un-step-btn').forEach(b => {
+                b.classList.remove('bg-blue-50', 'text-blue-900', 'border-blue-200');
+                b.classList.add('bg-gray-50', 'text-gray-600');
+            });
+
+            const panel = document.getElementById(`un-step-panel-${stepNum}`);
+            if (panel) panel.classList.remove('hidden');
+
+            const btn = document.getElementById(`un-step-btn-${stepNum}`);
+            if (btn) {
+                btn.classList.remove('bg-gray-50', 'text-gray-600');
+                btn.classList.add('bg-blue-50', 'text-blue-900', 'border-blue-200');
+            }
+        }
+
+        function renderUnifiedCycleView() {
+            const proj = getActiveProject();
+            if (!proj) return;
+
+            document.getElementById('unifiedProjTitle').innerText = proj.title;
+
+            // Step 1 Form Populating
+            document.getElementById('unProjTitle').value = proj.title;
+            document.getElementById('unProjFiscalYear').value = proj.fiscalYear;
+            document.getElementById('unProjStrategicGoal').value = proj.strategicGoal || '';
+            document.getElementById('unProjWorkPlan').value = proj.workPlan || '';
+            document.getElementById('unProjStrategy').value = proj.strategy || '';
+            document.getElementById('unProjPurpose').value = proj.purpose;
+            document.getElementById('unProjBudgetType').value = proj.budgetType;
+            document.getElementById('unProjActivityType').value = proj.activityType;
+            document.getElementById('unProjRationale').value = proj.rationale || '';
+            document.getElementById('unProjObjectives').value = proj.objectives || '';
+            document.getElementById('unProjTargetOutcomes').value = proj.targetOutcomes || '';
+            document.getElementById('unProjDate').value = proj.date;
+            document.getElementById('unProjLocation').value = proj.location;
+            document.getElementById('unProjMethodology').value = proj.methodology || '';
+            document.getElementById('unProjResponsibleUnit').value = proj.responsibleUnit || '';
+            document.getElementById('unProjBudgetSource').value = proj.budgetSource || '';
+            document.getElementById('unProjBudgetApproved').value = proj.budgetApproved;
+            document.getElementById('unProjExpectedOutcomes').value = proj.expectedOutcomes || '';
+            document.getElementById('unProjCommitteeOrder').value = proj.committeeOrder || '';
+
+            renderBudgetItemsTable();
+            renderProposalSignersInputs();
+            renderUnStep2ParticipantTable();
+            renderUnStep3MediaAndBudget();
+        }
+
+        function renderBudgetItemsTable() {
+            const proj = getActiveProject();
+            if (!proj.budgetItems) {
+                proj.budgetItems = [
+                    { name: "ค่าวิทยากรและผู้บรรยายพิเศษ", amount: 25000, actualAmount: 0 },
+                    { name: "ค่าอาหารกลางวันและอาหารว่างผู้เข้าร่วมอบรม", amount: 45000, actualAmount: 0 }
+                ];
+            }
+
+            const tbody = document.getElementById('budgetItemsTableBody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            proj.budgetItems.forEach((item, idx) => {
+                total += parseFloat(item.amount) || 0;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-1.5 text-center font-bold text-gray-500">${idx + 1}</td>
+                    <td class="p-1.5"><input type="text" value="${item.name}" onchange="updateBudgetItem(${idx}, 'name', this.value)" class="w-full border rounded p-1 text-xs"></td>
+                    <td class="p-1.5"><input type="number" value="${item.amount}" onchange="updateBudgetItem(${idx}, 'amount', this.value)" class="w-full border rounded p-1 text-xs text-right font-bold"></td>
+                    <td class="p-1.5 text-center"><button type="button" onclick="removeBudgetItem(${idx})" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('budgetItemTotalDisplay').innerText = total.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('budgetItemTotalThaiText').innerText = thaiBahtText(total);
+        }
+
+        function addBudgetItemRow() {
+            const proj = getActiveProject();
+            if (!proj.budgetItems) proj.budgetItems = [];
+            proj.budgetItems.push({ name: "รายการค่าใช้จ่ายเพิ่มเติม", amount: 0, actualAmount: 0 });
+            renderBudgetItemsTable();
+        }
+
+        function removeBudgetItem(idx) {
+            const proj = getActiveProject();
+            proj.budgetItems.splice(idx, 1);
+            renderBudgetItemsTable();
+        }
+
+        function updateBudgetItem(idx, field, val) {
+            const proj = getActiveProject();
+            if (proj.budgetItems[idx]) {
+                proj.budgetItems[idx][field] = field === 'amount' ? (parseFloat(val) || 0) : val;
+                renderBudgetItemsTable();
+            }
+        }
+
+        function renderUnStep3MediaAndBudget() {
+            const proj = getActiveProject();
+            if (!proj.budgetItems) {
+                proj.budgetItems = [
+                    { name: "ค่าใช้จ่ายในการจัดกิจกรรมตามแผนงาน", amount: proj.budgetApproved || 0, actualAmount: proj.budgetActual || 0 }
+                ];
+            }
+
+            const tbody = document.getElementById('unStep3BudgetTableBody');
+            tbody.innerHTML = '';
+
+            let totalApproved = 0;
+            let totalActual = 0;
+
+            proj.budgetItems.forEach((item, idx) => {
+                const approved = parseFloat(item.amount) || 0;
+                const actual = item.actualAmount !== undefined ? (parseFloat(item.actualAmount) || 0) : (parseFloat(item.amount) || 0);
+                const balance = approved - actual;
+
+                totalApproved += approved;
+                totalActual += actual;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-amber-50/50';
+                tr.innerHTML = `
+                    <td class="p-2 text-center font-bold text-gray-500">${idx + 1}</td>
+                    <td class="p-2 font-medium text-gray-800">${item.name}</td>
+                    <td class="p-2 text-right font-mono font-semibold text-blue-900">${approved.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    <td class="p-2 text-right">
+                        <input type="number" value="${actual}" onchange="updateBudgetItemActual(${idx}, this.value)" class="w-32 border rounded p-1 text-xs text-right font-mono font-bold text-emerald-800 bg-white">
+                    </td>
+                    <td class="p-2 text-right font-mono font-bold ${balance >= 0 ? 'text-emerald-600' : 'text-red-600'}">
+                        ${balance.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            proj.budgetApproved = totalApproved;
+            proj.budgetActual = totalActual;
+
+            const totalBalance = totalApproved - totalActual;
+            document.getElementById('step3ApprovedTotalDisplay').innerText = `฿${totalApproved.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('step3TotalApprovedSum').innerText = totalApproved.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('step3TotalActualSum').innerText = totalActual.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('step3TotalBalanceSum').innerText = totalBalance.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+
+            const grid = document.getElementById('unMediaGalleryGrid');
+            grid.innerHTML = '';
+
+            proj.gallery.forEach((photo, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg border overflow-hidden shadow-sm space-y-1 p-2 text-xs relative';
+                card.innerHTML = `
+                    <img src="${photo.url}" class="w-full h-24 object-cover rounded" alt="Gallery Photo">
+                    <p class="font-medium text-gray-700 truncate">${photo.caption}</p>
+                    <button onclick="removeProjectPhoto(${idx})" class="absolute top-3 right-3 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center shadow"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function updateBudgetItemActual(idx, val) {
+            const proj = getActiveProject();
+            if (proj.budgetItems && proj.budgetItems[idx]) {
+                proj.budgetItems[idx].actualAmount = parseFloat(val) || 0;
+                renderUnStep3MediaAndBudget();
+                renderDashboardView();
+                showToast('บันทึกการเบิกจ่ายจริงเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        function openProposalPrintModal() {
+            const proj = getActiveProject();
+            const box = document.getElementById('proposalPrintPreviewBox');
+
+            let budgetItemsHtml = '';
+            let budgetTotal = 0;
+            if (proj.budgetItems && proj.budgetItems.length > 0) {
+                proj.budgetItems.forEach((item, idx) => {
+                    budgetTotal += parseFloat(item.amount) || 0;
+                    budgetItemsHtml += `
+                        <tr class="border-b">
+                            <td class="p-1.5 border text-center">๗.${idx + 1}</td>
+                            <td class="p-1.5 border">${item.name}</td>
+                            <td class="p-1.5 border text-right font-mono">${(parseFloat(item.amount) || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                budgetTotal = proj.budgetApproved || 0;
+                budgetItemsHtml = `
+                    <tr class="border-b">
+                        <td class="p-1.5 border text-center">๗.๑</td>
+                        <td class="p-1.5 border">ค่าใช้จ่ายในการจัดกิจกรรมตามแผนงาน</td>
+                        <td class="p-1.5 border text-right font-mono">${budgetTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            }
+
+            const thaiBahtTotal = thaiBahtText(budgetTotal);
+
+            box.innerHTML = `
+                <div class="text-center space-y-2 border-b pb-4">
+                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                    <h3 class="text-base font-bold text-blue-950">${headerOrgName.innerText}</h3>
+                    <h2 class="text-lg font-bold text-blue-900">แบบเสนอขออนุมัติโครงการ</h2>
+                </div>
+
+                <div class="space-y-3 text-xs leading-relaxed">
+                    <p class="font-bold text-sm text-blue-950">ชื่อโครงการ หรือ กิจกรรม: <span class="font-normal">${proj.title}</span></p>
+                    
+                    <p><strong>๑. หลักการและเหตุผล:</strong></p>
+                    <p class="official-indent leading-relaxed text-gray-800">${proj.rationale || '-'}</p>
+
+                    <p><strong>๒. วัตถุประสงค์:</strong></p>
+                    <p class="official-indent leading-relaxed text-gray-800">${(proj.objectives || '-').replace(/\n/g, '<br>')}</p>
+
+                    <p><strong>๓. เป้าหมาย:</strong></p>
+                    <p class="official-indent text-gray-800">${proj.targetOutcomes || '-'}</p>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <p><strong>๔. ระยะเวลาดำเนินการ:</strong> ${proj.date}</p>
+                        <p><strong>๕. สถานที่:</strong> ${proj.location}</p>
+                    </div>
+
+                    <p><strong>๖. วิธีการดำเนินการโครงการ:</strong></p>
+                    <p class="official-indent text-gray-800">${(proj.methodology || '-').replace(/\n/g, '<br>')}</p>
+
+                    <p><strong>๗. ผู้รับผิดชอบโครงการ:</strong> ${proj.responsibleUnit || '-'}</p>
+
+                    <div>
+                        <p><strong>๘. งบประมาณ:</strong> ใช้จ่ายจาก ${proj.budgetSource || 'งบประมาณ สอ.สธสต.'} มีรายละเอียดค่าใช้จ่าย ดังนี้</p>
+                        <table class="w-full text-left border text-xs my-2">
+                            <thead class="bg-gray-100 font-bold border-b">
+                                <tr>
+                                    <th class="p-1.5 border text-center w-12">ลำดับ</th>
+                                    <th class="p-1.5 border">รายการ</th>
+                                    <th class="p-1.5 border text-right w-32">จำนวนเงิน (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${budgetItemsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr class="font-bold bg-gray-50 border-t">
+                                    <td colspan="2" class="p-1.5 border text-right">รวมทั้งสิ้น: (${thaiBahtTotal})</td>
+                                    <td class="p-1.5 border text-right font-mono text-blue-900">${budgetTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p class="text-[10px] text-gray-500 font-semibold">* หมายเหตุ งบประมาณสามารถถัวเฉลี่ยได้ทุกรายการ</p>
+                    </div>
+
+                    <p><strong>๙. ผลที่คาดว่าจะได้รับ:</strong></p>
+                    <p class="official-indent text-gray-800">${proj.expectedOutcomes || '-'}</p>
+                    
+                    <div class="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        ${proj.signers.map(s => `
+                            <div class="space-y-1">
+                                <p class="font-bold text-[11px] text-blue-900">${s.role || 'ผู้ลงนาม'}</p>
+                                <div class="h-12 flex items-end justify-center">
+                                    ${s.signatureUrl ? `<img src="${s.signatureUrl}" class="h-10 object-contain mx-auto" alt="Signature">` : `<div class="border-b border-dotted w-28 border-gray-600"></div>`}
+                                </div>
+                                <p class="font-bold text-xs">(${s.name})</p>
+                                <p class="text-[10px] text-gray-600">${s.position}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('proposalPrintModal').classList.remove('hidden');
+        }
+
+        function openAddParticipantModal() {
+            document.getElementById('partNameInput').value = '';
+            document.getElementById('partPosInput').value = '';
+            document.getElementById('partCodeInput').value = '';
+            document.getElementById('addParticipantModal').classList.remove('hidden');
+        }
+
+        function toggleCustomPartType(val) {
+            const container = document.getElementById('customPartTypeContainer');
+            if (val === 'CUSTOM') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function saveNewParticipant(event) {
+            event.preventDefault();
+            const proj = getActiveProject();
+            let typeVal = document.getElementById('partTypeSelect').value;
+            if (typeVal === 'CUSTOM') {
+                typeVal = document.getElementById('customPartTypeInput').value || 'อื่นๆ';
+            }
+
+            const certNo = generateNextCertNo(proj.fiscalYear);
+
+            proj.participants.push({
+                id: `p-${Date.now()}`,
+                certNo: certNo,
+                name: document.getElementById('partNameInput').value,
+                position: document.getElementById('partPosInput').value,
+                code: document.getElementById('partCodeInput').value,
+                memberType: typeVal,
+                preTest: 0,
+                postTest: 0,
+                checkedIn: true
+            });
+
+            closeModal('addParticipantModal');
+            renderUnStep2ParticipantTable();
+            renderParticipantsView();
+            showToast(`ลงทะเบียนผู้เข้าร่วมเรียบร้อย รหัสเกียรติบัตร: ${certNo}`, 'success');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastIcon');
+            const message = document.getElementById('toastMessage');
+
+            toast.className = 'mb-4 p-4 rounded-lg shadow-md flex items-center justify-between transition-all ';
+            if (type === 'success') {
+                toast.classList.add('bg-emerald-100', 'text-emerald-900', 'border', 'border-emerald-300');
+                icon.className = 'fa-solid fa-circle-check text-emerald-600 text-xl';
+            } else if (type === 'warning') {
+                toast.classList.add('bg-amber-100', 'text-amber-900', 'border', 'border-amber-300');
+                icon.className = 'fa-solid fa-triangle-exclamation text-amber-600 text-xl';
+            } else if (type === 'error') {
+                toast.classList.add('bg-red-100', 'text-red-900', 'border', 'border-red-300');
+                icon.className = 'fa-solid fa-circle-xmark text-red-600 text-xl';
+            } else {
+                toast.classList.add('bg-blue-100', 'text-blue-900', 'border', 'border-blue-300');
+                icon.className = 'fa-solid fa-circle-info text-blue-600 text-xl';
+            }
+
+            message.innerText = msg;
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                closeToast();
+            }, 4000);
+        }
+
+        function closeToast() {
+            document.getElementById('toastNotification').classList.add('hidden');
+        }
+
+        function copyPublicPortalLink() {
+            const url = window.location.href.split('?')[0] + '?mode=public';
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = url;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('คัดลอกลิงก์ตรงสำหรับสมาชิกเรียบร้อยแล้ว', 'success');
+        }
+
+        function simulateGoogleFormSync() {
+            const proj = getActiveProject();
+            const certNo = generateNextCertNo(proj.fiscalYear);
+            proj.participants.push({
+                id: `p-gf-${Date.now()}`,
+                certNo: certNo,
+                name: "นางสาวฟาติมะห์ สตูลสาธารณสุข",
+                position: "พยาบาลวิชาชีพปฏิบัติการ",
+                code: "สตูล-00099",
+                memberType: "สมาชิก",
+                preTest: 65,
+                postTest: 90,
+                checkedIn: true
+            });
+            renderUnStep2ParticipantTable();
+            renderParticipantsView();
+            showToast('ดึงรายชื่อใหม่จาก Google Forms สำเร็จ (เพิ่ม 1 รายชื่อ)', 'success');
+        }
+
+        function copyAppsScriptTemplate() {
+            const code = `function doGet(e) { return ContentService.createTextOutput("OK"); }`;
+            const tempInput = document.createElement('textarea');
+            document.body.appendChild(tempInput);
+            tempInput.value = code;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('คัดลอกโค้ดสคริปต์เรียบร้อย', 'success');
+        }
+
+        function renderProjectsView() {
+            const container = document.getElementById('projectsListContainer');
+            container.innerHTML = '';
+            const fyProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+
+            fyProjects.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <span class="bg-blue-100 text-blue-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full">${p.purpose}</span>
+                            <h3 class="text-base font-bold text-blue-950 heading-font">${p.title}</h3>
+                            <p class="text-xs text-gray-500">${p.strategicGoal || '-'}</p>
+                        </div>
+                        <span class="text-xs font-bold text-blue-900 bg-blue-50 px-3 py-1 rounded-lg">฿${p.budgetApproved.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-gray-600 pt-2 border-t">
+                        <span>วันที่จัด: ${p.date}</span>
+                        <span>ผู้เข้าร่วม: ${p.participants.length} คน</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderParticipantsView() {
+            const proj = getActiveProject();
+            const tbody = document.getElementById('participantsTableBody');
+            tbody.innerHTML = '';
+
+            proj.participants.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-gray-500">${idx + 1}</td>
+                    <td class="p-3 font-bold text-blue-900">${p.name}</td>
+                    <td class="p-3 text-gray-600">${p.position}</td>
+                    <td class="p-3 font-mono text-gray-700">${p.code}</td>
+                    <td class="p-3"><span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-bold">${p.memberType}</span></td>
+                    <td class="p-3 text-center font-mono text-amber-700 font-bold">${p.certNo || '-'}</td>
+                    <td class="p-3 text-center font-bold text-blue-800">${p.preTest}%</td>
+                    <td class="p-3 text-center font-bold text-emerald-600">${p.postTest}%</td>
+                    <td class="p-3 text-center">${p.checkedIn ? '<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>' : '<i class="fa-solid fa-circle-xmark text-gray-300 text-base"></i>'}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="removeParticipant('${p.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderMediaView() {
+            const container = document.getElementById('mediaGalleryContainer');
+            container.innerHTML = '';
+            const proj = getActiveProject();
+
+            proj.gallery.forEach(g => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm p-3 space-y-2';
+                card.innerHTML = `
+                    <img src="${g.url}" class="w-full h-40 object-cover rounded-lg" alt="Gallery">
+                    <p class="text-xs font-semibold text-gray-800">${g.caption}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'public') {
+                isPublicPortalMode = true;
+                document.getElementById('mainHeader').classList.add('hidden');
+                document.getElementById('mainNavBar').classList.add('hidden');
+                document.getElementById('publicPortalNotice').classList.remove('hidden');
+                switchTab('member-portal');
+            } else {
+                renderDashboardView();
+            }
+        };
+
+        function exitPublicPortalMode() {
+            window.location.href = window.location.href.split('?')[0];
+        }
+    </script>
+</body>
+</html>

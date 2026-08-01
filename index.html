@@ -1218,6 +1218,24 @@ function getSheetData(sheet) {
         </div>
     </div>
 
+    <!-- MODAL 5: Delete Project Confirmation Modal -->
+    <div id="deleteProjectModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-red-900"><i class="fa-solid fa-triangle-exclamation"></i> ยืนยันการลบโครงการ</h3>
+                <button onclick="closeModal('deleteProjectModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-2 text-xs text-gray-700">
+                <p>คุณต้องการลบโครงการ <strong id="deleteProjTitleDisplay" class="text-blue-900"></strong> ใช่หรือไม่?</p>
+                <p class="text-red-600 font-semibold">* เมื่อลบแล้ว ข้อมูลผู้เข้าร่วม รายงาน และภาพกิจกรรมในโครงการนี้จะถูกลบอย่างถาวร</p>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t">
+                <button type="button" onclick="closeModal('deleteProjectModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ยกเลิก</button>
+                <button type="button" onclick="confirmDeleteProject()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow">ยืนยันลบโครงการ</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Global Application State Variables
         let currentFiscalYear = "2569";
@@ -1226,6 +1244,41 @@ function getSheetData(sheet) {
         let globalCertLogoUrl = "https://placehold.co/120x120/b45309/ffffff?text=CERT";
         let globalCertBgStyle = "classic";
         let isPublicPortalMode = false;
+        let projectToDeleteId = null;
+
+        function openDeleteProjectModal(projId) {
+            const proj = projectsState.find(p => p.id === projId);
+            if (!proj) return;
+            
+            if (projectsState.length <= 1) {
+                showToast('ไม่สามารถลบได้ เนื่องจากต้องมีอย่างน้อย 1 โครงการในระบบ', 'warning');
+                return;
+            }
+
+            projectToDeleteId = projId;
+            document.getElementById('deleteProjTitleDisplay').innerText = `"${proj.title}"`;
+            document.getElementById('deleteProjectModal').classList.remove('hidden');
+        }
+
+        function confirmDeleteProject() {
+            if (!projectToDeleteId) return;
+
+            const targetTitle = projectsState.find(p => p.id === projectToDeleteId)?.title || '';
+            projectsState = projectsState.filter(p => p.id !== projectToDeleteId);
+
+            if (activeProjectId === projectToDeleteId) {
+                const avail = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+                activeProjectId = avail.length > 0 ? avail[0].id : (projectsState[0]?.id || '');
+            }
+
+            projectToDeleteId = null;
+            closeModal('deleteProjectModal');
+
+            renderDashboardView();
+            renderProjectsView();
+            renderUnifiedCycleView();
+            showToast(`ลบโครงการ "${targetTitle}" เรียบร้อยแล้ว`, 'success');
+        }
 
         function thaiBahtText(num) {
             if (num === null || num === undefined || isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
@@ -1598,6 +1651,9 @@ function getSheetData(sheet) {
                             </button>
                             <button onclick="switchTab('report-a4')" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
                                 <i class="fa-solid fa-file-invoice"></i> ดูรายงาน A4 สารบรรณ
+                            </button>
+                            <button onclick="openDeleteProjectModal('${proj.id}')" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-trash"></i> ลบโครงการนี้
                             </button>
                         </div>
                     </div>
@@ -2624,6 +2680,14 @@ function getSheetData(sheet) {
                     <div class="flex justify-between items-center text-xs text-gray-600 pt-2 border-t">
                         <span>วันที่จัด: ${p.date}</span>
                         <span>ผู้เข้าร่วม: ${p.participants.length} คน</span>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2 border-t">
+                        <button onclick="changeActiveProject('${p.id}'); switchTab('unified-cycle');" class="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> บริหารโครงการ
+                        </button>
+                        <button onclick="openDeleteProjectModal('${p.id}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> ลบโครงการ
+                        </button>
                     </div>
                 `;
                 container.appendChild(card);

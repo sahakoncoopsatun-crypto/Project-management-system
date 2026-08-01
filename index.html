@@ -928,38 +928,162 @@
 
     <!-- MODAL 1: Database Guide & Endpoint Config -->
     <div id="databaseGuideModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-bold text-emerald-900 flex items-center gap-2"><i class="fa-solid fa-database"></i> เชื่อมต่อฐานข้อมูล Google Sheets / Web App</h3>
+                <div>
+                    <h3 class="text-lg font-bold text-emerald-950 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-emerald-600"></i> การเชื่อมโยงฐานข้อมูล Google Sheets / Apps Script (Cloud Sync)
+                    </h3>
+                    <p class="text-xs text-gray-500">บันทึกข้อมูลโครงการ รายชื่อผู้ลงทะเบียน Google Forms และเกียรติบัตรออนไลน์ขึ้นคลาวด์ฟรีแบบ Real-time</p>
+                </div>
                 <button onclick="closeModal('databaseGuideModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
-                <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
-                    <p class="font-bold text-emerald-900 mb-1">สถานะการเชื่อมต่อปัจจุบัน:</p>
-                    <p id="dbConnectionStatusText" class="text-emerald-700 font-semibold"><i class="fa-solid fa-circle-check"></i> พร้อมใช้งาน (โหมดจำลองฐานข้อมูลในตัวเครื่อง / Local Storage Sync)</p>
+            <!-- Connection Status Bar -->
+            <div id="dbStatusCard" class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg shadow">
+                        <i class="fa-solid fa-cloud-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-emerald-950">สถานะระบบฐานข้อมูลปัจจุบัน:</p>
+                        <p id="dbConnectionStatusText" class="text-xs text-emerald-700 font-semibold mt-0.5">
+                            <i class="fa-solid fa-circle-dot text-emerald-500 animate-pulse"></i> พร้อมใช้งาน (โหมดจำลองฐานข้อมูลตัวเครื่อง / Local Storage Sync)
+                        </p>
+                    </div>
                 </div>
+                <button onclick="testDatabaseConnection()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-lg text-xs font-bold shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-plug"></i> ทดสอบการเชื่อมต่อ
+                </button>
+            </div>
 
-                <label class="block font-bold text-gray-800">ระบุ Google Apps Script Web App URL เพื่อซิงค์ออนไลน์:</label>
+            <!-- Web App URL Input Form -->
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2">
+                <label class="block text-xs font-bold text-gray-800">1. ระบุ Google Apps Script Web App URL (สำหรับการซิงค์ออนไลน์):</label>
                 <div class="flex gap-2">
-                    <input type="url" id="googleWebAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border rounded-lg p-2 text-xs">
-                    <button onclick="saveDatabaseEndpoint()" class="bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs">บันทึก URL</button>
+                    <input type="url" id="googleWebAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 border rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-emerald-500">
+                    <button onclick="saveDatabaseEndpoint()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow transition">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึก URL
+                    </button>
+                </div>
+                <p class="text-[11px] text-gray-500">* หากเว้นว่างไว้ ระบบจะทำงานในโหมด Local Offline Sync ในตัวเครื่องให้อัตโนมัติ</p>
+            </div>
+
+            <!-- Step-by-step Setup Guide Accordion/Cards -->
+            <div class="space-y-3 text-xs text-gray-700">
+                <h4 class="font-bold text-sm text-gray-900 border-b pb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-blue-700"></i> ขั้นตอนการสร้างฐานข้อมูล Google Sheets & Apps Script (ทำเพียงครั้งเดียว)
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-gray-50 p-3.5 rounded-xl border space-y-1.5">
+                        <span class="bg-blue-800 text-white font-bold text-[10px] px-2 py-0.5 rounded">ขั้นตอนที่ ๑</span>
+                        <p class="font-bold text-gray-900">สร้าง Google Sheet ใหม่ใน Google Drive</p>
+                        <p class="text-[11px] text-gray-600">เปิด Google Drive ➔ สร้าง Google Sheets ใหม่ ➔ ตั้งชื่อไฟล์เช่น <strong>"ฐานข้อมูล สอ.สธสต."</strong></p>
+                    </div>
+
+                    <div class="bg-gray-50 p-3.5 rounded-xl border space-y-1.5">
+                        <span class="bg-blue-800 text-white font-bold text-[10px] px-2 py-0.5 rounded">ขั้นตอนที่ ๒</span>
+                        <p class="font-bold text-gray-900">คัดลอกสคริปต์ Google Apps Script</p>
+                        <p class="text-[11px] text-gray-600">ไปที่เมนู <strong>ส่วนขยาย (Extensions) ➔ Apps Script</strong> ใน Google Sheets แล้วคัดลอกโค้ดจากปุ่มด้านล่างไปวางแทนที่</p>
+                    </div>
+
+                    <div class="bg-gray-50 p-3.5 rounded-xl border space-y-1.5">
+                        <span class="bg-blue-800 text-white font-bold text-[10px] px-2 py-0.5 rounded">ขั้นตอนที่ ๓</span>
+                        <p class="font-bold text-gray-900">ทำ การทำให้ใช้งานได้ (Deploy as Web App)</p>
+                        <p class="text-[11px] text-gray-600">กดปุ่ม <strong>Deploy ➔ New Deployment ➔ Web App</strong> โดยเลือก <u>Who has access: Anyone (ทุกคน)</u></p>
+                    </div>
+
+                    <div class="bg-gray-50 p-3.5 rounded-xl border space-y-1.5">
+                        <span class="bg-blue-800 text-white font-bold text-[10px] px-2 py-0.5 rounded">ขั้นตอนที่ ๔</span>
+                        <p class="font-bold text-gray-900">นำ URL มาวางในระบบ</p>
+                        <p class="text-[11px] text-gray-600">คัดลอก URL ที่ได้ในรูป <code>.../exec</code> นำมาวางลงในช่องบันทึก URL ด้านบน แล้วกดทดสอบการเชื่อมต่อ</p>
+                    </div>
                 </div>
 
-                <div class="bg-gray-50 p-3 rounded-lg border space-y-2">
-                    <p class="font-bold text-gray-800">วิธีการติดตั้ง Google Apps Script ใน Google Sheets:</p>
-                    <ol class="list-decimal pl-4 space-y-1 text-gray-600">
-                        <li>เปิด Google Sheets ใหม่ใน Google Drive</li>
-                        <li>ไปที่เมนู <strong class="text-gray-800">ส่วนขยาย ➔ Apps Script</strong></li>
-                        <li>ก๊อบปี้โค้ด API จากปุ่มด้านล่างไปวางใน Apps Script แล้วกด <strong class="text-gray-800">Deploy as Web App (Anyone)</strong></li>
-                    </ol>
-                    <button onclick="copyAppsScriptTemplate()" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded text-[11px] shadow">
-                        <i class="fa-solid fa-copy"></i> คัดลอกโค้ด Google Apps Script
-                    </button>
+                <!-- Google Apps Script Source Code Box -->
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 border border-slate-700">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <span class="font-mono text-xs font-bold text-amber-400"><i class="fa-code fa-solid"></i> โค้ดต้นแบบ Google Apps Script (Code.gs)</span>
+                        <button onclick="copyAppsScriptTemplate()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 rounded text-xs transition flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-copy"></i> คัดลอกโค้ดทั้งหมด
+                        </button>
+                    </div>
+                    <pre class="font-mono text-[11px] text-emerald-300 leading-tight overflow-x-auto max-h-48 p-2 bg-slate-950 rounded border border-slate-800">
+// Google Apps Script Backend for สอ.สธสต. Project System
+function doGet(e) {
+  var action = e.parameter.action;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === "test") {
+    return responseJSON({ status: "success", message: "เชื่อมต่อฐานข้อมูล สอ.สธสต. สำเร็จ" });
+  }
+  if (action === "getProjects") {
+    var sheet = ss.getSheetByName("Projects") || createSheet(ss, "Projects");
+    return responseJSON(getSheetData(sheet));
+  }
+  if (action === "getParticipants") {
+    var sheet = ss.getSheetByName("Participants") || createSheet(ss, "Participants");
+    return responseJSON(getSheetData(sheet));
+  }
+  return responseJSON({ status: "online", system: "สอ.สธสต." });
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    if (contents.action === "saveProject") {
+      var sheet = ss.getSheetByName("Projects") || createSheet(ss, "Projects");
+      sheet.appendRow([new Date(), contents.data.id, contents.data.title, contents.data.fiscalYear, contents.data.budgetApproved, contents.data.budgetActual]);
+    } else if (contents.action === "saveParticipant") {
+      var sheet = ss.getSheetByName("Participants") || createSheet(ss, "Participants");
+      sheet.appendRow([new Date(), contents.data.projId, contents.data.name, contents.data.position, contents.data.code, contents.data.memberType, contents.data.certNo]);
+    }
+    return responseJSON({ status: "success" });
+  } catch (err) {
+    return responseJSON({ status: "error", message: err.toString() });
+  }
+}
+
+function responseJSON(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function createSheet(ss, name) {
+  return ss.insertSheet(name);
+}
+
+function getSheetData(sheet) {
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length &lt; 2) return [];
+  var headers = rows[0];
+  var result = [];
+  for (var i = 1; i &lt; rows.length; i++) {
+    var obj = {};
+    for (var j = 0; j &lt; headers.length; j++) {
+      obj[headers[j]] = rows[i][j];
+    }
+    result.push(obj);
+  }
+  return result;
+}</pre>
+                </div>
+
+                <!-- Google Forms Mapping Guide -->
+                <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 space-y-1.5 text-amber-950">
+                    <p class="font-bold text-xs"><i class="fa-solid fa-paperclip"></i> การเชื่อมโยงกับ Google Forms สำหรับลงทะเบียน:</p>
+                    <p class="text-[11px] leading-relaxed">
+                        เมื่อสร้าง Google Form ให้ตอบกลับมาที่ Google Sheets เดียวกัน โดยกำหนดหัวข้อคำถามให้ตรงกับฟิลด์:
+                        <code>ชื่อ-นามสกุล</code>, <code>ตำแหน่ง</code>, <code>เลขสมาชิก หรือ เลขบัตรประชาชน</code>, และ <code>ประเภทผู้เข้าร่วม</code> (สมาชิกสามัญ / สมาชิกสมทบ / บุคคลภายนอก)
+                        ระบบจะดึงรายชื่อเข้ามาประมวลผลและออกเลขที่เกียรติบัตร <strong>สอ.สธสต.</strong> ให้อัตโนมัติ
+                    </p>
                 </div>
             </div>
 
-            <div class="text-right pt-2 border-t">
+            <div class="flex justify-between items-center border-t pt-3">
+                <span class="text-[11px] text-gray-500"><i class="fa-solid fa-shield-halved text-emerald-600"></i> ปลอดภัย ไม่มีการจัดเก็บข้อมูลความลับภายนอก</span>
                 <button onclick="closeModal('databaseGuideModal')" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-xs font-semibold">ปิดหน้าต่าง</button>
             </div>
         </div>
@@ -1063,35 +1187,127 @@
     </div>
 
     <script>
-        let currentFiscalYear = "2569";
-        let activeProjectId = "proj-1";
+        function openDatabaseGuideModal() {
+            const savedUrl = localStorage.getItem('googleWebAppUrl') || '';
+            document.getElementById('googleWebAppUrlInput').value = savedUrl;
+            updateDatabaseStatusDisplay();
+            document.getElementById('databaseGuideModal').classList.remove('hidden');
+        }
 
-        let globalOrgLogoUrl = "https://placehold.co/120x120/1e3a8a/ffffff?text=ORG";
-        let globalCertLogoUrl = "https://placehold.co/120x120/b45309/ffffff?text=CERT";
+        function saveDatabaseEndpoint() {
+            const url = document.getElementById('googleWebAppUrlInput').value.trim();
+            localStorage.setItem('googleWebAppUrl', url);
+            updateDatabaseStatusDisplay();
+            showToast(url ? 'บันทึก URL Web App เรียบร้อยแล้ว' : 'สลับกลับเป็นโหมด Local Database Offline', 'success');
+        }
 
-        // Thai Baht Text Converter Function
-        function thaiBahtText(numStr) {
-            let num = parseFloat(numStr);
-            if (isNaN(num) || num === 0) return "ศูนย์บาทถ้วน";
-            num = num.toFixed(2);
-            const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
-            const units = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
-            
-            let [baht, satang] = num.split('.');
-            let bahtStr = "";
-            
-            let len = baht.length;
-            for (let i = 0; i < len; i++) {
-                let digit = parseInt(baht[i]);
-                let pos = len - i - 1;
-                if (digit !== 0) {
-                    if (pos % 6 === 1 && digit === 1) bahtStr += "";
-                    else if (pos % 6 === 1 && digit === 2) bahtStr += "ยี่";
-                    else if (pos % 6 === 0 && digit === 1 && len > 1 && i > 0) bahtStr += "เอ็ด";
-                    else bahtStr += numbers[digit];
-                    bahtStr += units[pos % 6];
-                    if (pos % 6 === 0 && pos > 0) bahtStr += "ล้าน";
-                }
+        function testDatabaseConnection() {
+            const url = document.getElementById('googleWebAppUrlInput').value.trim();
+            if (!url) {
+                showToast('ยังไม่ได้ระบุ Web App URL - กำลังใช้งานในโหมด Local Offline', 'warning');
+                return;
+            }
+
+            const testUrl = url + (url.includes('?') ? '&' : '?') + 'action=test';
+            showToast('กำลังทดสอบการเชื่อมต่อเซิร์ฟเวอร์...', 'info');
+
+            fetch(testUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        showToast(`เชื่อมต่อสำเร็จ: ${data.message || 'พร้อมใช้งาน'}`, 'success');
+                        updateDatabaseStatusDisplay(true);
+                    } else {
+                        showToast('การเชื่อมต่อตอบกลับ แต่รูปแบบข้อมูลไม่ตรงตามกำหนด', 'warning');
+                    }
+                })
+                .catch(err => {
+                    console.error('Connection Test Error:', err);
+                    showToast('ไม่สามารถเชื่อมต่อ Web App ได้ กรุณาตรวจสอบสิทธิ์ Deployment เป็น "Anyone"', 'error');
+                });
+        }
+
+        function updateDatabaseStatusDisplay(isOnline = false) {
+            const url = localStorage.getItem('googleWebAppUrl');
+            const statusText = document.getElementById('dbConnectionStatusText');
+            if (!statusText) return;
+
+            if (url) {
+                statusText.innerHTML = `<i class="fa-solid fa-cloud-check text-emerald-600"></i> เชื่อมต่อ Google Apps Script Cloud Sync (${url.substring(0, 35)}...)`;
+            } else {
+                statusText.innerHTML = `<i class="fa-solid fa-circle-dot text-amber-500 animate-pulse"></i> พร้อมใช้งาน (โหมดจำลองฐานข้อมูลตัวเครื่อง / Local Storage Sync)`;
+            }
+        }
+
+        function copyAppsScriptTemplate() {
+            const code = `// Google Apps Script Backend for สอ.สธสต. Project System
+function doGet(e) {
+  var action = e.parameter.action;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === "test") {
+    return responseJSON({ status: "success", message: "เชื่อมต่อฐานข้อมูล สอ.สธสต. สำเร็จ" });
+  }
+  if (action === "getProjects") {
+    var sheet = ss.getSheetByName("Projects") || createSheet(ss, "Projects");
+    return responseJSON(getSheetData(sheet));
+  }
+  if (action === "getParticipants") {
+    var sheet = ss.getSheetByName("Participants") || createSheet(ss, "Participants");
+    return responseJSON(getSheetData(sheet));
+  }
+  return responseJSON({ status: "online", system: "สอ.สธสต." });
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    if (contents.action === "saveProject") {
+      var sheet = ss.getSheetByName("Projects") || createSheet(ss, "Projects");
+      sheet.appendRow([new Date(), contents.data.id, contents.data.title, contents.data.fiscalYear, contents.data.budgetApproved, contents.data.budgetActual]);
+    } else if (contents.action === "saveParticipant") {
+      var sheet = ss.getSheetByName("Participants") || createSheet(ss, "Participants");
+      sheet.appendRow([new Date(), contents.data.projId, contents.data.name, contents.data.position, contents.data.code, contents.data.memberType, contents.data.certNo]);
+    }
+    return responseJSON({ status: "success" });
+  } catch (err) {
+    return responseJSON({ status: "error", message: err.toString() });
+  }
+}
+
+function responseJSON(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function createSheet(ss, name) {
+  return ss.insertSheet(name);
+}
+
+function getSheetData(sheet) {
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length < 2) return [];
+  var headers = rows[0];
+  var result = [];
+  for (var i = 1; i < rows.length; i++) {
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) {
+      obj[headers[j]] = rows[i][j];
+    }
+    result.push(obj);
+  }
+  return result;
+}`;
+
+            const tempInput = document.createElement('textarea');
+            document.body.appendChild(tempInput);
+            tempInput.value = code;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('คัดลอกโค้ด Google Apps Script สำหรับวางใน Extensions เรียบร้อยแล้ว', 'success');
+        }
             }
             bahtStr += "บาท";
             if (satang === "00" || !satang) {

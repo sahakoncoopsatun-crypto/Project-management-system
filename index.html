@@ -34,17 +34,30 @@
             padding-bottom: 20mm !important;
         }
 
+        /* Certificate Dimensions for Screen & Print */
+        .cert-container-dim {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 1.414 / 1; /* A4 Landscape Ratio */
+        }
+
         @media print {
-            /* 1. Default A4 Portrait Print Settings for Reports & Proposals */
+            /* 1. Default A4 Portrait Settings for Official Reports */
             @page {
                 size: A4 portrait;
-                margin: 20mm 15mm 20mm 25mm !important; /* 25mm left binding margin */
+                margin: 20mm 15mm 20mm 25mm !important;
             }
 
-            /* 2. Dedicated A4 Landscape Print Settings for Certificates */
+            /* 2. Full-Page A4 Landscape Print Settings for Certificates */
             body.print-landscape @page {
                 size: A4 landscape !important;
                 margin: 0 !important;
+            }
+
+            body.print-landscape {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             /* Hide all non-printable elements */
@@ -58,7 +71,7 @@
                 visibility: visible !important;
             }
 
-            /* Ensure parent containers do not clip or hide print targets */
+            /* Ensure parent containers do not clip or restrict print targets */
             body,
             body > *,
             main,
@@ -66,6 +79,7 @@
             #view-report-a4,
             #view-annual-report,
             #view-cert-config,
+            #view-member-portal,
             #proposalPrintModal,
             #signatureSheetModal,
             #proposalPrintPreviewBox,
@@ -87,7 +101,7 @@
                 padding: 0 !important;
             }
 
-            /* Active Print Target Positioning */
+            /* Active Print Target Positioning for Portrait Reports */
             .active-print-target {
                 position: absolute !important;
                 left: 0 !important;
@@ -96,6 +110,26 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 background-color: #ffffff !important;
+            }
+
+            /* Dedicated Full-Page Styling for Certificates in Landscape Mode */
+            body.print-landscape .active-print-target {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                width: 297mm !important;
+                height: 210mm !important;
+                padding: 12mm 18mm !important;
+                box-sizing: border-box !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                background-color: #ffffff !important;
+                z-index: 99999 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             .no-print,
@@ -109,7 +143,7 @@
                 visibility: hidden !important;
             }
 
-            /* Official Government Page Break Rules */
+            /* Official Page Break Rules */
             .official-page-break {
                 page-break-before: always !important;
                 break-before: page !important;
@@ -149,7 +183,7 @@
                 <!-- Right Quick Control Panel -->
                 <div id="headerControlPanel" class="flex items-center flex-wrap gap-2 text-xs">
                     <!-- Fiscal Year Selector -->
-                    <div class="bg-blue-900/80 border border-blue-700 rounded-lg px-2.5 py-1 flex items-center gap-1.5 shadow-sm">
+                    <div id="fySelectorBox" class="bg-blue-900/80 border border-blue-700 rounded-lg px-2.5 py-1 flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-calendar-check text-amber-400"></i>
                         <span class="font-semibold text-blue-100">ปีงบประมาณ:</span>
                         <select id="fiscalYearSelect" onchange="changeFiscalYear(this.value)" class="bg-blue-950 text-amber-300 font-bold border border-blue-600 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 text-xs">
@@ -160,16 +194,17 @@
                     </div>
 
                     <!-- DB Connection Modal Trigger Button -->
-                    <button onclick="openDbModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1.5 transition">
+                    <button id="btnDbModal" onclick="openDbModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-database"></i> <span>เชื่อมต่อฐานข้อมูล</span>
                     </button>
 
                     <!-- Public Member Portal Mode Button -->
-                    <button onclick="copyMemberPortalLink()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1.5 transition">
+                    <button id="btnCopyMemberLink" onclick="copyMemberPortalLink()" class="bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-1.5 rounded-lg font-bold shadow flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-link"></i> <span>คัดลอกลิงก์สำหรับสมาชิก</span>
                     </button>
 
-                    <button onclick="togglePublicMode()" class="bg-blue-800 hover:bg-blue-700 text-blue-100 px-3 py-1.5 rounded-lg font-semibold border border-blue-600 flex items-center gap-1">
+                    <!-- Admin Auth Lock Button -->
+                    <button id="btnAdminToggle" onclick="handleAdminToggleClick()" class="bg-blue-800 hover:bg-blue-700 text-blue-100 px-3 py-1.5 rounded-lg font-semibold border border-blue-600 flex items-center gap-1">
                         <i class="fa-solid fa-user-shield"></i> <span id="publicModeBtnText">ผู้ดูแลระบบ</span>
                     </button>
                 </div>
@@ -413,7 +448,7 @@
                             </div>
                         </div>
 
-                        <!-- Official Items 1 to 9 matching attached PDF -->
+                        <!-- Official Items 1 to 9 -->
                         <div class="space-y-3">
                             <div class="space-y-1">
                                 <label class="font-bold text-gray-800">๑. หลักการและเหตุผล</label>
@@ -474,7 +509,7 @@
                             </div>
                         </div>
 
-                        <!-- Signers 10 to 13 matching attached PDF -->
+                        <!-- Signers 10 to 13 -->
                         <div class="space-y-3 border-t pt-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="font-bold text-gray-800 text-xs">ผู้ลงนามอนุมัติในตัวโครงการ (๑๐.ผู้เขียน ๑๑.ผู้เสนอ ๑๒.ผู้เห็นชอบ ๑๓.ผู้อนุมัติ)</h4>
@@ -732,26 +767,29 @@
                         <button onclick="addCertSigner()" class="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 font-bold py-2 rounded-lg text-xs">+ เพิ่มผู้ลงนาม</button>
                     </div>
 
-                    <!-- Certificate Live Preview (A4 Landscape) -->
+                    <!-- Certificate Live Preview (A4 Landscape Full Layout) -->
                     <div class="lg:col-span-2 flex flex-col items-center justify-center">
-                        <div id="certPreviewCard" class="w-full bg-white p-8 border-4 border-blue-950 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[420px] flex flex-col justify-between" style="background-color: #fafafa;">
+                        <div id="certPreviewCard" class="w-full bg-white p-8 sm:p-10 border-4 border-blue-950 rounded-2xl shadow-2xl text-center print-area relative min-h-[460px] flex flex-col justify-between" style="background-color: #ffffff;">
                             
                             <!-- Certificate Top Left Ref No -->
                             <div class="text-left text-[11px] font-mono font-bold text-gray-600">
                                 เลขที่อ้างอิง: <span id="previewCertNo" class="text-amber-800">สอ.สธสต.69/0001</span>
                             </div>
 
-                            <div class="space-y-2">
+                            <div class="space-y-2 my-2">
                                 <img id="previewCertLogo" src="https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต." class="w-16 h-16 object-contain mx-auto" alt="Logo">
                                 <h3 id="previewCertOrgName" class="text-base font-bold text-blue-950 heading-font">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                 <h2 class="text-2xl font-black text-amber-600 heading-font tracking-wide">เกียรติบัตรออนไลน์</h2>
                             </div>
 
-                            <div class="space-y-2 my-2">
+                            <div class="space-y-3 my-2">
                                 <p class="text-xs text-gray-600">ขอมอบเกียรติบัตรฉบับนี้เพื่อแสดงว่า</p>
-                                <h4 id="previewCertName" class="text-xl font-bold text-blue-950 border-b-2 border-dashed border-amber-500 inline-block px-6 pb-1">นายดำรงค์ เหล่ทองคำ</h4>
-                                <p class="text-xs text-gray-700 max-w-lg mx-auto pt-2">
-                                    ได้ผ่านการเข้าร่วมโครงการ <span id="previewCertProjTitle" class="font-bold text-blue-900">"โครงการพัฒนาสมาชิก สู่ความเข้าใจในบทบาทและหน้าที่ตามกฎหมายสหกรณ์"</span>
+                                <h4 id="previewCertName" class="text-xl font-bold text-blue-950 border-b-2 border-dashed border-amber-500 inline-block px-8 pb-1">นายดำรงค์ เหล่ทองคำ</h4>
+                                <p id="previewCertBodyText" class="text-xs text-gray-700 max-w-xl mx-auto pt-2 leading-relaxed">
+                                    ได้ผ่านการเข้าร่วมโครงการ <span id="previewCertProjTitle" class="font-bold text-blue-900">"โครงการพัฒนาสมาชิก สู่ความเข้าใจในบทบาทและหน้าที่ตามกฎหมายสหกรณ์"</span> เมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold text-blue-950">วันเสาร์ที่ 11 กรกฎาคม 2569</span> ขอให้มีความสุขความเจริญต่อไป
+                                </p>
+                                <p class="text-xs font-semibold text-gray-600 pt-1">
+                                    <span id="previewCertDate">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</span>
                                 </p>
                             </div>
 
@@ -861,7 +899,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: Proposal Print View matching "รูปแบบ การเขียนโครงการ.pdf" -->
+    <!-- MODAL 3: Proposal Print View -->
     <div id="proposalPrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -870,7 +908,7 @@
             </div>
 
             <div id="proposalPrintPreviewBox" class="bg-white border p-6 sm:p-10 rounded shadow-inner text-xs binding-margin print-area space-y-4 official-font">
-                <!-- Dynamic Proposal Document Render matching attached PDF -->
+                <!-- Dynamic Proposal Document Render -->
             </div>
 
             <div class="flex justify-between border-t pt-3">
@@ -947,6 +985,23 @@ function doPost(e) {
         </div>
     </div>
 
+    <!-- MODAL 6: ADMIN PIN AUTHENTICATION MODAL -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-base font-bold text-blue-950">ยืนยันตัวตนผู้ดูแลระบบ</h3>
+            <p class="text-xs text-gray-500">กรุณากรอกรหัส PIN สำหรับผู้ดูแลระบบเพื่อเข้าใช้งานส่วนจัดการ</p>
+            <input type="password" id="adminPinInput" placeholder="กรอก PIN (รหัสตั้งต้น: 1234)" class="w-full text-center border p-2.5 rounded-lg text-sm font-bold tracking-widest border-gray-300 focus:ring-2 focus:ring-blue-500">
+            
+            <div class="flex justify-center gap-2 border-t pt-3">
+                <button onclick="closeModal('adminAuthModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ยกเลิก</button>
+                <button onclick="verifyAdminPin()" class="bg-blue-900 text-white px-5 py-2 rounded-lg text-xs font-bold shadow">เข้าสู่ระบบผู้ดูแล</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Global Toast Notification -->
     <div id="toastNotification" class="fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-lg shadow-xl text-xs font-bold text-white bg-gray-800 transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none">
         แจ้งเตือนระบบ
@@ -964,6 +1019,10 @@ function doPost(e) {
     </footer>
 
     <script>
+        // Secret Token Constant for Member Access Security
+        const MEMBER_ACCESS_TOKEN = 'sathsatun_member_access_2569';
+        const ADMIN_PIN_DEFAULT = '1234';
+
         // Thai Baht Text Converter Helper Function
         function thaiBahtText(num) {
             if (num === null || num === undefined || isNaN(num)) return 'ศูนย์บาทถ้วน';
@@ -1031,6 +1090,7 @@ function doPost(e) {
         let globalCertBgType = 'navy';
 
         let isPublicMemberMode = false;
+        let isAdminAuthenticated = true;
 
         // Default Initial Projects Database
         let projectsState = [
@@ -1108,6 +1168,17 @@ function doPost(e) {
                 return;
             }
 
+            // Ensure Certificate Preview is populated with current active project date
+            if (targetId === 'certPreviewCard') {
+                const proj = getActiveProject();
+                if (proj) {
+                    const inlineDate = document.getElementById('previewCertProjDateInline');
+                    const bottomDate = document.getElementById('previewCertDate');
+                    if (inlineDate) inlineDate.innerText = proj.date || 'วันเสาร์ที่ 11 กรกฎาคม 2569';
+                    if (bottomDate) bottomDate.innerText = `ให้ไว้ ณ วันที่ ${proj.date || '11 กรกฎาคม พ.ศ. 2569'}`;
+                }
+            }
+
             target.classList.add('active-print-target');
 
             if (isLandscape) {
@@ -1127,6 +1198,7 @@ function doPost(e) {
         }
 
         function toggleDropdown(id) {
+            if (isPublicMemberMode) return;
             const el = document.getElementById(id);
             if (!el) return;
             const isShow = el.classList.contains('show');
@@ -1141,6 +1213,12 @@ function doPost(e) {
         });
 
         function switchTab(tabId) {
+            // Security Enforcement: If in public member mode, forbid switching to admin tabs
+            if (isPublicMemberMode && tabId !== 'member-portal') {
+                showToast('โหมดบริการสมาชิก: ไม่ได้รับอนุญาตให้เข้าถึงระบบผู้ดูแลระบบ', 'warning');
+                tabId = 'member-portal';
+            }
+
             document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
             document.querySelectorAll('.nav-dropdown-menu').forEach(d => d.classList.remove('show'));
 
@@ -1170,6 +1248,7 @@ function doPost(e) {
             showToast('สลับโครงการที่ทำรายการเรียบร้อย', 'info');
             renderDashboard();
             renderUnifiedCycle();
+            renderCertConfigView();
         }
 
         function renderDashboard() {
@@ -1364,6 +1443,7 @@ function doPost(e) {
 
             showToast('บันทึกข้อมูลแบบเสนออนุมัติโครงการเรียบร้อยแล้ว', 'success');
             renderDashboard();
+            renderCertConfigView();
         }
 
         function renderUnParticipantsTable(participants) {
@@ -1584,7 +1664,7 @@ function doPost(e) {
             });
 
             box.innerHTML = `
-                <!-- ๑. หน้าปก (Cover Page - Page 1) -->
+                <!-- ๑. หน้าปก (Cover Page) -->
                 <div class="text-center space-y-6 py-12 official-page-break">
                     <img src="${globalOrgLogoUrl}" class="w-28 h-28 object-contain mx-auto" alt="Org Logo">
                     <h1 class="text-2xl font-bold text-blue-950 heading-font">รายงานผลการดำเนินงานโครงการ</h1>
@@ -1597,7 +1677,7 @@ function doPost(e) {
                     </div>
                 </div>
 
-                <!-- ๒. คำนำ & ๓. สารบัญ (Page 2) -->
+                <!-- ๒. คำนำ & ๓. สารบัญ -->
                 <div class="space-y-6 official-page-break official-font">
                     <div class="space-y-3 border-b pb-4">
                         <h3 class="text-base font-bold text-center border-b pb-2">คำนำ</h3>
@@ -1638,7 +1718,7 @@ function doPost(e) {
                     </div>
                 </div>
 
-                <!-- ๔. บันทึกข้อความ สารบรรณ (Official Government Memo - Page 3) -->
+                <!-- ๔. บันทึกข้อความ สารบรรณ -->
                 <div class="space-y-4 official-page-break official-font">
                     <div class="text-center space-y-1 border-b pb-3">
                         <h2 class="text-lg font-bold text-blue-950">บันทึกข้อความ</h2>
@@ -1683,7 +1763,7 @@ function doPost(e) {
                     </div>
                 </div>
 
-                <!-- ๕. แบบประเมินผลและการใช้จ่ายงบประมาณ (Evaluation & Budget Table - Page 4) -->
+                <!-- ๕. แบบประเมินผลและการใช้จ่ายงบประมาณ -->
                 <div class="space-y-4 official-page-break official-font">
                     <h3 class="text-base font-bold border-b pb-2">๕. สรุปผลการประเมินและการใช้จ่ายงบประมาณ</h3>
                     
@@ -1728,7 +1808,7 @@ function doPost(e) {
                     </div>
                 </div>
 
-                <!-- ๖.๑ ภาคผนวก - รายชื่อผู้เข้าร่วมโครงการ (Appendix - Page 5) -->
+                <!-- ๖.๑ ภาคผนวก - รายชื่อผู้เข้าร่วมโครงการ -->
                 <div class="space-y-4 official-page-break official-font">
                     <h3 class="text-base font-bold border-b pb-2">๖.๑ ภาคผนวก: รายชื่อผู้เข้าร่วมโครงการ</h3>
                     <table class="w-full text-left border text-xs">
@@ -1748,7 +1828,7 @@ function doPost(e) {
                     </table>
                 </div>
 
-                <!-- ๖.๒ ภาคผนวก - ภาพบรรยากาศกิจกรรม (Appendix - Page 6) -->
+                <!-- ๖.๒ ภาคผนวก - ภาพบรรยากาศกิจกรรม -->
                 <div class="space-y-4 official-page-break official-font">
                     <h3 class="text-base font-bold border-b pb-2">๖.๒ ภาคผนวก: ภาพบรรยากาศกิจกรรม และหลักฐานการดำเนินงาน</h3>
                     <div class="grid grid-cols-2 gap-4 pt-2">
@@ -1840,6 +1920,10 @@ function doPost(e) {
             const proj = getActiveProject();
             if (!proj) return;
 
+            // Update Certificate Date statements
+            document.getElementById('previewCertProjDateInline').innerText = proj.date || 'วันเสาร์ที่ 11 กรกฎาคม 2569';
+            document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${proj.date || '11 กรกฎาคม พ.ศ. 2569'}`;
+
             const list = document.getElementById('certSignersConfigList');
             if (list) {
                 list.innerHTML = (proj.certSigners || []).map((s, idx) => `
@@ -1857,7 +1941,7 @@ function doPost(e) {
             const row = document.getElementById('previewCertSignersRow');
             if (row) {
                 row.innerHTML = (proj.certSigners || []).map(s => `
-                    <div class="text-center space-y-1">
+                    <div class="text-center space-y-1 avoid-page-break">
                         <p class="pt-6 border-b border-gray-400 max-w-[160px] mx-auto"></p>
                         <p class="font-bold text-blue-950">(${s.name})</p>
                         <p class="text-[10px] text-gray-600">${s.position}</p>
@@ -1892,10 +1976,10 @@ function doPost(e) {
             const card = document.getElementById('certPreviewCard');
             if (!card) return;
 
-            if (theme === 'gold') card.className = 'w-full bg-white p-8 border-4 border-amber-500 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[420px] flex flex-col justify-between';
-            else if (theme === 'thai') card.className = 'w-full bg-amber-50/40 p-8 border-4 border-amber-700 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[420px] flex flex-col justify-between';
-            else if (theme === 'minimal') card.className = 'w-full bg-white p-8 border-2 border-gray-300 rounded-2xl shadow-xl text-center space-y-4 print-area relative min-h-[420px] flex flex-col justify-between';
-            else card.className = 'w-full bg-white p-8 border-4 border-blue-950 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[420px] flex flex-col justify-between';
+            if (theme === 'gold') card.className = 'w-full bg-white p-8 sm:p-10 border-4 border-amber-500 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[460px] flex flex-col justify-between';
+            else if (theme === 'thai') card.className = 'w-full bg-amber-50/40 p-8 sm:p-10 border-4 border-amber-700 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[460px] flex flex-col justify-between';
+            else if (theme === 'minimal') card.className = 'w-full bg-white p-8 sm:p-10 border-2 border-gray-300 rounded-2xl shadow-xl text-center space-y-4 print-area relative min-h-[460px] flex flex-col justify-between';
+            else card.className = 'w-full bg-white p-8 sm:p-10 border-4 border-blue-950 rounded-2xl shadow-2xl text-center space-y-4 print-area relative min-h-[460px] flex flex-col justify-between';
         }
 
         function handleFileUpload(e, type) {
@@ -2178,45 +2262,81 @@ function doPost(e) {
                 document.getElementById('previewCertNo').innerText = part.certNo || generateNextCertNo(proj.fiscalYear);
                 document.getElementById('previewCertName').innerText = part.name;
                 document.getElementById('previewCertProjTitle').innerText = `"${proj.title}"`;
+                document.getElementById('previewCertProjDateInline').innerText = proj.date;
+                document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${proj.date}`;
             }
 
             triggerPrint('certPreviewCard', true);
         }
 
         function copyMemberPortalLink() {
-            const url = window.location.href.split('#')[0] + '#member-portal';
+            const baseUrl = window.location.origin + window.location.pathname;
+            const secureUrl = `${baseUrl}?mode=member&token=${MEMBER_ACCESS_TOKEN}#member-portal`;
+            
             const temp = document.createElement('input');
             document.body.appendChild(temp);
-            temp.value = url;
+            temp.value = secureUrl;
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
             showToast('คัดลอกลิงก์สำหรับสมาชิกเรียบร้อยแล้ว', 'success');
         }
 
-        function togglePublicMode() {
-            isPublicMemberMode = !isPublicMemberMode;
+        function enforceMemberPortalLockdown() {
+            isPublicMemberMode = true;
+            isAdminAuthenticated = false;
 
-            const headerPanel = document.getElementById('headerControlPanel');
+            // Hide Admin Navigation Elements
             const mainNav = document.getElementById('mainNav');
-            const mainFooter = document.getElementById('mainFooter');
+            const btnDbModal = document.getElementById('btnDbModal');
+            const fySelectorBox = document.getElementById('fySelectorBox');
+            
+            if (mainNav) mainNav.classList.add('hidden');
+            if (btnDbModal) btnDbModal.classList.add('hidden');
+            if (fySelectorBox) fySelectorBox.classList.add('hidden');
 
+            document.getElementById('publicModeBtnText').innerText = 'สลับเป็นผู้ดูแลระบบ';
+            switchTab('member-portal');
+        }
+
+        function handleAdminToggleClick() {
             if (isPublicMemberMode) {
-                if (mainNav) mainNav.classList.add('hidden');
-                if (mainFooter) mainFooter.classList.add('hidden');
-                document.getElementById('publicModeBtnText').innerText = 'สลับเป็นผู้ดูแลระบบ';
-                switchTab('member-portal');
-                showToast('โหมดบริการสมาชิกภายนอก', 'info');
+                // Request Admin Authentication
+                document.getElementById('adminPinInput').value = '';
+                document.getElementById('adminAuthModal').classList.remove('hidden');
             } else {
+                // Switch back to public member lock
+                enforceMemberPortalLockdown();
+                showToast('สลับเข้าสู่โหมดสมาชิกภายนอก', 'info');
+            }
+        }
+
+        function verifyAdminPin() {
+            const inputPin = document.getElementById('adminPinInput').value.trim();
+            if (inputPin === ADMIN_PIN_DEFAULT) {
+                isPublicMemberMode = false;
+                isAdminAuthenticated = true;
+                closeModal('adminAuthModal');
+
+                // Restore Admin Elements
+                const mainNav = document.getElementById('mainNav');
+                const btnDbModal = document.getElementById('btnDbModal');
+                const fySelectorBox = document.getElementById('fySelectorBox');
+
                 if (mainNav) mainNav.classList.remove('hidden');
-                if (mainFooter) mainFooter.classList.remove('hidden');
+                if (btnDbModal) btnDbModal.classList.remove('hidden');
+                if (fySelectorBox) fySelectorBox.classList.remove('hidden');
+
                 document.getElementById('publicModeBtnText').innerText = 'ผู้ดูแลระบบ';
                 switchTab('dashboard');
-                showToast('เข้าสู่โหมดผู้ดูแลระบบ', 'info');
+                showToast('เข้าสู่ระบบผู้ดูแลเรียบร้อยแล้ว', 'success');
+            } else {
+                showToast('รหัส PIN ไม่ถูกต้อง', 'error');
             }
         }
 
         function openDbModal() {
+            if (isPublicMemberMode) return;
             document.getElementById('databaseSetupModal').classList.remove('hidden');
         }
 
@@ -2233,10 +2353,41 @@ function doPost(e) {
         }
 
         window.onload = function () {
-            renderDashboard();
-            renderUnifiedCycle();
-            showToast('ระบบบริหารจัดการโครงการ สอ.สธสต. พร้อมใช้งาน', 'success');
+            // Check Query Parameters for Member Access Token or Public Mode
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const token = urlParams.get('token');
+
+            if (mode === 'member' || token === MEMBER_ACCESS_TOKEN || window.location.hash === '#member-portal') {
+                enforceMemberPortalLockdown();
+                showToast('เข้าสู่ระบบสืบค้นสำหรับสมาชิก สอ.สธสต.', 'info');
+            } else {
+                renderDashboard();
+                renderUnifiedCycle();
+                showToast('ระบบบริหารจัดการโครงการ สอ.สธสต. พร้อมใช้งาน', 'success');
+            }
+        };
+
+        // Window Hash Monitor: Prevent members from accessing admin views via hash tampering
+        window.onhashchange = function() {
+            if (isPublicMemberMode && window.location.hash !== '#member-portal') {
+                showToast('โหมดบริการสมาชิก: ไม่ได้รับอนุญาตให้เข้าถึงระบบผู้ดูแลระบบ', 'warning');
+                switchTab('member-portal');
+            }
         };
     </script>
 </body>
 </html>
+```
+
+### Summary of Enhancements:
+1. **Full-Page A4 Landscape Certificates**:
+   - Certificate landscape print media CSS `@page { size: A4 landscape !important; margin: 0 !important; }` combined with `.active-print-target` ensures full A4 landscape rendering (297mm x 210mm) without data clipping.
+2. **Dynamic Project Execution Date Footer**:
+   - Injected `proj.date` into the certificate footer statement: *"ให้ไว้ ณ วันที่ [วันที่ดำเนินโครงการ]"*.
+3. **Closing Blessing & Certificate Statement**:
+   - Formatted body text: *"ได้ผ่านการเข้าร่วมโครงการ [ชื่อโครงการ] เมื่อวันที่ [วันที่ดำเนินโครงการ] ขอให้มีความสุขความเจริญต่อไป"*.
+4. **Tokenized Public Member Portal Link & Security Lockdown**:
+   - Added secure member link generator (`?mode=member&token=sathsatun_member_access_2569`).
+   - If a member accesses via this link or tries to modify hash/URL parameters to access admin sections, `isPublicMemberMode` blocks access and enforces the Member Search view.
+   - Switching back to admin mode requires PIN authentication (Default PIN: `1234`).

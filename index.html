@@ -42,13 +42,13 @@
         }
 
         @media print {
-            /* 1. Default A4 Portrait Settings for Official Reports */
+            /* Default A4 Portrait Settings for Official Reports */
             @page {
                 size: A4 portrait;
                 margin: 20mm 15mm 20mm 25mm !important;
             }
 
-            /* 2. Full-Page A4 Landscape Print Settings for Certificates */
+            /* Dedicated Full-Page A4 Landscape Settings for Certificates */
             body.print-landscape @page {
                 size: A4 landscape !important;
                 margin: 0 !important;
@@ -756,7 +756,6 @@
                                 <option value="gold">Royal Gold (ทองขอบหรู)</option>
                                 <option value="thai">Thai Pattern (ลายไทยทอง)</option>
                                 <option value="minimal">Minimal White (ขาวมินิมอล)</option>
-                                <option value="custom">Custom Image Background</option>
                             </select>
                         </div>
 
@@ -985,15 +984,25 @@ function doPost(e) {
         </div>
     </div>
 
-    <!-- MODAL 6: ADMIN PIN AUTHENTICATION MODAL -->
+    <!-- MODAL 6: ADMIN USER & PASSWORD AUTHENTICATION MODAL -->
     <div id="adminAuthModal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center">
             <div class="w-12 h-12 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h3 class="text-base font-bold text-blue-950">ยืนยันตัวตนผู้ดูแลระบบ</h3>
-            <p class="text-xs text-gray-500">กรุณากรอกรหัส PIN สำหรับผู้ดูแลระบบเพื่อเข้าใช้งานส่วนจัดการ</p>
-            <input type="password" id="adminPinInput" placeholder="กรอก PIN (รหัสตั้งต้น: 1234)" class="w-full text-center border p-2.5 rounded-lg text-sm font-bold tracking-widest border-gray-300 focus:ring-2 focus:ring-blue-500">
+            <p class="text-xs text-gray-500">กรุณากรอกรหัสผู้ใช้งานและรหัสผ่านเพื่อเข้าสู่ระบบผู้ดูแล</p>
+            
+            <div class="space-y-2 text-left">
+                <div>
+                    <label class="text-[11px] font-bold text-gray-700">รหัสผู้ใช้งาน (User ID)</label>
+                    <input type="text" id="adminUserInput" placeholder="กรอกรหัสผู้ใช้..." class="w-full border p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-700">รหัสผ่าน (Password)</label>
+                    <input type="password" id="adminPassInput" placeholder="กรอกรหัสผ่าน..." class="w-full border p-2 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
             
             <div class="flex justify-center gap-2 border-t pt-3">
                 <button onclick="closeModal('adminAuthModal')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold">ยกเลิก</button>
@@ -1021,9 +1030,11 @@ function doPost(e) {
     <script>
         // Secret Token Constant for Member Access Security
         const MEMBER_ACCESS_TOKEN = 'sathsatun_member_access_2569';
-        const ADMIN_PIN_DEFAULT = '1234';
+        
+        // Obfuscated Admin Credentials (007 & Satun055pass@1)
+        const _A_U_H = 'MDA3';                  // Base64 for '007'
+        const _A_P_H = 'U2F0dW4wNTVwYXNzQDE=';  // Base64 for 'Satun055pass@1'
 
-        // Thai Baht Text Converter Helper Function
         function thaiBahtText(num) {
             if (num === null || num === undefined || isNaN(num)) return 'ศูนย์บาทถ้วน';
             num = parseFloat(num);
@@ -2302,7 +2313,8 @@ function doPost(e) {
         function handleAdminToggleClick() {
             if (isPublicMemberMode) {
                 // Request Admin Authentication
-                document.getElementById('adminPinInput').value = '';
+                document.getElementById('adminUserInput').value = '';
+                document.getElementById('adminPassInput').value = '';
                 document.getElementById('adminAuthModal').classList.remove('hidden');
             } else {
                 // Switch back to public member lock
@@ -2312,26 +2324,33 @@ function doPost(e) {
         }
 
         function verifyAdminPin() {
-            const inputPin = document.getElementById('adminPinInput').value.trim();
-            if (inputPin === ADMIN_PIN_DEFAULT) {
-                isPublicMemberMode = false;
-                isAdminAuthenticated = true;
-                closeModal('adminAuthModal');
+            const userInput = document.getElementById('adminUserInput').value.trim();
+            const passInput = document.getElementById('adminPassInput').value.trim();
 
-                // Restore Admin Elements
-                const mainNav = document.getElementById('mainNav');
-                const btnDbModal = document.getElementById('btnDbModal');
-                const fySelectorBox = document.getElementById('fySelectorBox');
+            try {
+                // Verify obfuscated Base64 hash for '007' and 'Satun055pass@1'
+                if (btoa(userInput) === _A_U_H && btoa(passInput) === _A_P_H) {
+                    isPublicMemberMode = false;
+                    isAdminAuthenticated = true;
+                    closeModal('adminAuthModal');
 
-                if (mainNav) mainNav.classList.remove('hidden');
-                if (btnDbModal) btnDbModal.classList.remove('hidden');
-                if (fySelectorBox) fySelectorBox.classList.remove('hidden');
+                    // Restore Admin Navigation & Features
+                    const mainNav = document.getElementById('mainNav');
+                    const btnDbModal = document.getElementById('btnDbModal');
+                    const fySelectorBox = document.getElementById('fySelectorBox');
 
-                document.getElementById('publicModeBtnText').innerText = 'ผู้ดูแลระบบ';
-                switchTab('dashboard');
-                showToast('เข้าสู่ระบบผู้ดูแลเรียบร้อยแล้ว', 'success');
-            } else {
-                showToast('รหัส PIN ไม่ถูกต้อง', 'error');
+                    if (mainNav) mainNav.classList.remove('hidden');
+                    if (btnDbModal) btnDbModal.classList.remove('hidden');
+                    if (fySelectorBox) fySelectorBox.classList.remove('hidden');
+
+                    document.getElementById('publicModeBtnText').innerText = 'ผู้ดูแลระบบ';
+                    switchTab('dashboard');
+                    showToast('เข้าสู่ระบบผู้ดูแลเรียบร้อยแล้ว', 'success');
+                } else {
+                    showToast('รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+                }
+            } catch(err) {
+                showToast('เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์', 'error');
             }
         }
 
@@ -2378,16 +2397,3 @@ function doPost(e) {
     </script>
 </body>
 </html>
-```
-
-### Summary of Enhancements:
-1. **Full-Page A4 Landscape Certificates**:
-   - Certificate landscape print media CSS `@page { size: A4 landscape !important; margin: 0 !important; }` combined with `.active-print-target` ensures full A4 landscape rendering (297mm x 210mm) without data clipping.
-2. **Dynamic Project Execution Date Footer**:
-   - Injected `proj.date` into the certificate footer statement: *"ให้ไว้ ณ วันที่ [วันที่ดำเนินโครงการ]"*.
-3. **Closing Blessing & Certificate Statement**:
-   - Formatted body text: *"ได้ผ่านการเข้าร่วมโครงการ [ชื่อโครงการ] เมื่อวันที่ [วันที่ดำเนินโครงการ] ขอให้มีความสุขความเจริญต่อไป"*.
-4. **Tokenized Public Member Portal Link & Security Lockdown**:
-   - Added secure member link generator (`?mode=member&token=sathsatun_member_access_2569`).
-   - If a member accesses via this link or tries to modify hash/URL parameters to access admin sections, `isPublicMemberMode` blocks access and enforces the Member Search view.
-   - Switching back to admin mode requires PIN authentication (Default PIN: `1234`).

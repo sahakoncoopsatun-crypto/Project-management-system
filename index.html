@@ -939,6 +939,25 @@
 
     </main>
 
+    <!-- OFFICIAL WEBSITE FOOTER -->
+    <footer class="bg-blue-950 text-blue-200 border-t border-blue-800 py-6 mt-12 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center font-bold text-amber-400 text-sm shadow-inner">
+                    สอ.
+                </div>
+                <div>
+                    <p class="font-bold text-white text-sm">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด (สอ.สธสต.)</p>
+                    <p class="text-[11px] text-blue-300">ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์</p>
+                </div>
+            </div>
+            <div class="text-center md:text-right text-[11px] text-blue-300 space-y-1">
+                <p>© พ.ศ. 2569 สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด. สงวนลิขสิทธิ์ทั้งหมด</p>
+                <p><i class="fa-solid fa-location-dot text-amber-400"></i> สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด | ระบบบริการสมาชิก & บริหารโครงการ</p>
+            </div>
+        </div>
+    </footer>
+
     <!-- MODAL 1: Database Guide & Endpoint Config -->
     <div id="databaseGuideModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -2672,14 +2691,3 @@ function getSheetData(sheet) {
     </script>
 </body>
 </html>
-```
-
-### สรุปการแก้ไข:
-1. **แก้ไขไวยากรณ์สคริปต์ JavaScript**: แก้ไขฟังก์ชันแปลงจำนวนเงินเป็นตัวอักษรไทย (`thaiBahtText`) และสโคปฟังก์ชันให้กลับมาสมบูรณ์ทั้งหมด ทำให้สคริปต์โหลดและทำงานได้ 100%
-2. **ระบบเมนูและดรอปดาวน์คลิกใช้งานได้ตามปกติ**: ปุ่มสลับหน้าต่างทั้งหมด เช่น **แดชบอร์ด**, **การจัดการโครงการครบวงจร**, **รายการโครงการ**, **รายชื่อผู้เข้าร่วม**, **รายงาน 6 ส่วน**, **รายงานสรุปประจำปี**, **เกียรติบัตร & ผู้ลงนาม** และ **ระบบบริการสมาชิก** ตอบสนองการคลิกอย่างถูกต้อง
-3. **รักษาความสามารถเดิมครบถ้วน**:
-   * รายงาน A4 ฉบับมาตรฐานใช้ฟอนต์ **TH Sarabun** ทั้งหมด
-   * ตารางเปรียบเทียบงบประมาณอนุมัติ vs ใช้จริง (คงเหลือ)
-   * โครงสร้างข้อเสนอโครงการ A4 ครบถ้วนตามแบบมาตรฐาน
-   * ระบบรันเลขเกียรติบัตร `สอ.สธสต.` แยกตามปีงบประมาณ
-   * คู่มือและระบบเชื่อมต่อฐานข้อมูล Google Apps Script

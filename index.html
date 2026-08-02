@@ -202,26 +202,40 @@
 
                 <!-- Project Management Dropdown -->
                 <div class="relative nav-dropdown-container">
-                    <button type="button" onclick="toggleNavDropdown('navDropProj')" class="px-3.5 py-2 rounded-xl text-white/90 hover:bg-blue-800/80 hover:text-white flex items-center gap-2 whitespace-nowrap transition cursor-pointer">
+                    <button type="button" onclick="event.stopPropagation(); toggleNavDropdown('navDropProj');" class="px-3.5 py-2 rounded-xl text-white/90 hover:bg-blue-800/80 hover:text-white flex items-center gap-2 whitespace-nowrap transition cursor-pointer">
                         <i class="fa-solid fa-diagram-project text-amber-400"></i> บริหารจัดการโครงการ <i class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
-                    <div id="navDropProj" class="absolute left-0 mt-1 w-60 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50 text-slate-700">
-                        <a href="javascript:void(0)" onclick="switchTab('unified-cycle'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-rotate text-blue-600"></i> จัดการโครงการครบวงจร (4 ขั้น)</a>
-                        <a href="javascript:void(0)" onclick="switchTab('projects'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-list-check text-blue-600"></i> ทะเบียนรายการโครงการทั้งหมด</a>
-                        <a href="javascript:void(0)" onclick="switchTab('participants'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-users-gear text-blue-600"></i> รายชื่อผู้เข้าร่วม & นำเข้า Excel</a>
+                    <div id="navDropProj" class="absolute left-0 mt-1 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50 text-slate-700">
+                        <button type="button" onclick="switchTab('unified-cycle'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate text-blue-600"></i> จัดการโครงการครบวงจร (4 ขั้น)
+                        </button>
+                        <button type="button" onclick="switchTab('projects'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-list-check text-blue-600"></i> ทะเบียนรายการโครงการทั้งหมด
+                        </button>
+                        <button type="button" onclick="switchTab('participants'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-users-gear text-blue-600"></i> รายชื่อผู้เข้าร่วม & นำเข้า Excel
+                        </button>
                     </div>
                 </div>
 
                 <!-- Reports & Certificates Dropdown -->
                 <div class="relative nav-dropdown-container">
-                    <button type="button" onclick="toggleNavDropdown('navDropReport')" class="px-3.5 py-2 rounded-xl text-white/90 hover:bg-blue-800/80 hover:text-white flex items-center gap-2 whitespace-nowrap transition cursor-pointer">
+                    <button type="button" onclick="event.stopPropagation(); toggleNavDropdown('navDropReport');" class="px-3.5 py-2 rounded-xl text-white/90 hover:bg-blue-800/80 hover:text-white flex items-center gap-2 whitespace-nowrap transition cursor-pointer">
                         <i class="fa-solid fa-file-contract text-amber-400"></i> รายงาน & เกียรติบัตร <i class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
                     <div id="navDropReport" class="absolute left-0 mt-1 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 hidden z-50 text-slate-700">
-                        <a href="javascript:void(0)" onclick="switchTab('report-a4'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-file-lines text-blue-600"></i> รายงานผลสารบรรณ 6 ส่วน (A4)</a>
-                        <a href="javascript:void(0)" onclick="switchTab('annual-report'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-chart-line text-blue-600"></i> รายงานสรุปประจำปีตามยุทธศาสตร์</a>
-                        <a href="javascript:void(0)" onclick="switchTab('media'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-images text-blue-600"></i> สื่อ & ภาพกิจกรรมหลักฐาน</a>
-                        <a href="javascript:void(0)" onclick="switchTab('cert-config'); closeNavDropdowns();" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5"><i class="fa-solid fa-award text-amber-500"></i> ตั้งค่าเกียรติบัตร & ผู้ลงนาม</a>
+                        <button type="button" onclick="switchTab('report-a4'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-file-lines text-blue-600"></i> รายงานผลสารบรรณ 6 ส่วน (A4)
+                        </button>
+                        <button type="button" onclick="switchTab('annual-report'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-chart-line text-blue-600"></i> รายงานสรุปประจำปีตามยุทธศาสตร์
+                        </button>
+                        <button type="button" onclick="switchTab('media'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-images text-blue-600"></i> สื่อ & ภาพกิจกรรมหลักฐาน
+                        </button>
+                        <button type="button" onclick="switchTab('cert-config'); closeNavDropdowns();" class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 cursor-pointer">
+                            <i class="fa-solid fa-award text-amber-500"></i> ตั้งค่าเกียรติบัตร & ผู้ลงนาม
+                        </button>
                     </div>
                 </div>
 
@@ -1280,6 +1294,1129 @@ function doPost(e) {
     </footer>
 
     <script>
+        let currentFiscalYear = '2569';
+        let activeProjectId = 'proj-2569-001';
+        let isAdminLoggedIn = true; // Admin enabled by default for Preview
+        let isPublicMemberMode = false;
+        let globalOrgLogoUrl = 'https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต.';
+        let certLogoUrl = 'https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต.';
+        let gasEndpointUrl = '';
+        let excelParsedData = [];
+
+        // Obfuscated Credentials (User: 007 / Pass: Satun055pass@1)
+        const _A_U_H = 'MDA3';
+        const _A_P_H = 'U2F0dW4wNTVwYXNzQDE=';
+
+        let projectsState = [
+            {
+                id: 'proj-2569-001',
+                fiscalYear: '2569',
+                title: 'โครงการอบรมสัมมนาพัฒนาศักยภาพสมาชิกและบุคลากร สอ.สธสต. ประจำปี 2569',
+                reason: 'เนื่องด้วยสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด มีนโยบายส่งเสริมความรู้ความเข้าใจเกี่ยวกับระเบียบและสิทธิประโยชน์ของสมาชิก จึงจัดโครงการนี้ขึ้น',
+                objective: '1. เพื่อพัฒนาศักยภาพความรู้ด้านการเงินของสมาชิก\n2. เพื่อสร้างความสัมพันธ์อันดีระหว่างสมาชิกและสหกรณ์',
+                target: 'เชิงปริมาณ: สมาชิกเข้าร่วมไม่น้อยกว่า 100 คน\nเชิงคุณภาพ: ผู้เข้าร่วมมีความพึงพอใจไม่น้อยกว่าร้อยละ 85',
+                date: 'วันเสาร์ที่ 11 กรกฎาคม พ.ศ. 2569 เวลา 08.30 - 16.30 น.',
+                location: 'ณ ห้องประชุมสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
+                method: '1. เสนออนุมัติโครงการ\n2. ประชาสัมพันธ์และเปิดรับสมัคร\n3. ดำเนินการจัดอบรมสัมมนาและประเมินผล',
+                responsible: 'ฝ่ายบริหารงานทั่วไป สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
+                budgetSource: 'งบประมาณรายจ่ายประจำปี 2569 หมวดพัฒนาสมาชิก',
+                budgetItems: [
+                    { title: 'ค่าอาหารกลางวันและเครื่องดื่ม (100 คน x 200 บาท)', amount: 20000, actualAmount: 19500 },
+                    { title: 'ค่าเอกสารและอุปกรณ์ประกอบการอบรม', amount: 5000, actualAmount: 4800 },
+                    { title: 'ค่าตอบแทนวิทยากร (6 ชั่วโมง)', amount: 6000, actualAmount: 6000 }
+                ],
+                expected: '1. สมาชิกมีความรู้ความเข้าใจในระเบียบสหกรณ์มากขึ้น\n2. เกิดความตระหนักในการวางแผนทางการเงิน',
+                signer10Name: 'นายดำรงค์ เหล่ทองคำ', signer10Pos: 'เจ้าหน้าที่ธุรการ',
+                signer11Name: 'นายประเสริฐ สุวรรณโณ', signer11Pos: 'หัวหน้าฝ่ายบริหารงานทั่วไป',
+                signer12Name: 'นางสาวสุดารัตน์ ใจดี', signer12Pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
+                signer13Name: 'นายวิชาญ บุญทอง', signer13Pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
+                problems: 'สมาชิกบางท่านเดินทางมาจากพื้นที่ห่างไกลทำให้เข้าร่วมกิจกรรมล่าช้ากว่าเวลาเล็กน้อย',
+                suggestions: 'ควรเพิ่มระยะเวลาประชาสัมพันธ์ และจัดเตรียมสถานที่จอดรถสำรองในครั้งต่อไป',
+                hasSurvey: true,
+                surveyDemo: { male: 35, female: 60, lgbt: 3, unspecified: 2, memReg: 80, memAssoc: 18, memOther: 2 },
+                surveyCategories: [
+                    {
+                        id: 'cat1', name: 'หมวดที่ 1: ด้านประสบการณ์หรือความเกี่ยวข้องกับโครงการ',
+                        questions: [{ id: 'q1', title: 'โครงการตรงกับความต้องการและความสนใจของท่าน', n5: 70, n4: 25, n3: 5, n2: 0, n1: 0 }]
+                    },
+                    {
+                        id: 'cat2', name: 'หมวดที่ 2: ด้านเนื้อหาและกิจกรรมของโครงการ',
+                        questions: [{ id: 'q2', title: 'เนื้อหาการบรรยายมีความชัดเจนและนำไปใช้ประโยชน์ได้จริง', n5: 65, n4: 30, n3: 5, n2: 0, n1: 0 }]
+                    },
+                    {
+                        id: 'cat3', name: 'หมวดที่ 3: ด้านกระบวนการและบรรยากาศการดำเนินงาน',
+                        questions: [{ id: 'q3', title: 'สถานที่และระยะเวลาในการจัดกิจกรรมมีความเหมาะสม', n5: 60, n4: 35, n3: 5, n2: 0, n1: 0 }]
+                    },
+                    {
+                        id: 'cat4', name: 'หมวดที่ 4: ด้านวิทยากรหรือผู้ดำเนินโครงการ',
+                        questions: [{ id: 'q4', title: 'วิทยากรมีความรู้ความเชี่ยวชาญและถ่ายทอดได้น่าสนใจ', n5: 75, n4: 20, n3: 5, n2: 0, n1: 0 }]
+                    },
+                    {
+                        id: 'cat5', name: 'หมวดที่ 5: ด้านประโยชน์และการนำไปใช้',
+                        questions: [{ id: 'q5', title: 'ท่านได้รับประโยชน์และสามารถนำความรู้ไปประยุกต์ใช้ได้', n5: 80, n4: 18, n3: 2, n2: 0, n1: 0 }]
+                    }
+                ],
+                participants: [
+                    { id: 'p1', certNo: 'สอ.สธสต.69/0001', name: 'นายสมชาย รักดี', code: '05500123', pos: 'นักวิชาการสาธารณสุข', type: 'สมาชิกสามัญ', checked: true },
+                    { id: 'p2', certNo: 'สอ.สธสต.69/0002', name: 'นางสาววิไล พรประเสริฐ', code: '05500124', pos: 'พยาบาลวิชาชีพชำนาญการ', type: 'สมาชิกสามัญ', checked: true }
+                ],
+                media: []
+            }
+        ];
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let bgClass = 'bg-slate-900 text-white';
+            let iconClass = 'fa-info-circle text-blue-400';
+
+            if (type === 'success') {
+                bgClass = 'bg-emerald-900 text-white border border-emerald-700';
+                iconClass = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-red-900 text-white border border-red-700';
+                iconClass = 'fa-circle-exclamation text-red-400';
+            }
+
+            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm`;
+            toast.innerHTML = `<i class="fa-solid ${iconClass} text-sm"></i> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showConfirm(message, onConfirm) {
+            const modal = document.getElementById('customConfirmModal');
+            const msgEl = document.getElementById('customConfirmMessage');
+            const okBtn = document.getElementById('customConfirmOkBtn');
+            const cancelBtn = document.getElementById('customConfirmCancelBtn');
+
+            if (!modal || !msgEl || !okBtn || !cancelBtn) return;
+
+            msgEl.innerText = message;
+            modal.classList.remove('hidden');
+
+            const handleOk = () => {
+                modal.classList.add('hidden');
+                cleanup();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+
+            const handleCancel = () => {
+                modal.classList.add('hidden');
+                cleanup();
+            };
+
+            const cleanup = () => {
+                okBtn.removeEventListener('click', handleOk);
+                cancelBtn.removeEventListener('click', handleCancel);
+            };
+
+            okBtn.addEventListener('click', handleOk);
+            cancelBtn.addEventListener('click', handleCancel);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatCertDate(dateStr) {
+            if (!dateStr) return '11 กรกฎาคม พ.ศ. 2569';
+            let clean = dateStr.split('เวลา')[0].trim();
+            return clean.replace(/^วัน [ก-๙]+\s+/, '');
+        }
+
+        function thaiBahtText(amount) {
+            if (isNaN(amount) || amount === 0) return 'ศูนย์บาทถ้วน';
+            const numbers = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
+            const units = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
+            
+            let split = amount.toFixed(2).split('.');
+            let baht = parseInt(split[0]);
+            let satang = parseInt(split[1]);
+            let bahtStr = '';
+
+            if (baht > 0) {
+                let digits = baht.toString().split('').reverse();
+                for (let i = 0; i < digits.length; i++) {
+                    let d = parseInt(digits[i]);
+                    let unit = units[i % 6];
+                    if (i >= 6 && i % 6 === 0) unit += 'ล้าน';
+                    
+                    if (d === 1) {
+                        if (i % 6 === 1) bahtStr = 'สิบ' + bahtStr;
+                        else if (i % 6 === 0 && i > 0) bahtStr = 'เอ็ด' + bahtStr;
+                        else bahtStr = numbers[d] + unit + bahtStr;
+                    } else if (d === 2 && i % 6 === 1) {
+                        bahtStr = 'ยี่สิบ' + bahtStr;
+                    } else if (d > 0) {
+                        bahtStr = numbers[d] + unit + bahtStr;
+                    }
+                }
+                bahtStr += 'บาท';
+            }
+
+            if (satang === 0) {
+                bahtStr += 'ถ้วน';
+            } else {
+                let satangDigits = satang.toString().padStart(2, '0').split('');
+                let d1 = parseInt(satangDigits[0]);
+                let d2 = parseInt(satangDigits[1]);
+                if (d1 === 1) bahtStr += 'สิบ';
+                else if (d1 === 2) bahtStr += 'ยี่สิบ';
+                else if (d1 > 0) bahtStr += numbers[d1] + 'สิบ';
+
+                if (d2 === 1 && d1 > 0) bahtStr += 'เอ็ดสตางค์';
+                else if (d2 > 0) bahtStr += numbers[d2] + 'สตางค์';
+                else bahtStr += 'สตางค์';
+            }
+
+            return bahtStr;
+        }
+
+        function calculateSatisfaction(n5, n4, n3, n2, n1) {
+            n5 = parseInt(n5) || 0; n4 = parseInt(n4) || 0; n3 = parseInt(n3) || 0; n2 = parseInt(n2) || 0; n1 = parseInt(n1) || 0;
+            const total = n5 + n4 + n3 + n2 + n1;
+            if (total === 0) return { total: 0, mean: '0.00', percentage: '0.00', interpretation: 'ไม่มีข้อมูล' };
+            
+            const scoreSum = (n5 * 5) + (n4 * 4) + (n3 * 3) + (n2 * 2) + (n1 * 1);
+            const mean = scoreSum / total;
+            const percentage = (mean / 5) * 100;
+            
+            let interpretation = 'น้อยที่สุด / ปรับปรุงเร่งด่วน / เหมาะสมน้อยที่สุด';
+            if (mean >= 4.51) interpretation = 'มากที่สุด / ดีที่สุด / เหมาะสมมากที่สุด';
+            else if (mean >= 3.51) interpretation = 'มาก / ดี / เหมาะสมมาก';
+            else if (mean >= 2.51) interpretation = 'ปานกลาง / พอใช้ / เหมาะสมปานกลาง';
+            else if (mean >= 1.51) interpretation = 'น้อย / ควรปรับปรุง / เหมาะสมน้อย';
+
+            return { total, mean: mean.toFixed(2), percentage: percentage.toFixed(2), interpretation };
+        }
+
+        window.onload = function() {
+            loadStateFromLocalStorage();
+            checkUrlParameters();
+            applySecurityAccessControl();
+            renderDashboard();
+            renderActiveProjectUI();
+            updateDbSyncBadgeStatus();
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-dropdown-container')) {
+                    closeNavDropdowns();
+                }
+            });
+        };
+
+        function checkUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'member') {
+                isAdminLoggedIn = false;
+                isPublicMemberMode = true;
+            }
+        }
+
+        function applySecurityAccessControl() {
+            const nav = document.getElementById('mainNavMenu');
+            const adminCtrls = document.querySelectorAll('.admin-only-ctrl');
+
+            if (!isAdminLoggedIn) {
+                isPublicMemberMode = true;
+                if (nav) nav.classList.add('hidden');
+                adminCtrls.forEach(el => el.classList.add('hidden'));
+                document.getElementById('adminAuthLabel').innerText = 'เข้าสู่ระบบผู้ดูแลระบบ';
+
+                document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+                const memberView = document.getElementById('view-member-portal');
+                if (memberView) memberView.classList.remove('hidden');
+            } else {
+                isPublicMemberMode = false;
+                if (nav) nav.classList.remove('hidden');
+                adminCtrls.forEach(el => el.classList.remove('hidden'));
+                document.getElementById('adminAuthLabel').innerText = 'ผู้ดูแลระบบ (ออกจากระบบ)';
+            }
+        }
+
+        function handleHeaderLogoClick() {
+            if (isAdminLoggedIn) {
+                switchTab('dashboard');
+            } else {
+                switchTab('member-portal');
+            }
+        }
+
+        function toggleAdminAuthAction() {
+            if (isAdminLoggedIn) {
+                showConfirm('คุณต้องการออกจากระบบผู้ดูแลระบบใช่หรือไม่?', function() {
+                    isAdminLoggedIn = false;
+                    applySecurityAccessControl();
+                    showToast('ออกจากระบบผู้ดูแลระบบแล้ว', 'info');
+                });
+            } else {
+                openAdminAuthModal();
+            }
+        }
+
+        function saveStateToLocalStorage() {
+            try {
+                localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
+                localStorage.setItem('coop_gas_url', gasEndpointUrl);
+                syncToRemoteDatabase();
+            } catch(e) { console.error(e); }
+        }
+
+        function loadStateFromLocalStorage() {
+            try {
+                const savedProjects = localStorage.getItem('coop_projects_state');
+                if (savedProjects) projectsState = JSON.parse(savedProjects);
+                const savedGas = localStorage.getItem('coop_gas_url');
+                if (savedGas) {
+                    gasEndpointUrl = savedGas;
+                    const el = document.getElementById('gasEndpointUrlInput');
+                    if (el) el.value = savedGas;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function syncToRemoteDatabase() {
+            if (!gasEndpointUrl) return;
+            const activeProj = getActiveProject();
+            if (!activeProj) return;
+
+            fetch(gasEndpointUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(activeProj)
+            }).then(() => {
+                updateDbSyncBadgeStatus(true);
+            }).catch(() => {
+                updateDbSyncBadgeStatus(false);
+            });
+        }
+
+        function updateDbSyncBadgeStatus(isOnline) {
+            const badge = document.getElementById('dbSyncBadge');
+            if (!badge) return;
+            if (gasEndpointUrl) {
+                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300';
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
+            } else {
+                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
+            }
+        }
+
+        function getActiveProject() {
+            return projectsState.find(p => p.id === activeProjectId) || projectsState[0];
+        }
+
+        function changeFiscalYear(year) {
+            currentFiscalYear = year;
+            const firstInYear = projectsState.find(p => p.fiscalYear === year);
+            if (firstInYear) activeProjectId = firstInYear.id;
+            renderDashboard();
+            renderActiveProjectUI();
+        }
+
+        function toggleNavDropdown(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isHidden = el.classList.contains('hidden');
+            closeNavDropdowns();
+            if (isHidden) el.classList.remove('hidden');
+        }
+
+        function closeNavDropdowns() {
+            ['navDropProj', 'navDropReport'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+        }
+
+        function switchTab(tabId) {
+            closeNavDropdowns();
+            if (!isAdminLoggedIn && tabId !== 'member-portal') {
+                showToast('ท่านจำเป็นต้องเข้าสู่ระบบผู้ดูแลระบบก่อน', 'error');
+                openAdminAuthModal();
+                tabId = 'member-portal';
+            }
+
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            const target = document.getElementById(`view-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-blue-800', 'font-bold'));
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('bg-blue-800', 'font-bold');
+
+            if (tabId === 'dashboard') renderDashboard();
+            else if (tabId === 'unified-cycle') renderActiveProjectUI();
+            else if (tabId === 'projects') renderProjectsList();
+            else if (tabId === 'participants') renderParticipantsList();
+            else if (tabId === 'report-a4') renderOfficialBookletReport();
+            else if (tabId === 'annual-report') renderAnnualStrategicReport();
+            else if (tabId === 'cert-config') updateCertPreview();
+            else if (tabId === 'media') renderMediaGallery();
+        }
+
+        function switchUnStep(stepNum) {
+            document.querySelectorAll('.un-step-panel').forEach(p => p.classList.add('hidden'));
+            const panel = document.getElementById(`un-step-panel-${stepNum}`);
+            if (panel) panel.classList.remove('hidden');
+
+            document.querySelectorAll('.un-step-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-900', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            const activeTab = document.getElementById(`unStepTab-${stepNum}`);
+            if (activeTab) {
+                activeTab.classList.remove('bg-slate-100', 'text-slate-700');
+                activeTab.classList.add('bg-blue-900', 'text-white');
+            }
+
+            if (stepNum === 1) renderActiveProjectUI();
+            else if (stepNum === 2) renderUnStep2Participants();
+            else if (stepNum === 3) renderUnStep3MediaAndBudget();
+        }
+
+        function renderDashboard() {
+            document.getElementById('dashFiscalYearLabel').innerText = `ปีงบประมาณ ${currentFiscalYear}`;
+            const filteredProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+            document.getElementById('statTotalProjects').innerText = filteredProjects.length;
+
+            let totalParts = 0;
+            let approvedBudget = 0;
+            let actualExpense = 0;
+            let certsIssued = 0;
+
+            filteredProjects.forEach(p => {
+                totalParts += (p.participants || []).length;
+                (p.budgetItems || []).forEach(b => {
+                    approvedBudget += parseFloat(b.amount) || 0;
+                    actualExpense += parseFloat(b.actualAmount || b.amount) || 0;
+                });
+                certsIssued += (p.participants || []).filter(item => item.checked).length;
+            });
+
+            document.getElementById('statTotalParticipants').innerText = totalParts;
+            document.getElementById('statTotalApprovedBudget').innerText = '฿' + approvedBudget.toLocaleString();
+            document.getElementById('statTotalActualExpense').innerText = '฿' + actualExpense.toLocaleString();
+            document.getElementById('statTotalCertsIssued').innerText = certsIssued;
+
+            const select = document.getElementById('activeProjectSelect');
+            if (select) {
+                select.innerHTML = '';
+                filteredProjects.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.innerText = `[${p.fiscalYear}] ${p.title}`;
+                    if (p.id === activeProjectId) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        function setActiveProject(projId) {
+            activeProjectId = projId;
+            renderActiveProjectUI();
+        }
+
+        function renderActiveProjectUI() {
+            const proj = getActiveProject();
+            if (!proj) return;
+
+            document.getElementById('unifiedProjectTitleBadge').innerText = `โครงการ: ${proj.title}`;
+            document.getElementById('unifiedFiscalBadge').innerText = `ปีงบประมาณ ${proj.fiscalYear}`;
+            document.getElementById('partViewProjectTitle').innerText = `โครงการ: ${proj.title}`;
+            
+            document.getElementById('propTitle').value = proj.title || '';
+            document.getElementById('propReason').value = proj.reason || '';
+            document.getElementById('propObjective').value = proj.objective || '';
+            document.getElementById('propTarget').value = proj.target || '';
+            document.getElementById('propDate').value = proj.date || '';
+            document.getElementById('propLocation').value = proj.location || '';
+            document.getElementById('propMethod').value = proj.method || '';
+            document.getElementById('propResponsible').value = proj.responsible || '';
+            document.getElementById('propBudgetSource').value = proj.budgetSource || '';
+            document.getElementById('propExpected').value = proj.expected || '';
+
+            document.getElementById('signer10Name').value = proj.signer10Name || '';
+            document.getElementById('signer10Pos').value = proj.signer10Pos || '';
+            document.getElementById('signer11Name').value = proj.signer11Name || '';
+            document.getElementById('signer11Pos').value = proj.signer11Pos || '';
+            document.getElementById('signer12Name').value = proj.signer12Name || '';
+            document.getElementById('signer12Pos').value = proj.signer12Pos || '';
+            document.getElementById('signer13Name').value = proj.signer13Name || '';
+            document.getElementById('signer13Pos').value = proj.signer13Pos || '';
+
+            renderBudgetItemsTable();
+            renderUnStep2Participants();
+            renderSurveyQuestionsMatrix();
+        }
+
+        function renderBudgetItemsTable() {
+            const proj = getActiveProject();
+            const tbody = document.getElementById('budgetItemsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            let total = 0;
+            (proj.budgetItems || []).forEach((item, idx) => {
+                total += parseFloat(item.amount) || 0;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold">${idx + 1}</td>
+                    <td class="p-3"><input type="text" value="${escapeHtml(item.title)}" onchange="updateBudgetItem(${idx}, 'title', this.value)" class="w-full border rounded p-1 font-semibold"></td>
+                    <td class="p-3 text-right"><input type="number" value="${item.amount}" onchange="updateBudgetItem(${idx}, 'amount', this.value)" class="w-full border rounded p-1 text-right font-mono font-bold"></td>
+                    <td class="p-3 text-center"><button type="button" onclick="removeBudgetItemRow(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('budgetTotalAmount').innerText = total.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('budgetTotalBahtText').innerText = `(${thaiBahtText(total)})`;
+        }
+
+        function addBudgetItemRow() {
+            const proj = getActiveProject();
+            if (!proj.budgetItems) proj.budgetItems = [];
+            proj.budgetItems.push({ title: 'รายการค่าใช้จ่ายใหม่', amount: 0, actualAmount: 0 });
+            renderBudgetItemsTable();
+            saveStateToLocalStorage();
+        }
+
+        function updateBudgetItem(idx, field, val) {
+            const proj = getActiveProject();
+            if (proj.budgetItems && proj.budgetItems[idx]) {
+                proj.budgetItems[idx][field] = field === 'amount' ? parseFloat(val) || 0 : val;
+                renderBudgetItemsTable();
+                saveStateToLocalStorage();
+            }
+        }
+
+        function removeBudgetItemRow(idx) {
+            const proj = getActiveProject();
+            if (proj.budgetItems) {
+                proj.budgetItems.splice(idx, 1);
+                renderBudgetItemsTable();
+                saveStateToLocalStorage();
+            }
+        }
+
+        function saveProjectProposal(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            proj.title = document.getElementById('propTitle').value;
+            proj.reason = document.getElementById('propReason').value;
+            proj.objective = document.getElementById('propObjective').value;
+            proj.target = document.getElementById('propTarget').value;
+            proj.date = document.getElementById('propDate').value;
+            proj.location = document.getElementById('propLocation').value;
+            proj.method = document.getElementById('propMethod').value;
+            proj.responsible = document.getElementById('propResponsible').value;
+            proj.budgetSource = document.getElementById('propBudgetSource').value;
+            proj.expected = document.getElementById('propExpected').value;
+
+            proj.signer10Name = document.getElementById('signer10Name').value;
+            proj.signer10Pos = document.getElementById('signer10Pos').value;
+            proj.signer11Name = document.getElementById('signer11Name').value;
+            proj.signer11Pos = document.getElementById('signer11Pos').value;
+            proj.signer12Name = document.getElementById('signer12Name').value;
+            proj.signer12Pos = document.getElementById('signer12Pos').value;
+            proj.signer13Name = document.getElementById('signer13Name').value;
+            proj.signer13Pos = document.getElementById('signer13Pos').value;
+
+            saveStateToLocalStorage();
+            showToast('บันทึกข้อมูลแบบเสนออนุมัติโครงการเรียบร้อยแล้ว', 'success');
+            renderDashboard();
+        }
+
+        function generateNextCertNo(fiscalYear) {
+            const proj = getActiveProject();
+            const currentParts = proj.participants || [];
+            const count = currentParts.length + 1;
+            const yy = (fiscalYear || '2569').substring(2);
+            return `สอ.สธสต.${yy}/${count.toString().padStart(4, '0')}`;
+        }
+
+        function reindexParticipantCertNos() {
+            const proj = getActiveProject();
+            const yy = (proj.fiscalYear || '2569').substring(2);
+            (proj.participants || []).forEach((p, idx) => {
+                p.certNo = `สอ.สธสต.${yy}/${(idx + 1).toString().padStart(4, '0')}`;
+            });
+            saveStateToLocalStorage();
+        }
+
+        function renderUnStep2Participants() {
+            const proj = getActiveProject();
+            const tbody = document.getElementById('unStep2ParticipantsTable');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (proj.participants || []).forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold">${idx + 1}</td>
+                    <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
+                    <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
+                    <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
+                    <td class="p-3">${escapeHtml(p.pos || '-')}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">ออกเกียรติบัตรได้ทันที</span></td>
+                    <td class="p-3 text-center"><button type="button" onclick="printSingleCertificate('${p.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-bold px-2.5 py-1 rounded-lg text-[11px] shadow active:scale-95 cursor-pointer"><i class="fa-solid fa-print"></i> พิมพ์</button></td>
+                    <td class="p-3 text-center"><button type="button" onclick="removeParticipant('${p.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderParticipantsList() {
+            const proj = getActiveProject();
+            const tbody = document.getElementById('mainParticipantsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (proj.participants || []).forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold">${idx + 1}</td>
+                    <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
+                    <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
+                    <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
+                    <td class="p-3">${escapeHtml(p.pos || '-')}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">พร้อมใช้งาน</span></td>
+                    <td class="p-3 text-center"><button type="button" onclick="printSingleCertificate('${p.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-bold px-2.5 py-1 rounded-lg text-[11px] shadow active:scale-95 cursor-pointer"><i class="fa-solid fa-print"></i> พิมพ์</button></td>
+                    <td class="p-3 text-center"><button type="button" onclick="removeParticipant('${p.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function removeParticipant(partId) {
+            const proj = getActiveProject();
+            proj.participants = (proj.participants || []).filter(p => p.id !== partId);
+            reindexParticipantCertNos();
+            renderUnStep2Participants();
+            renderParticipantsList();
+            renderDashboard();
+            showToast('ลบรายชื่อผู้เข้าร่วมแล้ว', 'info');
+        }
+
+        function saveSingleParticipant(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            if (!proj.participants) proj.participants = [];
+
+            const name = document.getElementById('partInputName').value;
+            const code = document.getElementById('partInputCode').value;
+            const pos = document.getElementById('partInputPos').value;
+            const type = document.getElementById('partInputType').value;
+
+            proj.participants.push({
+                id: 'part-' + Date.now(),
+                certNo: generateNextCertNo(proj.fiscalYear),
+                name, code, pos, type, checked: true
+            });
+
+            reindexParticipantCertNos();
+            closeModal('addParticipantModal');
+            renderUnStep2Participants();
+            renderParticipantsList();
+            renderDashboard();
+            showToast('เพิ่มผู้เข้าร่วมเรียบร้อยแล้ว', 'success');
+        }
+
+        function renderUnStep3MediaAndBudget() {
+            const proj = getActiveProject();
+            const tbody = document.getElementById('executionBudgetTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            let totalApp = 0, totalAct = 0;
+            (proj.budgetItems || []).forEach((item, idx) => {
+                const app = parseFloat(item.amount) || 0;
+                const act = parseFloat(item.actualAmount || item.amount) || 0;
+                const diff = app - act;
+                totalApp += app; totalAct += act;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold">${idx + 1}</td>
+                    <td class="p-3 font-semibold">${escapeHtml(item.title)}</td>
+                    <td class="p-3 text-right font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    <td class="p-3 text-right"><input type="number" value="${act}" onchange="updateActualBudgetItem(${idx}, this.value)" class="w-full border rounded p-1 text-right font-mono font-bold"></td>
+                    <td class="p-3 text-right font-mono font-bold ${diff >= 0 ? 'text-emerald-700' : 'text-red-600'}">${diff.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('execTotalApproved').innerText = totalApp.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('execTotalActual').innerText = totalAct.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('execTotalDiff').innerText = (totalApp - totalAct).toLocaleString('th-TH', { minimumFractionDigits: 2 });
+
+            document.getElementById('execProblems').value = proj.problems || '';
+            document.getElementById('execSuggestions').value = proj.suggestions || '';
+            
+            const demo = proj.surveyDemo || { male: 0, female: 0, lgbt: 0, unspecified: 0, memReg: 0, memAssoc: 0, memOther: 0 };
+            document.getElementById('demoMale').value = demo.male || 0;
+            document.getElementById('demoFemale').value = demo.female || 0;
+            document.getElementById('demoLgbt').value = demo.lgbt || 0;
+            document.getElementById('demoUnspecified').value = demo.unspecified || 0;
+            document.getElementById('demoMemReg').value = demo.memReg || 0;
+            document.getElementById('demoMemAssoc').value = demo.memAssoc || 0;
+            document.getElementById('demoMemOther').value = demo.memOther || 0;
+        }
+
+        function updateActualBudgetItem(idx, val) {
+            const proj = getActiveProject();
+            if (proj.budgetItems && proj.budgetItems[idx]) {
+                proj.budgetItems[idx].actualAmount = parseFloat(val) || 0;
+                renderUnStep3MediaAndBudget();
+                saveStateToLocalStorage();
+            }
+        }
+
+        function saveExecutionSummary(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            proj.problems = document.getElementById('execProblems').value;
+            proj.suggestions = document.getElementById('execSuggestions').value;
+            saveStateToLocalStorage();
+            showToast('บันทึกผลการดำเนินงานและสถิติประเมินเรียบร้อยแล้ว', 'success');
+        }
+
+        function toggleProjectSurvey(checked) {
+            const proj = getActiveProject();
+            proj.hasSurvey = checked;
+            document.getElementById('surveyToggleLabel').innerText = checked ? 'มีแบบประเมิน' : 'ไม่มีแบบประเมิน';
+            saveStateToLocalStorage();
+            showToast(checked ? 'เปิดใช้งานแบบประเมิน' : 'ปิดใช้งานแบบประเมิน', 'info');
+        }
+
+        function updateSurveyDemo() {
+            const proj = getActiveProject();
+            proj.surveyDemo = {
+                male: parseInt(document.getElementById('demoMale').value) || 0,
+                female: parseInt(document.getElementById('demoFemale').value) || 0,
+                lgbt: parseInt(document.getElementById('demoLgbt').value) || 0,
+                unspecified: parseInt(document.getElementById('demoUnspecified').value) || 0,
+                memReg: parseInt(document.getElementById('demoMemReg').value) || 0,
+                memAssoc: parseInt(document.getElementById('demoMemAssoc').value) || 0,
+                memOther: parseInt(document.getElementById('demoMemOther').value) || 0
+            };
+            const total = proj.surveyDemo.male + proj.surveyDemo.female + proj.surveyDemo.lgbt + proj.surveyDemo.unspecified;
+            document.getElementById('surveyTotalRespondentsBadge').innerText = `ผู้ตอบแบบประเมิน: ${total} คน`;
+            saveStateToLocalStorage();
+        }
+
+        function renderSurveyQuestionsMatrix() {
+            const proj = getActiveProject();
+            const box = document.getElementById('surveyQuestionsCategoryList');
+            if (!box) return;
+
+            box.innerHTML = '';
+            (proj.surveyCategories || []).forEach((cat, catIdx) => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'border border-slate-200 rounded-2xl p-4 bg-white space-y-3 shadow-sm';
+
+                let questionsHtml = '';
+                (cat.questions || []).forEach((q, qIdx) => {
+                    const stats = calculateSatisfaction(q.n5, q.n4, q.n3, q.n2, q.n1);
+                    questionsHtml += `
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0 space-y-2">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                <span class="font-bold text-xs text-blue-950 flex-1">${catIdx + 1}.${qIdx + 1} ${escapeHtml(q.title)}</span>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                        Mean: ${stats.mean} (${stats.percentage}%) - ${stats.interpretation}
+                                    </span>
+                                    <button type="button" onclick="openEditQuestionModal('${cat.id}', '${q.id}')" class="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i> แก้ไขคำถาม</button>
+                                    <button type="button" onclick="removeQuestion('${cat.id}', '${q.id}')" class="text-red-500 hover:text-red-700 text-xs bg-red-50 p-1 px-2 rounded-lg border border-red-200 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-5 gap-2 text-[11px] bg-slate-50 p-2 rounded-xl">
+                                <div><span class="text-slate-500">มากที่สุด (5):</span> <input type="number" value="${q.n5}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n5', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
+                                <div><span class="text-slate-500">มาก (4):</span> <input type="number" value="${q.n4}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n4', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
+                                <div><span class="text-slate-500">ปานกลาง (3):</span> <input type="number" value="${q.n3}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n3', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
+                                <div><span class="text-slate-500">น้อย (2):</span> <input type="number" value="${q.n2}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n2', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
+                                <div><span class="text-slate-500">น้อยที่สุด (1):</span> <input type="number" value="${q.n1}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n1', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                catDiv.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <h6 class="font-extrabold text-xs text-blue-900">${escapeHtml(cat.name)}</h6>
+                        <span class="text-[11px] font-bold text-slate-500">${(cat.questions || []).length} ข้อ</span>
+                    </div>
+                    <div class="space-y-3 pt-1">${questionsHtml || '<p class="text-[11px] text-slate-400 italic">ยังไม่มีข้อคำถามในหมวดนี้</p>'}</div>
+                `;
+                box.appendChild(catDiv);
+            });
+        }
+
+        function updateQuestionRating(catId, qId, field, val) {
+            const proj = getActiveProject();
+            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
+            if (!cat) return;
+            const q = (cat.questions || []).find(item => item.id === qId);
+            if (!q) return;
+
+            q[field] = parseInt(val) || 0;
+            saveStateToLocalStorage();
+            renderSurveyQuestionsMatrix();
+        }
+
+        function openAddQuestionModal() {
+            document.getElementById('addQuestionModal').classList.remove('hidden');
+        }
+
+        function saveDynamicQuestion(e) {
+            e.preventDefault();
+            const catId = document.getElementById('questionCategorySelect').value;
+            const title = document.getElementById('questionTitleInput').value;
+            const proj = getActiveProject();
+            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
+            if (cat) {
+                if (!cat.questions) cat.questions = [];
+                cat.questions.push({ id: 'q-' + Date.now(), title, n5: 0, n4: 0, n3: 0, n2: 0, n1: 0 });
+                saveStateToLocalStorage();
+                closeModal('addQuestionModal');
+                renderSurveyQuestionsMatrix();
+                showToast('เพิ่มข้อคำถามเรียบร้อยแล้ว', 'success');
+            }
+        }
+
+        function openEditQuestionModal(catId, qId) {
+            const proj = getActiveProject();
+            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
+            if (!cat) return;
+            const q = (cat.questions || []).find(item => item.id === qId);
+            if (!q) return;
+
+            document.getElementById('editQuestionCatId').value = catId;
+            document.getElementById('editQuestionQId').value = qId;
+            document.getElementById('editQuestionTitleInput').value = q.title;
+            document.getElementById('editQuestionModal').classList.remove('hidden');
+        }
+
+        function saveEditedQuestion(e) {
+            e.preventDefault();
+            const catId = document.getElementById('editQuestionCatId').value;
+            const qId = document.getElementById('editQuestionQId').value;
+            const newTitle = document.getElementById('editQuestionTitleInput').value;
+
+            const proj = getActiveProject();
+            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
+            if (!cat) return;
+            const q = (cat.questions || []).find(item => item.id === qId);
+            if (!q) return;
+
+            q.title = newTitle;
+            saveStateToLocalStorage();
+            closeModal('editQuestionModal');
+            renderSurveyQuestionsMatrix();
+            showToast('แก้ไขข้อความคำถามเรียบร้อยแล้ว', 'success');
+        }
+
+        function removeQuestion(catId, qId) {
+            const proj = getActiveProject();
+            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
+            if (!cat) return;
+            cat.questions = (cat.questions || []).filter(q => q.id !== qId);
+            saveStateToLocalStorage();
+            renderSurveyQuestionsMatrix();
+            showToast('ลบข้อคำถามแล้ว', 'info');
+        }
+
+        function openBlankSurveyModal() {
+            const proj = getActiveProject();
+            const box = document.getElementById('blankSurveyPreviewBox');
+            if (!box || !proj) return;
+
+            let categoriesHtml = '';
+            (proj.surveyCategories || []).forEach((cat, cIdx) => {
+                let qRows = '';
+                (cat.questions || []).forEach((q, qIdx) => {
+                    qRows += `
+                        <tr class="border-b">
+                            <td class="p-2 border font-medium">${cIdx + 1}.${qIdx + 1} ${escapeHtml(q.title)}</td>
+                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
+                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
+                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
+                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
+                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
+                        </tr>
+                    `;
+                });
+
+                categoriesHtml += `
+                    <tr class="bg-slate-100 font-bold border-b"><td colspan="6" class="p-2 border text-blue-950">${escapeHtml(cat.name)}</td></tr>
+                    ${qRows}
+                `;
+            });
+
+            box.innerHTML = `
+                <div class="text-center space-y-1.5 border-b pb-4">
+                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                    <h2 class="text-base font-bold text-blue-950">${document.getElementById('headerOrgName').innerText}</h2>
+                    <h1 class="text-lg font-black text-blue-900">แบบประเมินความพึงพอใจผู้เข้าร่วมโครงการ</h1>
+                    <h3 class="text-xs font-bold text-slate-800">โครงการ: "${escapeHtml(proj.title)}"</h3>
+                    <p class="text-[11px] text-slate-600">จัดขึ้นเมื่อ ${escapeHtml(proj.date)} ณ ${escapeHtml(proj.location)}</p>
+                </div>
+
+                <div class="space-y-4 text-xs official-font pt-2">
+                    <div class="border rounded-xl p-3 space-y-2">
+                        <h4 class="font-bold text-blue-950 border-b pb-1">ส่วนที่ 1: ข้อมูลทั่วไปของผู้ตอบแบบประเมิน</h4>
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div><span class="font-bold">1. เพศ:</span> [ ] ชาย &nbsp; [ ] หญิง &nbsp; [ ] LGBTQ+</div>
+                            <div><span class="font-bold">2. สมาชิก:</span> [ ] สมาชิกสามัญ &nbsp; [ ] สมาชิกสมทบ</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-blue-950">ส่วนที่ 2: ความพึงพอใจต่อการดำเนินโครงการ</h4>
+                        <table class="w-full border text-[11px]">
+                            <thead class="bg-blue-950 text-white font-bold border-b">
+                                <tr>
+                                    <th class="p-2 border text-left">ประเด็นการประเมิน</th>
+                                    <th class="p-2 border text-center w-10">มากที่สุด<br>(5)</th>
+                                    <th class="p-2 border text-center w-10">มาก<br>(4)</th>
+                                    <th class="p-2 border text-center w-10">ปานกลาง<br>(3)</th>
+                                    <th class="p-2 border text-center w-10">น้อย<br>(2)</th>
+                                    <th class="p-2 border text-center w-10">น้อยที่สุด<br>(1)</th>
+                                </tr>
+                            </thead>
+                            <tbody>${categoriesHtml}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('blankSurveyModal').classList.remove('hidden');
+        }
+
+        function renderOfficialBookletReport() {
+            const proj = getActiveProject();
+            const box = document.getElementById('officialReportPrintBox');
+            if (!box || !proj) return;
+
+            let totalApp = 0, totalAct = 0;
+            let budgetRows = '';
+            (proj.budgetItems || []).forEach((b, idx) => {
+                const app = parseFloat(b.amount) || 0;
+                const act = parseFloat(b.actualAmount || b.amount) || 0;
+                totalApp += app; totalAct += act;
+                budgetRows += `
+                    <tr class="border-b">
+                        <td class="p-2 text-center border">${idx + 1}</td>
+                        <td class="p-2 border">${escapeHtml(b.title)}</td>
+                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${(app - act).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            box.innerHTML = `
+                <!-- PAGE 1: COVER PAGE -->
+                <div class="text-center space-y-6 py-12 min-h-[900px] flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <img src="${globalOrgLogoUrl}" class="w-24 h-24 object-contain mx-auto" alt="Logo">
+                        <h1 class="text-2xl font-black text-blue-950">รายงานผลการดำเนินโครงการ</h1>
+                        <h2 class="text-lg font-bold text-blue-900">"${escapeHtml(proj.title)}"</h2>
+                        <p class="text-sm font-semibold text-slate-700">ประจำปีงบประมาณ พ.ศ. ${proj.fiscalYear}</p>
+                    </div>
+
+                    <div class="space-y-2 text-sm">
+                        <p class="font-bold text-blue-950">จัดขึ้นโดย</p>
+                        <p class="font-bold text-slate-800">${escapeHtml(proj.responsible)}</p>
+                        <p class="text-slate-600">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</p>
+                    </div>
+                </div>
+
+                <!-- PAGE BREAK -->
+                <div class="page-break"></div>
+
+                <!-- PAGE 2: OFFICIAL MEMO & 6 PARTS -->
+                <div class="space-y-6 pt-4">
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2">ส่วนที่ 1 บทนำและข้อมูลทั่วไป</h2>
+                    <div class="space-y-3 leading-relaxed">
+                        <p><strong>1.1 ชื่อโครงการ:</strong> ${escapeHtml(proj.title)}</p>
+                        <p><strong>1.2 หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
+                        <p><strong>1.3 วัตถุประสงค์:</strong></p>
+                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
+                        <p><strong>1.4 เป้าหมาย:</strong></p>
+                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
+                    </div>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 2 การดำเนินงาน</h2>
+                    <div class="space-y-2 leading-relaxed">
+                        <p><strong>2.1 ระยะเวลาจัดงาน:</strong> ${escapeHtml(proj.date)}</p>
+                        <p><strong>2.2 สถานที่ดำเนินงาน:</strong> ${escapeHtml(proj.location)}</p>
+                        <p><strong>2.3 ผู้เข้าร่วมโครงการ:</strong> จำนวนสะสม ${(proj.participants || []).length} คน</p>
+                    </div>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 3 สรุปผลการดำเนินงาน</h2>
+                    <p class="leading-relaxed">การจัดโครงการบรรลุตามวัตถุประสงค์ที่กำหนดไว้ มีผู้เข้าร่วมทั้งสิ้น ${(proj.participants || []).length} คน คิดเป็นร้อยละ 100 ของเป้าหมาย</p>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 4 การใช้งบประมาณ</h2>
+                    <table class="w-full border text-xs">
+                        <thead class="bg-slate-100 font-bold border-b">
+                            <tr>
+                                <th class="p-2 border text-center w-10">ลำดับ</th>
+                                <th class="p-2 border text-left">รายการค่าใช้จ่าย</th>
+                                <th class="p-2 border text-right">งบอนุมัติ (บาท)</th>
+                                <th class="p-2 border text-right">จ่ายจริง (บาท)</th>
+                                <th class="p-2 border text-right">คงเหลือ (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${budgetRows}</tbody>
+                    </table>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 5 ปัญหาและอุปสรรค</h2>
+                    <p class="leading-relaxed">${escapeHtml(proj.problems || 'ไม่มีปัญหาอุปสรรคสำคัญในการดำเนินงาน')}</p>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 6 ข้อเสนอแนะ</h2>
+                    <p class="leading-relaxed">${escapeHtml(proj.suggestions || 'ควรจัดกิจกรรมพัฒนาศักยภาพอย่างต่อเนื่องในปีกิจการถัดไป')}</p>
+                </div>
+            `;
+        }
+
+        function renderAnnualStrategicReport() {
+            const box = document.getElementById('annualReportPrintBox');
+            if (!box) return;
+
+            const filteredProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+            let rows = '';
+            let grandApp = 0, grandAct = 0, grandParts = 0;
+
+            filteredProjects.forEach((p, idx) => {
+                let app = 0, act = 0;
+                (p.budgetItems || []).forEach(b => {
+                    app += parseFloat(b.amount) || 0;
+                    act += parseFloat(b.actualAmount || b.amount) || 0;
+                });
+                grandApp += app; grandAct += act;
+                const partsCount = (p.participants || []).length;
+                grandParts += partsCount;
+
+                rows += `
+                    <tr class="border-b">
+                        <td class="p-2 text-center border">${idx + 1}</td>
+                        <td class="p-2 border font-bold">${escapeHtml(p.title)}</td>
+                        <td class="p-2 text-center border font-mono">${partsCount}</td>
+                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            box.innerHTML = `
+                <div class="text-center space-y-2 border-b pb-4">
+                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                    <h1 class="text-lg font-black text-blue-950">รายงานสรุปประจำปีตามแผนยุทธศาสตร์</h1>
+                    <h2 class="text-sm font-bold text-amber-800">ปีงบประมาณ พ.ศ. ${currentFiscalYear}</h2>
+                </div>
+
+                <table class="w-full border text-xs my-4">
+                    <thead class="bg-blue-950 text-white font-bold border-b">
+                        <tr>
+                            <th class="p-2 border text-center w-10">ลำดับ</th>
+                            <th class="p-2 border text-left">ชื่อโครงการ</th>
+                            <th class="p-2 border text-center w-24">ผู้เข้าร่วม (คน)</th>
+                            <th class="p-2 border text-right w-32">งบอนุมัติ (บาท)</th>
+                            <th class="p-2 border text-right w-32">จ่ายจริง (บาท)</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows || '<tr><td colspan="5" class="p-4 text-center text-slate-400">ไม่มีโครงการในปีงบประมาณนี้</td></tr>'}</tbody>
+                    <tfoot class="bg-slate-100 font-bold border-t">
+                        <tr>
+                            <td colspan="2" class="p-2 text-right border">รวมสะสมทั้งปี:</td>
+                            <td class="p-2 text-center border font-mono">${grandParts}</td>
+                            <td class="p-2 text-right border font-mono">${grandApp.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                            <td class="p-2 text-right border font-mono">${grandAct.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+        }
+
+        function renderProjectsList() {
+            const grid = document.getElementById('projectsGridContainer');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            projectsState.forEach((p) => {
+                let budget = 0;
+                (p.budgetItems || []).forEach(b => budget += parseFloat(b.amount) || 0);
+
+                const card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-blue-100 text-blue-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">ปี ${p.fiscalYear}</span>
+                            <span class="text-[11px] font-bold text-slate-500"><i class="fa-solid fa-users"></i> ${(p.participants || []).length} คน</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-blue-950 leading-snug line-clamp-2">${escapeHtml(p.title)}</h4>
+                        <p class="text-xs font-mono font-bold text-emerald-700">งบประมาณ: ฿${budget.toLocaleString()}</p>
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t">
+                        <button onclick="setActiveProject('${p.id}'); switchTab('unified-cycle');" class="flex-1 bg-blue-900 hover:bg-blue-950 text-white p-2 rounded-xl text-xs font-bold text-center active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-pen-to-square"></i> จัดการ
+                        </button>
+                        <button onclick="confirmDeleteProjectById('${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl text-xs font-bold border border-red-200 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMediaGallery() {
+            const proj = getActiveProject();
+            const grid = document.getElementById('mediaGalleryGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            (proj.media || []).forEach((m, idx) => {
+                const item = document.createElement('div');
+                item.className = 'relative group rounded-2xl overflow-hidden border shadow-sm aspect-video bg-slate-100';
+                item.innerHTML = `
+                    <img src="${m.url}" class="w-full h-full object-cover" alt="Media ${idx}">
+                    <button onclick="removeMediaItem('${m.id}')" class="absolute top-2 right-2 bg-red-600 text-white w-7 h-7 rounded-full text-xs opacity-0 group-hover:opacity-100 transition shadow flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                grid.appendChild(item);
+            });
+
+            if ((proj.media || []).length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-8 italic">ยังไม่มีภาพถ่ายกิจกรรมในโครงการนี้</p>';
+            }
+        }
+
         function triggerPrint(targetId, isLandscape) {
             if (isLandscape) {
                 document.body.classList.add('print-landscape-mode');

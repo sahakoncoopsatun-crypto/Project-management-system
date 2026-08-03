@@ -1881,24 +1881,46 @@ function doPost(e) {
         }
 
         function uploadCertSpecificLogo(input) {
-            const file = input.files[0];
-            if (!file) return;
-            compressImage(file, 400, 400, 0.85, function(base64) {
-                const proj = getActiveProject();
-                proj.certLogoUrl = base64;
-                saveStateToLocalStorage();
-                renderCertSignersConfigUI();
-                showToast('อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว', 'success');
+            // Redirects to new multi-logo system for backward compatibility
+            uploadCertLogos(input);
+        }
+
+        function uploadCertLogos(input) {
+            if (!input.files || input.files.length === 0) return;
+            const proj = getActiveProject();
+            if (!proj.certLogos) proj.certLogos = [];
+            let loaded = 0;
+            const total = input.files.length;
+            Array.from(input.files).forEach(file => {
+                compressImage(file, 500, 500, 0.92, function(base64) {
+                    proj.certLogos.push(base64);
+                    loaded++;
+                    if (loaded === total) {
+                        saveStateToLocalStorage();
+                        renderCertSignersConfigUI();
+                        showToast(`เพิ่มตรา ${total} รายการเรียบร้อยแล้ว`, 'success');
+                    }
+                });
             });
         }
 
+        function removeCertLogoByIndex(idx) {
+            const proj = getActiveProject();
+            if (!proj.certLogos) return;
+            proj.certLogos.splice(idx, 1);
+            saveStateToLocalStorage();
+            renderCertSignersConfigUI();
+            showToast('ลบตราแล้ว', 'info');
+        }
+
         function removeCertSpecificLogo() {
-            showConfirm('คุณต้องการลบตราเกียรติบัตรออกใช่หรือไม่? (ระบบจะสลับไปใช้ตราเวกเตอร์มาตรฐาน สอ.สธสต. แทน)', function() {
+            showConfirm('คุณต้องการลบตราทั้งหมดออกใช่หรือไม่? (จะสลับไปใช้ตราเวกเตอร์มาตรฐาน สอ.สธสต.)', function() {
                 const proj = getActiveProject();
+                proj.certLogos = [];
                 proj.certLogoUrl = '';
                 saveStateToLocalStorage();
                 renderCertSignersConfigUI();
-                showToast('ลบตราเกียรติบัตรแล้ว ระบบสลับใช้ตราเวกเตอร์มาตรฐาน', 'info');
+                showToast('ลบตราทั้งหมดแล้ว', 'info');
             });
         }
 

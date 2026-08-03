@@ -61,61 +61,48 @@
                 position: fixed !important;
                 left: 0 !important;
                 top: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
+                width: 100% !important;
+                height: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background: #ffffff !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
+                overflow: hidden !important;
             }
             .page-break {
-                page-break-before: always;
-                break-before: page;
+                page-break-before: always !important;
+                break-before: page !important;
             }
             .binding-margin {
                 padding-left: 25mm !important;
             }
-
-            /* Dedicated A4 Landscape Print Settings for Certificate */
-            body.print-landscape-mode {
-                background: #ffffff !important;
-            }
-            body.print-landscape-mode @page {
-                size: A4 landscape !important;
-                margin: 0 !important;
-            }
-            body.print-landscape-mode #printAreaContainer {
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 297mm !important;
-                height: 210mm !important;
-                padding: 8mm !important;
-                box-sizing: border-box !important;
+            /* Single landscape certificate page */
+            .cert-print-wrapper {
+                width: 277mm !important;
+                height: 190mm !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                background: #ffffff !important;
-                overflow: hidden !important;
-                margin: auto !important;
+                box-sizing: border-box !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
-            body.print-landscape-mode .cert-canvas-frame {
-                width: 100% !important;
-                height: 100% !important;
-                border: 10px double #1e3a8a !important;
+            .cert-print-wrapper .cert-canvas-frame {
+                width: 277mm !important;
+                height: 190mm !important;
                 box-shadow: none !important;
-                margin: 0 auto !important;
-                padding: 6px !important;
+                margin: 0 !important;
+                padding: 6mm !important;
                 box-sizing: border-box !important;
                 background: #ffffff !important;
+                aspect-ratio: unset !important;
             }
-            body.print-landscape-mode .cert-inner-border {
+            .cert-print-wrapper .cert-inner-border {
                 border: 2px solid #d97706 !important;
                 margin: 0 !important;
                 height: 100% !important;
-                padding: 12px 16px !important;
+                padding: 8mm 12mm !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -126,6 +113,7 @@
             }
         }
 
+        /* Default @page for portrait reports */
         @page {
             size: A4 portrait;
             margin: 15mm 15mm 15mm 20mm;
@@ -931,6 +919,20 @@
 
         <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH SEPARATE EMBLEM & DYNAMIC SIGNERS -->
         <section id="view-cert-config" class="space-y-6 hidden">
+            <!-- Project Context Badge -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl px-5 py-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-amber-500/20 border border-amber-400/50 rounded-xl flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-award text-amber-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest">กำลังตั้งค่าเกียรติบัตรสำหรับโครงการ</p>
+                        <p id="certConfigProjectTitle" class="text-sm font-extrabold text-amber-950 leading-snug line-clamp-1">-</p>
+                    </div>
+                </div>
+                <span id="certConfigStatusBadge" class="text-[10px] font-extrabold px-3 py-1 rounded-full border bg-slate-100 text-slate-600 border-slate-300">-</span>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Cert Config Controls -->
                 <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
@@ -980,9 +982,12 @@
                 <!-- Live Preview & Print -->
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex justify-between items-center bg-white p-4 rounded-2xl border">
-                        <span class="font-extrabold text-xs text-slate-800">พรีวิวเกียรติบัตร (A4 แนวนอน รูปแบบสารบรรณ)</span>
+                        <div>
+                            <span class="font-extrabold text-xs text-slate-800">พรีวิวเกียรติบัตร (A4 แนวนอน)</span>
+                            <p class="text-[11px] text-slate-400 mt-0.5">แสดงเป็นตัวอย่างเทียบหน้ากระดาษ — เอียงกว่า zoom ดูเพื่อตรวจสอบ</p>
+                        </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="openCertPreviewModal('p1')" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <button onclick="openCertPreviewModal(null)" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-1.5 active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-magnifying-glass-plus text-amber-400"></i> ขยายดูตัวอย่างก่อนพิมพ์
                             </button>
                             <button onclick="triggerPrint('certPreviewCard', true)" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
@@ -991,8 +996,12 @@
                         </div>
                     </div>
 
-                    <!-- Certificate Card Frame Official Sarabun Design -->
-                    <div id="certPreviewCard" class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font">
+                    <!-- Certificate Scaled Preview Wrapper -->
+                    <div class="bg-slate-200 rounded-2xl p-4 overflow-hidden" style="height: 420px;">
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <!-- The actual cert card, scaled to fit the preview box -->
+                            <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 277mm;">
+                                <div id="certPreviewCard" class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 277mm; height: 190mm;">
                         <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center">
                             <!-- Top Left Cert Reference No -->
                             <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
@@ -1036,7 +1045,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                            </div>
+                        </div>
+                    </div> <!-- end certPreviewScaleOuter -->
+                </div> <!-- end certPreviewScaleWrapper -->
                 </div>
             </div>
         </section>
@@ -1346,6 +1358,62 @@
                 <div class="flex justify-end gap-2 border-t pt-3">
                     <button type="button" onclick="closeModal('addParticipantModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
                     <button type="submit" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">บันทึกรายชื่อ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT PARTICIPANT -->
+    <div id="editParticipantModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen text-amber-500"></i> แก้ไขข้อมูลผู้เข้าร่วม
+                </h3>
+                <button onclick="closeModal('editParticipantModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="saveEditParticipant(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="editPartId">
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ชื่อ - สกุล <span class="text-red-500">*</span></label>
+                    <input type="text" id="editPartName" required class="w-full border rounded-xl p-2.5 font-semibold">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">เลขที่สมาชิก หรือ เลขบัตรประชาชน</label>
+                    <input type="text" id="editPartCode" class="w-full border rounded-xl p-2.5 font-semibold">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-1">
+                        <label class="font-bold text-slate-700">ตำแหน่ง</label>
+                        <input type="text" id="editPartPos" class="w-full border rounded-xl p-2.5 font-semibold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-bold text-slate-700">หน่วยงานต้นสังกัด</label>
+                        <input type="text" id="editPartOrg" class="w-full border rounded-xl p-2.5 font-semibold">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ประเภทสมาชิก (ระบุหรือเลือก)</label>
+                    <input type="text" id="editPartType" list="dynamicMemberTypeListEdit" class="w-full border rounded-xl p-2.5 font-semibold bg-white cursor-pointer">
+                    <datalist id="dynamicMemberTypeListEdit">
+                        <option value="สมาชิกสามัญ"></option>
+                        <option value="สมาชิกสมทบ"></option>
+                        <option value="บุคคลภายนอก / วิทยากร"></option>
+                    </datalist>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">หมายเหตุ</label>
+                    <input type="text" id="editPartRemark" class="w-full border rounded-xl p-2.5 font-semibold">
+                </div>
+
+                <div class="flex justify-end gap-2 border-t pt-3">
+                    <button type="button" onclick="closeModal('editParticipantModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
+                    <button type="submit" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">บันทึกการแก้ไข</button>
                 </div>
             </form>
         </div>
@@ -2742,6 +2810,9 @@ function doPost(e) {
                     </td>
                     <td class="p-3 text-center">
                         <div class="flex items-center justify-center gap-1">
+                            <button type="button" onclick="openEditParticipantModal('${p.id}')" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="แก้ไขข้อมูล">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                             <button type="button" onclick="openCertPreviewModal('${p.id}')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
                                 <i class="fa-solid fa-eye"></i> พรีวิว
                             </button>
@@ -2782,6 +2853,9 @@ function doPost(e) {
                     </td>
                     <td class="p-3 text-center">
                         <div class="flex items-center justify-center gap-1">
+                            <button type="button" onclick="openEditParticipantModal('${p.id}')" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="แก้ไขข้อมูล">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                             <button type="button" onclick="openCertPreviewModal('${p.id}')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
                                 <i class="fa-solid fa-eye"></i> พรีวิว
                             </button>
@@ -2854,37 +2928,46 @@ function doPost(e) {
             proj.participants.forEach((part, index) => {
                 const pageBreakClass = index < proj.participants.length - 1 ? 'page-break' : '';
                 allCertsHtml += `
-                    <div class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font ${pageBreakClass}" style="width: 100%; height: 100%; min-height: 200mm;">
-                        <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center">
-                            <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
-                                เลขที่อ้างอิง: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
-                            </div>
-                            <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
-                                <div class="flex items-center justify-center gap-3 mx-auto">
-                                    ${certLogoSource}
+                    <div class="cert-print-wrapper ${pageBreakClass}">
+                        <div class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font">
+                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center">
+                                <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
+                                    เลขที่อ้างอิง: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
                                 </div>
-                                <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
-                            </div>
-                            <div class="my-auto py-2 w-full text-center">
-                                <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center">${escapeHtml(part.name)}</h2>
-                            </div>
-                            <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                <p class="text-sm font-extrabold text-blue-900 text-center">${escapeHtml(proj.title)}</p>
-                                <p class="text-center">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
-                                <p class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
-                            </div>
-                            <div class="pt-4 space-y-3 w-full text-center">
-                                <p class="text-xs font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ ${cleanDate}</p>
-                                ${signersHtml}
+                                <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
+                                    <div class="flex items-center justify-center gap-3 mx-auto">
+                                        ${certLogoSource}
+                                    </div>
+                                    <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                    <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                </div>
+                                <div class="my-auto py-2 w-full text-center">
+                                    <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center">${escapeHtml(part.name)}</h2>
+                                </div>
+                                <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                    <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+                                    <p class="text-sm font-extrabold text-blue-900 text-center">${escapeHtml(proj.title)}</p>
+                                    <p class="text-center">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    <p class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                </div>
+                                <div class="pt-4 space-y-3 w-full text-center">
+                                    <p class="text-xs font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ ${cleanDate}</p>
+                                    ${signersHtml}
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
 
-            document.body.classList.add('print-landscape-mode');
+            let styleEl = document.getElementById('dynamicPrintStyle');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'dynamicPrintStyle';
+                document.head.appendChild(styleEl);
+            }
+            styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
+
             const printBox = document.getElementById('printAreaContainer');
             if (!printBox) return;
 
@@ -2895,7 +2978,7 @@ function doPost(e) {
 
             setTimeout(() => {
                 printBox.classList.add('hidden');
-                document.body.classList.remove('print-landscape-mode');
+                styleEl.innerHTML = '';
             }, 1000);
         }
 
@@ -3089,6 +3172,44 @@ function doPost(e) {
             renderParticipantsList();
             renderDashboard();
             showToast('เพิ่มผู้เข้าร่วมเรียบร้อยแล้ว', 'success');
+        }
+
+        function openEditParticipantModal(partId) {
+            const proj = getActiveProject();
+            const part = (proj.participants || []).find(p => p.id === partId);
+            if (!part) return;
+
+            document.getElementById('editPartId').value = part.id;
+            document.getElementById('editPartName').value = part.name || '';
+            document.getElementById('editPartCode').value = part.code || '';
+            document.getElementById('editPartPos').value = part.pos || '';
+            document.getElementById('editPartOrg').value = part.org || '';
+            document.getElementById('editPartType').value = part.type || 'สมาชิกสามัญ';
+            document.getElementById('editPartRemark').value = part.remark || '';
+
+            openModal('editParticipantModal');
+        }
+
+        function saveEditParticipant(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            const partId = document.getElementById('editPartId').value;
+            const part = (proj.participants || []).find(p => p.id === partId);
+            if (!part) return;
+
+            part.name = document.getElementById('editPartName').value;
+            part.code = document.getElementById('editPartCode').value;
+            part.pos = document.getElementById('editPartPos').value;
+            part.org = document.getElementById('editPartOrg').value;
+            part.type = document.getElementById('editPartType').value || 'สมาชิกสามัญ';
+            part.remark = document.getElementById('editPartRemark').value;
+
+            saveStateToLocalStorage();
+            closeModal('editParticipantModal');
+            renderUnStep2Participants();
+            renderParticipantsList();
+            renderDashboard();
+            showToast('แก้ไขข้อมูลผู้เข้าร่วมเรียบร้อยแล้ว', 'success');
         }
 
         function extractExcelRowData(row) {
@@ -3336,24 +3457,36 @@ function doPost(e) {
         function openAdminAuthModal() { openModal('adminAuthModal'); }
 
         function triggerPrint(targetId, isLandscape) {
+            let styleEl = document.getElementById('dynamicPrintStyle');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'dynamicPrintStyle';
+                document.head.appendChild(styleEl);
+            }
+
             if (isLandscape) {
-                document.body.classList.add('print-landscape-mode');
+                styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
             } else {
-                document.body.classList.remove('print-landscape-mode');
+                styleEl.innerHTML = '@page { size: A4 portrait; margin: 15mm 15mm 15mm 20mm; }';
             }
 
             const printBox = document.getElementById('printAreaContainer');
             const targetEl = document.getElementById(targetId);
             if (!printBox || !targetEl) return;
 
-            printBox.innerHTML = targetEl.outerHTML;
+            if (isLandscape && targetId === 'certPreviewCard') {
+                 printBox.innerHTML = `<div class="cert-print-wrapper">${targetEl.outerHTML}</div>`;
+            } else {
+                 printBox.innerHTML = targetEl.outerHTML;
+            }
+            
             printBox.classList.remove('hidden');
 
             window.print();
 
             setTimeout(() => {
                 printBox.classList.add('hidden');
-                document.body.classList.remove('print-landscape-mode');
+                styleEl.innerHTML = '';
             }, 1000);
         }
 
@@ -3370,10 +3503,8 @@ function doPost(e) {
                 expected: '', signer10Name: '', signer10Pos: '', signer11Name: '', signer11Pos: '',
                 signer12Name: '', signer12Pos: '', signer13Name: '', signer13Pos: '',
                 certLogoUrl: '',
-                certSigners: [
-                    { id: 'cs-1', name: '', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
-                    { id: 'cs-2', name: '', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
-                ],
+                certLogos: [],
+                certSigners: [],
                 hasSurvey: true, surveyDemo: { male: 0, female: 0, lgbt: 0, unspecified: 0, memReg: 0, memAssoc: 0, memOther: 0 },
                 surveyCategories: [], participants: [], media: []
             };

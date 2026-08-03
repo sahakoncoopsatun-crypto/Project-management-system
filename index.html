@@ -1257,25 +1257,34 @@
     </div>
 
     <!-- MODAL: DATABASE CONNECTION GUIDE & LIVE SYNC ENGINE -->
-    <div id="databaseModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+    <div id="databaseModal" onclick="if(event.target===this) closeModal('databaseModal')" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-amber-500"></i> การเชื่อมต่อฐานข้อมูล Google Sheets & Apps Script
+                    <i class="fa-solid fa-database text-amber-500 text-lg"></i> การเชื่อมต่อฐานข้อมูล Google Sheets & Apps Script
                 </h3>
-                <button onclick="closeModal('databaseModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('databaseModal')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg cursor-pointer transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <div class="space-y-3 text-xs">
-                <p class="text-slate-600">ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync:</p>
+            <div class="space-y-4 text-xs">
+                <p class="text-slate-600 leading-relaxed">
+                    ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync (ดึงข้อมูลกลับ / บันทึกข้อมูลขึ้น Cloud):
+                </p>
 
-                <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
-                    <p class="font-bold text-blue-950">1. วาง Web App URL ที่ได้จาก Google Apps Script</p>
-                    <input type="url" id="gasEndpointUrlInput" class="w-full border rounded-xl p-2.5 font-mono text-xs bg-white" placeholder="https://script.google.com/macros/s/.../exec">
-                    <div class="flex justify-end gap-2 pt-1">
-                        <button onclick="fetchDataFromDatabase(true)" class="bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95"><i class="fa-solid fa-cloud-arrow-down"></i> ดึงข้อมูลจาก Cloud</button>
-                        <button onclick="testDatabaseConnection()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95">ทดสอบการเชื่อมต่อ</button>
-                        <button onclick="saveGasEndpointUrl()" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95">บันทึก URL & ซิงค์ข้อมูล</button>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <label class="font-extrabold text-blue-950 block">1. วาง Web App URL ที่ได้จาก Google Apps Script</label>
+                    <input type="url" id="gasEndpointUrlInput" class="w-full border rounded-xl p-2.5 font-mono text-xs bg-white focus:ring-2 focus:ring-blue-800" placeholder="https://script.google.com/macros/s/.../exec">
+                    
+                    <div class="flex flex-wrap justify-end gap-2 pt-1">
+                        <button onclick="fetchDataFromDatabase(true)" class="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-cloud-arrow-down text-amber-300"></i> ดึงข้อมูลจาก Cloud
+                        </button>
+                        <button onclick="testDatabaseConnection()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-plug text-amber-300"></i> ทดสอบการเชื่อมต่อ
+                        </button>
+                        <button onclick="saveGasEndpointUrl()" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-floppy-disk text-amber-400"></i> บันทึก URL & ซิงค์ข้อมูล
+                        </button>
                     </div>
                 </div>
 
@@ -1841,8 +1850,14 @@ function doPost(e) {
         }
 
         function fetchDataFromDatabase(showToastMsg = true) {
+            const inputEl = document.getElementById('gasEndpointUrlInput');
+            if (inputEl && inputEl.value.trim()) {
+                gasEndpointUrl = inputEl.value.trim();
+                saveStateToLocalStorage(false);
+            }
+
             if (!gasEndpointUrl) {
-                if (showToastMsg) showToast('กรุณากรอกและบันทึก Web App URL ก่อนดึงข้อมูล', 'error');
+                if (showToastMsg) showToast('กรุณากรอก Web App URL ก่อนกดดึงข้อมูล', 'error');
                 return;
             }
 
@@ -1852,29 +1867,78 @@ function doPost(e) {
             }
 
             fetch(gasEndpointUrl)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
                 .then(resData => {
-                    if (resData && resData.status === 'success' && Array.isArray(resData.data) && resData.data.length > 0) {
-                        projectsState = resData.data;
-                        activeProjectId = projectsState[0].id;
-                        saveStateToLocalStorage(false);
-                        renderDashboard();
-                        renderActiveProjectUI();
-                        updateDbSyncBadgeStatus(true);
-                        if (showToastMsg) showToast(`ดึงข้อมูลจาก Google Sheets สำเร็จ (${projectsState.length} โครงการ)`, 'success');
-                    } else if (resData && Array.isArray(resData.data) && resData.data.length === 0) {
-                        updateDbSyncBadgeStatus(true);
-                        if (showToastMsg) showToast('เชื่อมต่อสำเร็จ แต่ยังไม่มีข้อมูลใน Google Sheets', 'info');
-                        syncToRemoteDatabase();
+                    if (resData && resData.status === 'success' && Array.isArray(resData.data)) {
+                        if (resData.data.length > 0) {
+                            projectsState = resData.data;
+                            activeProjectId = projectsState[0].id;
+                            saveStateToLocalStorage(false);
+                            renderDashboard();
+                            renderActiveProjectUI();
+                            updateDbSyncBadgeStatus(true);
+                            if (showToastMsg) showToast(`ดึงข้อมูลจาก Google Sheets สำเร็จ (${projectsState.length} โครงการ)`, 'success');
+                        } else {
+                            updateDbSyncBadgeStatus(true);
+                            if (showToastMsg) showToast('เชื่อมต่อสำเร็จ แต่ยังไม่มีข้อมูลโครงการใน Google Sheets', 'info');
+                            syncToRemoteDatabase();
+                        }
                     } else {
                         updateDbSyncBadgeStatus(true);
-                        if (showToastMsg) showToast('การดึงข้อมูลเสร็จสิ้น', 'success');
+                        if (showToastMsg) showToast('ดึงข้อมูลเสร็จสิ้น', 'success');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
                     updateDbSyncBadgeStatus(false);
-                    if (showToastMsg) showToast('ไม่สามารถดึงข้อมูลจาก Google Sheets ได้', 'error');
+                    if (showToastMsg) showToast('ไม่สามารถดึงข้อมูลได้ (โปรดตรวจสอบสิทธิ์ "Anyone" ใน Apps Script)', 'error');
+                });
+        }
+
+        function saveGasEndpointUrl() {
+            const inputEl = document.getElementById('gasEndpointUrlInput');
+            const url = inputEl ? inputEl.value.trim() : '';
+            if (!url) {
+                showToast('กรุณากรอก Web App URL ก่อนบันทึก', 'error');
+                return;
+            }
+            gasEndpointUrl = url;
+            saveStateToLocalStorage(false);
+            showToast('บันทึก URL เรียบร้อยแล้ว กำลังซิงค์ข้อมูล...', 'success');
+            fetchDataFromDatabase(true);
+            closeModal('databaseModal');
+        }
+
+        function testDatabaseConnection() {
+            const inputEl = document.getElementById('gasEndpointUrlInput');
+            const url = inputEl ? inputEl.value.trim() : gasEndpointUrl;
+            if (!url) {
+                showToast('กรุณากรอก Web App URL ก่อนทดสอบ', 'error');
+                return;
+            }
+            gasEndpointUrl = url;
+            saveStateToLocalStorage(false);
+
+            showToast('กำลังทดสอบการเชื่อมต่อ...', 'info');
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && (data.status === 'success' || Array.isArray(data.data))) {
+                        updateDbSyncBadgeStatus(true);
+                        showToast('การเชื่อมต่อกับ Google Sheets สำเร็จเรียบร้อย!', 'success');
+                    } else {
+                        showToast('เชื่อมต่อสำเร็จ แต่ตอบกลับรูปแบบไม่ถูกต้อง', 'info');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('เชื่อมต่อไม่สำเร็จ โปรดตรวจสอบสิทธิ์การเข้าถึงเป็น "Anyone"', 'error');
                 });
         }
 

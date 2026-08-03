@@ -972,6 +972,42 @@
                             </label>
                         </div>
 
+                        <!-- Certificate Background Control -->
+                        <div class="bg-blue-50/70 p-4 rounded-2xl border border-blue-200/90 space-y-3">
+                            <div class="flex justify-between items-center border-b border-blue-200/70 pb-2">
+                                <label class="font-extrabold text-xs text-blue-950 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-image text-blue-600 text-sm"></i> ภาพพื้นหลังเกียรติบัตร
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center gap-4 text-[11px] font-semibold text-slate-700">
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="bgStyleMode" value="cover" onchange="updateCertBgStyle(this.value)" class="w-3.5 h-3.5 text-blue-600">
+                                    เต็มแผ่น (Cover)
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="bgStyleMode" value="watermark" onchange="updateCertBgStyle(this.value)" class="w-3.5 h-3.5 text-blue-600">
+                                    ลายน้ำ (Watermark)
+                                </label>
+                            </div>
+
+                            <div id="certBgPreviewBox" class="hidden flex items-center justify-between bg-white p-2.5 rounded-xl border border-blue-200 shadow-sm mt-2">
+                                <div class="flex items-center gap-3">
+                                    <img id="certBgImgPreview" src="" class="w-12 h-12 object-cover rounded shadow-sm border">
+                                    <span class="text-xs font-semibold text-slate-700">มีภาพพื้นหลัง</span>
+                                </div>
+                                <button type="button" onclick="removeCertBg()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg cursor-pointer active:scale-95">
+                                    <i class="fa-solid fa-trash-can"></i> ลบ
+                                </button>
+                            </div>
+
+                            <label class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 py-2.5 px-4 rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95 mt-2">
+                                <i class="fa-solid fa-upload text-blue-600 text-sm"></i>
+                                <span>อัปโหลดภาพพื้นหลัง</span>
+                                <input type="file" accept="image/*" onchange="uploadCertBg(this)" class="hidden">
+                            </label>
+                        </div>
+
                         <!-- Dynamic Signers Configuration List -->
                         <div id="certSignersConfigList" class="space-y-4 pt-2 border-t border-slate-200">
                             <!-- Dynamic Render JS -->
@@ -981,6 +1017,17 @@
 
                 <!-- Live Preview & Print -->
                 <div class="lg:col-span-2 space-y-4">
+                    <!-- Alert for Uncompleted Project -->
+                    <div id="certConfigAlertPanel" class="hidden bg-amber-50 border border-amber-200 rounded-3xl p-10 flex flex-col items-center justify-center text-center space-y-4 h-full min-h-[400px]">
+                        <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 text-3xl mb-2">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-amber-900">ยังไม่สามารถดูตัวอย่างเกียรติบัตรได้</h3>
+                        <p class="text-sm text-amber-700 max-w-md">หน้าต่างพรีวิวและการพิมพ์เกียรติบัตร จะไม่แสดงจนกว่าโครงการจะถูก <strong>"อนุมัติเสร็จสิ้นโครงการ"</strong> เรียบร้อยแล้วเท่านั้น</p>
+                    </div>
+
+                    <!-- Preview Content -->
+                    <div id="certConfigPreviewPanel" class="space-y-4">
                     <div class="flex justify-between items-center bg-white p-4 rounded-2xl border">
                         <div>
                             <span class="font-extrabold text-xs text-slate-800">พรีวิวเกียรติบัตร (A4 แนวนอน)</span>
@@ -1011,7 +1058,7 @@
                             <!-- Top Org Logo & Header -->
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
                                 <div id="previewCertLogoBox" class="flex items-center justify-center gap-3 mx-auto">
-                                    <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg id="previewCertLogoSvg" class="w-24 h-24 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                                         <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                                         <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
@@ -1019,26 +1066,26 @@
                                     </svg>
                                     <!-- Custom logos appended here by JS -->
                                 </div>
-                                <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <h3 class="font-black text-2xl text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p class="text-base font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
                             <!-- Name Placeholder -->
-                            <div class="my-auto py-2 w-full text-center">
-                                <h2 id="previewCertName" class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center">นายสมชาย รักดี</h2>
+                            <div class="my-auto py-4 w-full text-center">
+                                <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-12 pb-2 text-center">นายสมชาย รักดี</h2>
                             </div>
 
                             <!-- Official Wording & Line Breaking -->
-                            <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                            <div class="space-y-2 text-base text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                 <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                <p class="text-sm font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                <p class="text-center">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
-                                <p class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
+                                <p class="text-center mt-1">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                <p class="font-bold text-amber-900 italic pt-3 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
-                            <div class="pt-4 space-y-3 w-full text-center">
-                                <p id="previewCertDate" class="text-xs font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+                            <div class="pt-6 space-y-4 w-full text-center">
+                                <p id="previewCertDate" class="text-sm font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
 
                                 <div id="previewCertSignersContainer" class="w-full">
                                     <!-- Dynamic Rendered Signatures Grid -->
@@ -1048,7 +1095,8 @@
                             </div>
                         </div>
                     </div> <!-- end certPreviewScaleOuter -->
-                </div> <!-- end certPreviewScaleWrapper -->
+                        </div> <!-- end certPreviewScaleWrapper -->
+                    </div> <!-- end certConfigPreviewPanel -->
                 </div>
             </div>
         </section>
@@ -1061,12 +1109,12 @@
                         ระบบสืบค้นประวัติกิจกรรม & เกียรติบัตรออนไลน์สำหรับสมาชิก
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
-                        พิมพ์ชื่อ-นามสกุล หรือ เลขที่สมาชิก/บัตรประชาชน เพื่อค้นหาประวัติการเข้าร่วมโครงการ และสั่งพิมพ์เกียรติบัตร PDF ย้อนหลัง
+                        พิมพ์เลขที่สมาชิกสหกรณ์ 5 หลัก หรือเลขบัตรประชาชน 13 หลัก เพื่อค้นหาประวัติการเข้าร่วมโครงการ และสั่งพิมพ์เกียรติบัตร PDF ย้อนหลัง
                     </p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-xl mx-auto pt-2">
-                    <input type="text" id="memberSearchQuery" onkeyup="if(event.key==='Enter') searchMemberCertificates()" placeholder="พิมพ์ชื่อ-นามสกุล หรือ เลขสมาชิก..." class="w-full bg-white text-slate-900 rounded-full px-5 py-3 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-slate-400 font-medium">
+                    <input type="text" id="memberSearchQuery" onkeyup="if(event.key==='Enter') searchMemberCertificates()" placeholder="พิมพ์เลขที่สมาชิก หรือ เลขบัตรประชาชน..." class="w-full bg-white text-slate-900 rounded-full px-5 py-3 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-slate-400 font-medium">
                     <button onclick="searchMemberCertificates()" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold px-8 py-3 rounded-full text-xs sm:text-sm shadow-lg transition duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95">
                         <i class="fa-solid fa-magnifying-glass"></i> ค้นหา
                     </button>
@@ -1610,7 +1658,7 @@ function doPost(e) {
     <script>
         let currentFiscalYear = '2569';
         let activeProjectId = 'proj-2569-001';
-        let isAdminLoggedIn = true; // Admin enabled by default for Preview
+        let isAdminLoggedIn = false; // Public Member Portal default
         let isPublicMemberMode = false;
         let systemOrgLogoUrl = '';
         let gasEndpointUrl = '';
@@ -2462,6 +2510,61 @@ function doPost(e) {
                 container.appendChild(box);
             });
 
+            // Handle Background Config UI
+            const bgBox = document.getElementById('certBgPreviewBox');
+            const bgImg = document.getElementById('certBgImgPreview');
+            if (bgBox && bgImg) {
+                if (proj.certBgUrl) {
+                    bgImg.src = proj.certBgUrl;
+                    bgBox.classList.remove('hidden');
+                } else {
+                    bgBox.classList.add('hidden');
+                }
+            }
+            const bgStyleRadios = document.getElementsByName('bgStyleMode');
+            bgStyleRadios.forEach(radio => {
+                radio.checked = (radio.value === (proj.certBgStyle || 'cover'));
+            });
+
+            // Toggle Preview Panel based on project status
+            const previewPanel = document.getElementById('certConfigPreviewPanel');
+            const alertPanel = document.getElementById('certConfigAlertPanel');
+            if (proj.status === 'completed') {
+                if (previewPanel) previewPanel.classList.remove('hidden');
+                if (alertPanel) alertPanel.classList.add('hidden');
+            } else {
+                if (previewPanel) previewPanel.classList.add('hidden');
+                if (alertPanel) alertPanel.classList.remove('hidden');
+            }
+
+            updateCertPreview();
+        }
+
+        function uploadCertBg(input) {
+            const file = input.files[0];
+            if (!file) return;
+            compressImage(file, 1920, 1080, 0.8, function(base64) {
+                const proj = getActiveProject();
+                proj.certBgUrl = base64;
+                if (!proj.certBgStyle) proj.certBgStyle = 'cover';
+                saveStateToLocalStorage();
+                renderCertSignersConfigUI();
+                showToast('อัปโหลดภาพพื้นหลังเรียบร้อยแล้ว', 'success');
+            });
+        }
+
+        function removeCertBg() {
+            const proj = getActiveProject();
+            proj.certBgUrl = '';
+            saveStateToLocalStorage();
+            renderCertSignersConfigUI();
+            showToast('ลบภาพพื้นหลังเรียบร้อยแล้ว', 'info');
+        }
+
+        function updateCertBgStyle(style) {
+            const proj = getActiveProject();
+            proj.certBgStyle = style;
+            saveStateToLocalStorage();
             updateCertPreview();
         }
 
@@ -2539,15 +2642,15 @@ function doPost(e) {
 
             let signersHtml = signers.map(s => `
                 <div class="text-center space-y-1 flex flex-col items-center justify-center">
-                    <div class="h-12 flex items-center justify-center">
-                        ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-12 object-contain" alt="Signature">` : ''}
+                    <div class="h-16 flex items-center justify-center">
+                        ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
-                    <p class="font-bold text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
-                    <p class="text-[11px] text-slate-600 font-medium text-center">${escapeHtml(s.pos || 'ตำแหน่ง')}</p>
+                    <p class="font-bold text-base text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
+                    <p class="text-sm text-slate-600 font-medium text-center">${escapeHtml(s.pos || 'ตำแหน่ง')}</p>
                 </div>
             `).join('');
 
-            return `<div class="grid ${gridColsClass} gap-6 mx-auto text-xs pt-2">${signersHtml}</div>`;
+            return `<div class="grid ${gridColsClass} gap-6 mx-auto text-base pt-4">${signersHtml}</div>`;
         }
 
         function updateCertPreview() {
@@ -2591,6 +2694,27 @@ function doPost(e) {
             const container = document.getElementById('previewCertSignersContainer');
             if (container) {
                 container.innerHTML = renderCertSignersPreviewHtml(proj.certSigners);
+            }
+
+            // Apply Background Image to Preview Card
+            const cardEl = document.getElementById('certPreviewCard');
+            if (cardEl) {
+                const innerBorder = cardEl.querySelector('.cert-inner-border');
+                if (innerBorder) {
+                    if (proj.certBgUrl) {
+                        innerBorder.style.backgroundImage = `url('${proj.certBgUrl}')`;
+                        innerBorder.style.backgroundRepeat = 'no-repeat';
+                        if (proj.certBgStyle === 'watermark') {
+                            innerBorder.style.backgroundSize = '50%';
+                            innerBorder.style.backgroundPosition = 'center center';
+                        } else {
+                            innerBorder.style.backgroundSize = 'cover';
+                            innerBorder.style.backgroundPosition = 'center center';
+                        }
+                    } else {
+                        innerBorder.style.backgroundImage = 'none';
+                    }
+                }
             }
         }
 
@@ -2801,7 +2925,10 @@ function doPost(e) {
                     <td class="p-3 text-center font-bold">${idx + 1}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
                     <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
-                    <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
+                    <td class="p-3 font-mono">
+                        ${escapeHtml(p.code || '-')}
+                        ${(p.code && !formatAndValidateParticipantCode(p.code).valid) ? '<span class="text-red-500 ml-1" title="รหัสไม่ถูกต้อง (ต้องเป็น 5 หรือ 13 หลัก)"><i class="fa-solid fa-triangle-exclamation"></i></span>' : ''}
+                    </td>
                     <td class="p-3">${escapeHtml(p.pos || '-')}${p.org ? ` (${escapeHtml(p.org)})` : ''}</td>
                     <td class="p-3 text-center">
                         ${isCompleted ? 
@@ -2844,7 +2971,10 @@ function doPost(e) {
                     <td class="p-3 text-center font-bold">${idx + 1}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
                     <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
-                    <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
+                    <td class="p-3 font-mono">
+                        ${escapeHtml(p.code || '-')}
+                        ${(p.code && !formatAndValidateParticipantCode(p.code).valid) ? '<span class="text-red-500 ml-1" title="รหัสไม่ถูกต้อง (ต้องเป็น 5 หรือ 13 หลัก)"><i class="fa-solid fa-triangle-exclamation"></i></span>' : ''}
+                    </td>
                     <td class="p-3">${escapeHtml(p.pos || '-')}${p.org ? ` (${escapeHtml(p.org)})` : ''}</td>
                     <td class="p-3 text-center">
                         ${isCompleted ? 
@@ -3148,22 +3278,41 @@ function doPost(e) {
             showToast('ลบรายชื่อผู้เข้าร่วมแล้ว', 'info');
         }
 
+        function formatAndValidateParticipantCode(code) {
+            if (!code) return { valid: true, code: '' };
+            let c = code.trim();
+            if (/^\d+$/.test(c)) {
+                if (c.length > 0 && c.length <= 5) {
+                    c = c.padStart(5, '0');
+                    return { valid: true, code: c };
+                } else if (c.length === 13) {
+                    return { valid: true, code: c };
+                }
+            }
+            return { valid: false, code: c };
+        }
+
         function saveSingleParticipant(e) {
             e.preventDefault();
             const proj = getActiveProject();
             if (!proj.participants) proj.participants = [];
 
             const name = document.getElementById('partInputName').value;
-            const code = document.getElementById('partInputCode').value;
+            let codeInput = document.getElementById('partInputCode').value;
             const pos = document.getElementById('partInputPos').value;
             const org = document.getElementById('partInputOrg').value;
             const type = document.getElementById('partInputType').value || 'สมาชิกสามัญ';
             const remark = document.getElementById('partInputRemark').value;
 
+            const codeValidation = formatAndValidateParticipantCode(codeInput);
+            if (!codeValidation.valid && codeValidation.code) {
+                showToast('⚠️ รหัสไม่ถูกต้อง (ต้องเป็นเลขสมาชิก 5 หลัก หรือเลขบัตร ปชช. 13 หลัก)', 'warning');
+            }
+
             proj.participants.push({
                 id: 'part-' + Date.now(),
                 certNo: generateNextCertNo(proj.fiscalYear),
-                name, code, pos, org, type, remark, checked: true, selected: false
+                name, code: codeValidation.code, pos, org, type, remark, checked: true, selected: false
             });
 
             reindexParticipantCertNos();
@@ -3197,8 +3346,15 @@ function doPost(e) {
             const part = (proj.participants || []).find(p => p.id === partId);
             if (!part) return;
 
-            part.name = document.getElementById('editPartName').value;
-            part.code = document.getElementById('editPartCode').value;
+            const nameInput = document.getElementById('editPartName').value;
+            const codeInput = document.getElementById('editPartCode').value;
+            const codeValidation = formatAndValidateParticipantCode(codeInput);
+            if (!codeValidation.valid && codeValidation.code) {
+                showToast('⚠️ รหัสไม่ถูกต้อง (ต้องเป็นเลขสมาชิก 5 หลัก หรือเลขบัตร ปชช. 13 หลัก)', 'warning');
+            }
+
+            part.name = nameInput;
+            part.code = codeValidation.code;
             part.pos = document.getElementById('editPartPos').value;
             part.org = document.getElementById('editPartOrg').value;
             part.type = document.getElementById('editPartType').value || 'สมาชิกสามัญ';
@@ -3244,6 +3400,11 @@ function doPost(e) {
                 if (keys.length > 1 && !code) code = String(row[keys[1]] || '').trim();
                 if (keys.length > 2 && !pos) pos = String(row[keys[2]] || '').trim();
                 if (keys.length > 3 && !org) org = String(row[keys[3]] || '').trim();
+            }
+
+            if (code) {
+                const codeValidation = formatAndValidateParticipantCode(code);
+                code = codeValidation.code;
             }
 
             return { name, code, pos, org, type, remark };
@@ -3383,14 +3544,14 @@ function doPost(e) {
             if (!box) return;
 
             if (!query) {
-                showToast('กรุณากรอกชื่อ-นามสกุล หรือเลขสมาชิกเพื่อค้นหา', 'error');
+                showToast('กรุณากรอกเลขที่สมาชิก หรือเลขบัตรประชาชนเพื่อค้นหา', 'error');
                 return;
             }
 
             let results = [];
             projectsState.forEach(proj => {
                 (proj.participants || []).forEach(p => {
-                    if (p.name.toLowerCase().includes(query) || (p.code && p.code.toLowerCase().includes(query))) {
+                    if (p.code && p.code.toLowerCase().includes(query)) {
                         results.push({ part: p, proj });
                     }
                 });

@@ -614,7 +614,7 @@
             <!-- STREAMING_CHUNK:Building Survey Matrix and Results View... -->
             <!-- UNIFIED STEP 3: EXECUTION SUMMARY & SATISFACTION SURVEY MODULE -->
             <div id="un-step-panel-3" class="un-step-panel space-y-6 hidden">
-                <form onsubmit="saveExecutionSummary(event)" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+                <form onsubmit="saveExecutionResult(event)" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
                     <div class="flex justify-between items-center border-b pb-4">
                         <h3 class="font-extrabold text-base text-blue-950 flex items-center gap-2">
                             <i class="fa-solid fa-square-poll-vertical text-amber-500"></i> บันทึกผลการดำเนินงาน งบประมาณ และสรุปการประเมิน
@@ -1120,6 +1120,164 @@
 
     <!-- CUSTOM TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 no-print"></div>
+
+    <!-- MODAL: ADMIN AUTHENTICATION LOGIN -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-8 space-y-5 shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-blue-950 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                    <i class="fa-solid fa-user-shield text-amber-400 text-2xl"></i>
+                </div>
+                <h3 class="text-base font-black text-blue-950">เข้าสู่ระบบผู้ดูแลระบบ</h3>
+                <p class="text-[11px] text-slate-500">สำหรับเจ้าหน้าที่ สอ.สธสต. เท่านั้น</p>
+            </div>
+            <form onsubmit="verifyAdminAuth(event)" class="space-y-3 text-xs">
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">รหัสผู้ใช้งาน</label>
+                    <input type="text" id="adminUserInput" required autocomplete="username"
+                        class="w-full border rounded-xl p-2.5 font-semibold focus:ring-2 focus:ring-blue-800 focus:outline-none"
+                        placeholder="กรอกรหัสผู้ใช้งาน">
+                </div>
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">รหัสผ่าน</label>
+                    <input type="password" id="adminPassInput" required autocomplete="current-password"
+                        class="w-full border rounded-xl p-2.5 font-semibold focus:ring-2 focus:ring-blue-800 focus:outline-none"
+                        placeholder="กรอกรหัสผ่าน">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('adminAuthModal')"
+                        class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-semibold cursor-pointer transition">ยกเลิก</button>
+                    <button type="submit"
+                        class="flex-1 bg-blue-900 hover:bg-blue-950 text-white px-4 py-2.5 rounded-xl font-bold shadow cursor-pointer active:scale-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket text-amber-400"></i> เข้าสู่ระบบ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: NEW PROJECT CREATION -->
+    <div id="newProjectModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-plus text-amber-500"></i> สร้างโครงการใหม่
+                </h3>
+                <button onclick="closeModal('newProjectModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="createNewProject(event)" class="space-y-4 text-xs">
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ชื่อโครงการ / กิจกรรม <span class="text-red-500">*</span></label>
+                    <input type="text" id="newProjTitle" required
+                        class="w-full border rounded-xl p-2.5 font-semibold text-slate-800 focus:ring-2 focus:ring-blue-800 focus:outline-none"
+                        placeholder="เช่น โครงการอบรมสัมมนาพัฒนาศักยภาพสมาชิก ปี 2569">
+                </div>
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ปีงบประมาณ <span class="text-red-500">*</span></label>
+                    <select id="newProjFiscal" required class="w-full border rounded-xl p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-blue-800 focus:outline-none bg-white cursor-pointer">
+                        <option value="2569">2569 (1 ต.ค. 68 - 30 ก.ย. 69)</option>
+                        <option value="2568">2568 (1 ต.ค. 67 - 30 ก.ย. 68)</option>
+                        <option value="2570">2570 (1 ต.ค. 69 - 30 ก.ย. 70)</option>
+                    </select>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 text-[11px] text-blue-800 font-medium flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info text-blue-500 mt-0.5 shrink-0"></i>
+                    <span>โครงการใหม่จะมีสถานะ <strong>"อยู่ระหว่างดำเนินการ"</strong> และสามารถกรอกรายละเอียดต่อได้ในขั้นตอนที่ 1 (แบบเสนออนุมัติโครงการ)</span>
+                </div>
+                <div class="flex gap-2 justify-end border-t pt-3">
+                    <button type="button" onclick="closeModal('newProjectModal')"
+                        class="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
+                    <button type="submit"
+                        class="bg-blue-900 hover:bg-blue-950 text-white px-6 py-2.5 rounded-xl font-bold shadow cursor-pointer active:scale-95 flex items-center gap-2 transition">
+                        <i class="fa-solid fa-plus text-amber-400"></i> สร้างโครงการ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PROPOSAL PRINT (A4 PORTRAIT) -->
+    <div id="proposalPrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-4xl w-full flex flex-col max-h-[92vh] shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center border-b px-6 py-4 bg-white shrink-0 sticky top-0 z-20">
+                <h3 class="text-base font-bold text-purple-950 flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature text-purple-600"></i> ตัวอย่างแบบเสนอขออนุมัติโครงการ (A4 Portrait)
+                </h3>
+                <button onclick="closeModal('proposalPrintModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <div id="proposalPrintArea" class="bg-white border p-8 sm:p-12 rounded-2xl shadow-inner text-xs binding-margin print-area space-y-6 official-font">
+                    <!-- Dynamic Proposal Content JS -->
+                </div>
+            </div>
+            <div class="flex justify-between border-t px-6 py-3.5 bg-slate-50 shrink-0">
+                <button onclick="closeModal('proposalPrintModal')"
+                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">ปิด</button>
+                <button onclick="triggerPrint('proposalPrintArea', false)"
+                    class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-print"></i> พิมพ์แบบเสนออนุมัติโครงการ (A4)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD SURVEY QUESTION -->
+    <div id="addQuestionModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-blue-600"></i> เพิ่มคำถามแบบสอบถาม
+                </h3>
+                <button onclick="closeModal('addQuestionModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="saveNewSurveyQuestion(event)" class="space-y-3 text-xs">
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">หมวดคำถาม <span class="text-red-500">*</span></label>
+                    <input type="text" id="newQuestionCategory" required list="existingCategoryList"
+                        class="w-full border rounded-xl p-2.5 font-semibold focus:ring-2 focus:ring-blue-800 focus:outline-none"
+                        placeholder="เช่น หมวดที่ 1: ด้านเนื้อหา">
+                    <datalist id="existingCategoryList"></datalist>
+                </div>
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ข้อคำถาม <span class="text-red-500">*</span></label>
+                    <textarea id="newQuestionText" required rows="3"
+                        class="w-full border rounded-xl p-2.5 font-medium leading-relaxed focus:ring-2 focus:ring-blue-800 focus:outline-none"
+                        placeholder="พิมพ์ข้อคำถาม เช่น เนื้อหามีความชัดเจนและนำไปปฏิบัติได้จริง"></textarea>
+                </div>
+                <div class="flex gap-2 justify-end border-t pt-3">
+                    <button type="button" onclick="closeModal('addQuestionModal')"
+                        class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
+                    <button type="submit"
+                        class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">บันทึกคำถาม</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: BLANK SURVEY PRINT -->
+    <div id="blankSurveyModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-4xl w-full flex flex-col max-h-[92vh] shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center border-b px-6 py-4 bg-white shrink-0">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-blue-600"></i> แบบสอบถามความพึงพอใจ (เปล่า / ยังไม่กรอกคะแนน)
+                </h3>
+                <button onclick="closeModal('blankSurveyModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <div id="blankSurveyPrintArea" class="bg-white border p-8 sm:p-12 rounded-2xl shadow-inner text-xs binding-margin print-area space-y-6 official-font">
+                    <!-- Dynamic Blank Survey Content -->
+                </div>
+            </div>
+            <div class="flex justify-between border-t px-6 py-3.5 bg-slate-50 shrink-0">
+                <button onclick="closeModal('blankSurveyModal')"
+                    class="bg-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">ปิด</button>
+                <button onclick="triggerPrint('blankSurveyPrintArea', false)"
+                    class="bg-blue-900 hover:bg-blue-950 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-print"></i> พิมพ์แบบสอบถามเปล่า (A4)
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- CUSTOM CONFIRMATION DIALOG MODAL -->
     <div id="customConfirmModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
@@ -1690,7 +1848,6 @@ function doPost(e) {
         } else {
             initApp();
         }
-        window.onload = initApp;
 
         function checkUrlParameters() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -3129,7 +3286,7 @@ function doPost(e) {
         }
 
         function openAddQuestionModal() { openModal('addQuestionModal'); }
-        function openBlankSurveyModal() { openModal('blankSurveyModal'); }
+        function openBlankSurveyModal() { openBlankSurveyPrintModal(); }
         function openExcelImportModal() { openModal('excelImportModal'); }
         function openAddParticipantModal() { openModal('addParticipantModal'); }
         function openNewProjectModal() { openModal('newProjectModal'); }
@@ -3542,9 +3699,306 @@ function doPost(e) {
                 showToast('ลิงก์สมาชิก: ' + link, 'info');
             });
         }
+
+        // ============================================================
+        // MISSING FUNCTIONS: SURVEY MATRIX (Step 3) + RENDER PANEL
+        // ============================================================
+
+        function renderSurveyQuestionsMatrix() {
+            const proj = getActiveProject();
+            if (!proj) return;
+
+            const container = document.getElementById('surveyQuestionsCategoryList');
+            if (!container) return;
+
+            // Update demographic inputs if they exist
+            const demo = proj.surveyDemo || {};
+            const demoMap = { male:'demoMale', female:'demoFemale', lgbt:'demoLgbt', unspecified:'demoUnspecified', memReg:'demoMemReg', memAssoc:'demoMemAssoc', memOther:'demoMemOther' };
+            Object.keys(demoMap).forEach(k => {
+                const el = document.getElementById(demoMap[k]);
+                if (el) el.value = demo[k] || 0;
+            });
+
+            // Update total badge
+            const total = (demo.male||0)+(demo.female||0)+(demo.lgbt||0)+(demo.unspecified||0);
+            const badge = document.getElementById('surveyTotalRespondentsBadge');
+            if (badge) badge.innerText = `ผู้ตอบแบบประเมิน: ${total} คน`;
+
+            // Render categories and questions
+            container.innerHTML = '';
+            const cats = proj.surveyCategories || [];
+            if (cats.length === 0) {
+                container.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">ยังไม่มีคำถาม — กดปุ่ม "เพิ่มคำถาม" เพื่อเริ่มต้น</p>';
+                return;
+            }
+
+            cats.forEach((cat, catIdx) => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'space-y-2 pt-3 border-t first:border-t-0 first:pt-0';
+                catDiv.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-extrabold text-xs text-blue-950">${escapeHtml(cat.name)}</h4>
+                        <button type="button" onclick="removeSurveyCategory(${catIdx})"
+                            class="text-red-500 hover:text-red-700 text-[11px] font-bold cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> ลบหมวด
+                        </button>
+                    </div>
+                `;
+                const questions = cat.questions || [];
+                if (questions.length === 0) {
+                    catDiv.innerHTML += '<p class="text-[11px] text-slate-400 italic pl-2">ยังไม่มีคำถามในหมวดนี้</p>';
+                }
+                questions.forEach((q, qIdx) => {
+                    const result = calculateSatisfaction(q.n5, q.n4, q.n3, q.n2, q.n1);
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2';
+                    qDiv.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <span class="font-semibold text-[11px] text-slate-800 flex-1 pr-2">${qIdx+1}. ${escapeHtml(q.title)}</span>
+                            <button type="button" onclick="removeSurveyQuestion(${catIdx}, ${qIdx})"
+                                class="text-red-400 hover:text-red-600 text-[10px] cursor-pointer shrink-0"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="grid grid-cols-5 gap-1 text-[10px] text-center">
+                            ${[5,4,3,2,1].map(n => `
+                                <div class="space-y-1">
+                                    <label class="font-bold text-slate-600">${n} (${['มากที่สุด','มาก','ปานกลาง','น้อย','น้อยที่สุด'][5-n]})</label>
+                                    <input type="number" min="0" value="${q['n'+n]||0}"
+                                        oninput="updateSurveyScore(${catIdx},${qIdx},'n${n}',this.value)"
+                                        class="w-full border rounded-lg p-1 text-center font-mono font-bold focus:ring-1 focus:ring-blue-800 focus:outline-none">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex gap-3 text-[10px] font-semibold text-slate-600 pt-1 border-t flex-wrap">
+                            <span>ผู้ตอบ: <strong class="text-blue-900">${result.total} คน</strong></span>
+                            <span>ค่าเฉลี่ย: <strong class="text-blue-900">${result.mean}</strong></span>
+                            <span>คิดเป็น: <strong class="text-emerald-700">${result.percentage}%</strong></span>
+                            <span class="text-amber-800 font-bold">→ ${result.interpretation}</span>
+                        </div>
+                    `;
+                    catDiv.appendChild(qDiv);
+                });
+                container.appendChild(catDiv);
+            });
+        }
+
+        function renderUnStep3MediaAndBudget() {
+            const proj = getActiveProject();
+            if (!proj) return;
+
+            // Render survey questions matrix
+            renderSurveyQuestionsMatrix();
+
+            // Update actual expense fields
+            const actualFields = document.querySelectorAll('[data-actual-idx]');
+            actualFields.forEach(el => {
+                const idx = parseInt(el.getAttribute('data-actual-idx'));
+                if (proj.budgetItems && proj.budgetItems[idx]) {
+                    el.value = proj.budgetItems[idx].actualAmount || proj.budgetItems[idx].amount || 0;
+                }
+            });
+
+            // Render actual budget table (uses executionBudgetTableBody from Step 3 HTML)
+            const actualTbody = document.getElementById('executionBudgetTableBody');
+            if (actualTbody && proj.budgetItems) {
+                actualTbody.innerHTML = '';
+                let totalApproved = 0, totalActual = 0;
+                proj.budgetItems.forEach((b, idx) => {
+                    const app = parseFloat(b.amount) || 0;
+                    const act = parseFloat(b.actualAmount || b.amount) || 0;
+                    totalApproved += app;
+                    totalActual += act;
+                    const diff = app - act;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-2 border text-center font-bold">${idx+1}</td>
+                        <td class="p-2 border font-semibold">${escapeHtml(b.title)}</td>
+                        <td class="p-2 border text-right font-mono">${app.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
+                        <td class="p-2 border text-right">
+                            <input type="number" min="0" value="${act}" data-actual-idx="${idx}"
+                                oninput="updateActualBudget(${idx}, this.value)"
+                                class="w-full border rounded-lg p-1 text-right font-mono font-bold focus:ring-1 focus:ring-blue-800 focus:outline-none">
+                        </td>
+                        <td class="p-2 border text-right font-mono ${diff<0?'text-red-600':'text-emerald-700'}">${diff.toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
+                    `;
+                    actualTbody.appendChild(tr);
+                });
+                const elApp = document.getElementById('execTotalApproved');
+                const elAct = document.getElementById('execTotalActual');
+                const elDiff = document.getElementById('execTotalDiff');
+                if (elApp) elApp.innerText = totalApproved.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+                if (elAct) elAct.innerText = totalActual.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+                if (elDiff) elDiff.innerText = (totalApproved - totalActual).toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            }
+
+            // Problems & Suggestions
+            const probEl = document.getElementById('execProblems');
+            const sugEl = document.getElementById('execSuggestions');
+            if (probEl) probEl.value = proj.problems || '';
+            if (sugEl) sugEl.value = proj.suggestions || '';
+        }
+
+        function updateActualBudget(idx, val) {
+            const proj = getActiveProject();
+            if (proj.budgetItems && proj.budgetItems[idx]) {
+                proj.budgetItems[idx].actualAmount = parseFloat(val) || 0;
+                saveStateToLocalStorage();
+            }
+        }
+
+        function updateSurveyScore(catIdx, qIdx, field, val) {
+            const proj = getActiveProject();
+            if (proj.surveyCategories && proj.surveyCategories[catIdx] &&
+                proj.surveyCategories[catIdx].questions && proj.surveyCategories[catIdx].questions[qIdx]) {
+                proj.surveyCategories[catIdx].questions[qIdx][field] = parseInt(val) || 0;
+                saveStateToLocalStorage();
+                renderSurveyQuestionsMatrix();
+            }
+        }
+
+        function removeSurveyCategory(catIdx) {
+            const proj = getActiveProject();
+            showConfirm(`ต้องการลบหมวดคำถามที่ ${catIdx+1} พร้อมคำถามทั้งหมดใช่หรือไม่?`, function() {
+                proj.surveyCategories.splice(catIdx, 1);
+                saveStateToLocalStorage();
+                renderSurveyQuestionsMatrix();
+                showToast('ลบหมวดคำถามแล้ว', 'info');
+            });
+        }
+
+        function removeSurveyQuestion(catIdx, qIdx) {
+            const proj = getActiveProject();
+            if (proj.surveyCategories && proj.surveyCategories[catIdx]) {
+                proj.surveyCategories[catIdx].questions.splice(qIdx, 1);
+                saveStateToLocalStorage();
+                renderSurveyQuestionsMatrix();
+                showToast('ลบคำถามแล้ว', 'info');
+            }
+        }
+
+        function saveNewSurveyQuestion(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            if (!proj.surveyCategories) proj.surveyCategories = [];
+
+            const catName = (document.getElementById('newQuestionCategory').value || '').trim();
+            const qText = (document.getElementById('newQuestionText').value || '').trim();
+
+            if (!catName || !qText) {
+                showToast('กรุณากรอกหมวดคำถามและข้อคำถามให้ครบ', 'error');
+                return;
+            }
+
+            let cat = proj.surveyCategories.find(c => c.name === catName);
+            if (!cat) {
+                cat = { id: 'cat-' + Date.now(), name: catName, questions: [] };
+                proj.surveyCategories.push(cat);
+            }
+            cat.questions.push({ id: 'q-' + Date.now(), title: qText, n5: 0, n4: 0, n3: 0, n2: 0, n1: 0 });
+
+            saveStateToLocalStorage();
+            closeModal('addQuestionModal');
+            document.getElementById('newQuestionCategory').value = '';
+            document.getElementById('newQuestionText').value = '';
+            renderSurveyQuestionsMatrix();
+            showToast('เพิ่มคำถามเรียบร้อยแล้ว', 'success');
+        }
+
+        function saveExecutionResult(e) {
+            e.preventDefault();
+            const proj = getActiveProject();
+            proj.problems = (document.getElementById('execProblems') || {}).value || '';
+            proj.suggestions = (document.getElementById('execSuggestions') || {}).value || '';
+            saveStateToLocalStorage();
+            showToast('บันทึกผลการดำเนินงานและสถิติประเมินเรียบร้อยแล้ว', 'success');
+        }
+
+        function openBlankSurveyPrintModal() {
+            const proj = getActiveProject();
+            const area = document.getElementById('blankSurveyPrintArea');
+            if (!area || !proj) return;
+
+            const cats = proj.surveyCategories || [];
+            let questionsHtml = '';
+            let globalQ = 1;
+            cats.forEach(cat => {
+                questionsHtml += `<h4 class="font-extrabold text-xs text-blue-950 border-b pb-1 mt-4">${escapeHtml(cat.name)}</h4>`;
+                (cat.questions || []).forEach(q => {
+                    questionsHtml += `
+                        <div class="flex justify-between items-center border-b py-1.5 text-[11px]">
+                            <span class="flex-1 pr-4">${globalQ++}. ${escapeHtml(q.title)}</span>
+                            <div class="flex gap-3 shrink-0">
+                                ${[5,4,3,2,1].map(n => `<div class="text-center"><div class="w-5 h-5 border-2 border-slate-400 rounded mx-auto"></div><div class="mt-0.5">${n}</div></div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            area.innerHTML = `
+                <div class="text-center space-y-1 border-b pb-4">
+                    <h1 class="text-base font-black text-blue-950">แบบสอบถามความพึงพอใจ</h1>
+                    <h2 class="text-sm font-bold text-amber-800">"${escapeHtml(proj.title)}"</h2>
+                    <p class="text-xs text-slate-600">โปรดทำเครื่องหมาย ✓ ในช่องที่ตรงกับระดับความพึงพอใจของท่าน</p>
+                    <p class="text-[11px] text-slate-500">5=มากที่สุด  4=มาก  3=ปานกลาง  2=น้อย  1=น้อยที่สุด</p>
+                </div>
+                <div class="space-y-1 pt-2">
+                    ${questionsHtml || '<p class="text-center text-slate-400 text-xs py-4">ยังไม่มีคำถาม</p>'}
+                </div>
+                <div class="pt-6 grid grid-cols-2 gap-8 text-center text-xs">
+                    <div>
+                        <p>(ลงชื่อ).....................................................</p>
+                        <p class="font-bold mt-1">ผู้ตอบแบบสอบถาม</p>
+                    </div>
+                    <div>
+                        <p>(ลงชื่อ).....................................................</p>
+                        <p class="font-bold mt-1">ผู้รวบรวมข้อมูล</p>
+                    </div>
+                </div>
+            `;
+            openModal('blankSurveyModal');
+        }
+
+        function updateDemographic(field, val) {
+            const proj = getActiveProject();
+            if (!proj.surveyDemo) proj.surveyDemo = {};
+            proj.surveyDemo[field] = parseInt(val) || 0;
+            saveStateToLocalStorage();
+        }
+
+        function updateSurveyDemo() {
+            const proj = getActiveProject();
+            if (!proj.surveyDemo) proj.surveyDemo = {};
+            const demoMap = {
+                male: 'demoMale', female: 'demoFemale', lgbt: 'demoLgbt',
+                unspecified: 'demoUnspecified', memReg: 'demoMemReg',
+                memAssoc: 'demoMemAssoc', memOther: 'demoMemOther'
+            };
+            Object.keys(demoMap).forEach(k => {
+                const el = document.getElementById(demoMap[k]);
+                if (el) proj.surveyDemo[k] = parseInt(el.value) || 0;
+            });
+            const total = (proj.surveyDemo.male||0) + (proj.surveyDemo.female||0) +
+                          (proj.surveyDemo.lgbt||0) + (proj.surveyDemo.unspecified||0);
+            const badge = document.getElementById('surveyTotalRespondentsBadge');
+            if (badge) badge.innerText = `ผู้ตอบแบบประเมิน: ${total} คน`;
+            saveStateToLocalStorage();
+        }
+
+        function toggleProjectSurvey(checked) {
+            const proj = getActiveProject();
+            proj.hasSurvey = checked;
+            const container = document.getElementById('surveyModuleContainer');
+            const label = document.getElementById('surveyToggleLabel');
+            if (container) {
+                container.style.display = checked ? '' : 'none';
+            }
+            if (label) {
+                label.innerText = checked ? 'มีแบบประเมิน' : 'ไม่มีแบบประเมิน';
+                label.className = `ml-2 text-xs font-extrabold ${checked ? 'text-emerald-800' : 'text-slate-500'}`;
+            }
+            saveStateToLocalStorage();
+        }
+
     </script>
 </body>
 </html>
-```eof
-
-แก้ไขระบบและสคริปต์เรียบร้อยแล้วครับ! สามารถคลิกดูผลงานและทดลองใช้งานในหน้า **Preview** ทางขวามือได้ทันทีครับ

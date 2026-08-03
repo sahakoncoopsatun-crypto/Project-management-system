@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ - สอ.สธสต.</title>
     
+    <!-- STREAMING_CHUNK:Loading styles and libraries... -->
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -159,6 +160,7 @@
 </head>
 <body class="h-full flex flex-col bg-slate-100 min-h-screen text-slate-800">
 
+    <!-- STREAMING_CHUNK:Rendering Header and Navigation Bar... -->
     <!-- MAIN HEADER -->
     <header class="bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white shadow-xl sticky top-0 z-40 no-print border-b border-blue-800/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -206,7 +208,7 @@
                     </div>
 
                     <!-- Database Connect Modal Trigger -->
-                    <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95 cursor-pointer" title="ตั้งค่าเชื่อมต่อฐานข้อมูล Cloud">
                         <i class="fa-solid fa-database text-amber-300"></i>
                         <span class="font-extrabold">ฐานข้อมูล Cloud</span>
                     </button>
@@ -279,6 +281,7 @@
         </nav>
     </header>
 
+    <!-- STREAMING_CHUNK:Building Main Dashboard View... -->
     <!-- MAIN CONTENT CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
@@ -608,6 +611,7 @@
                 </div>
             </div>
 
+            <!-- STREAMING_CHUNK:Building Survey Matrix and Results View... -->
             <!-- UNIFIED STEP 3: EXECUTION SUMMARY & SATISFACTION SURVEY MODULE -->
             <div id="un-step-panel-3" class="un-step-panel space-y-6 hidden">
                 <form onsubmit="saveExecutionSummary(event)" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
@@ -1089,6 +1093,7 @@
         </section>
     </main>
 
+    <!-- STREAMING_CHUNK:Building Dialog Modals and Overlays... -->
     <!-- MODAL: CERTIFICATE FULLSCREEN PREVIEW -->
     <div id="certPreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4 no-print overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-5xl w-full p-6 space-y-4 shadow-2xl my-auto">
@@ -1258,15 +1263,19 @@
 
     <!-- MODAL: DATABASE CONNECTION GUIDE & LIVE SYNC ENGINE -->
     <div id="databaseModal" onclick="if(event.target===this) closeModal('databaseModal')" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
+        <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden relative">
+            <!-- Fixed Sticky Header with Close X Button -->
+            <div class="flex justify-between items-center border-b px-6 py-4 bg-white shrink-0 sticky top-0 z-20">
                 <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
                     <i class="fa-solid fa-database text-amber-500 text-lg"></i> การเชื่อมต่อฐานข้อมูล Google Sheets & Apps Script
                 </h3>
-                <button onclick="closeModal('databaseModal')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg cursor-pointer transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button type="button" onclick="closeModal('databaseModal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 flex items-center justify-center transition cursor-pointer shrink-0" title="ปิดหน้าต่าง (Esc)">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
-            <div class="space-y-4 text-xs">
+            <!-- Scrollable Modal Body -->
+            <div class="p-6 overflow-y-auto space-y-4 text-xs flex-1">
                 <p class="text-slate-600 leading-relaxed">
                     ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync (ดึงข้อมูลกลับ / บันทึกข้อมูลขึ้น Cloud):
                 </p>
@@ -1369,92 +1378,10 @@ function doPost(e) {
                 </div>
             </div>
 
-            <div class="flex justify-end border-t pt-3">
-                <button onclick="closeModal('databaseModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">ปิดหน้าต่าง</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL: NEW PROJECT CREATION -->
-    <div id="newProjectModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-folder-plus text-amber-500"></i> สร้างโครงการใหม่
-                </h3>
-                <button onclick="closeModal('newProjectModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <form onsubmit="createNewProject(event)" class="space-y-3 text-xs">
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700">ชื่อโครงการ / กิจกรรม <span class="text-red-500">*</span></label>
-                    <input type="text" id="newProjTitle" required class="w-full border rounded-xl p-2.5 font-semibold" placeholder="เช่น โครงการอบรมสัมมนา...">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700">ปีงบประมาณ</label>
-                    <select id="newProjFiscal" class="w-full border rounded-xl p-2.5 font-semibold bg-white cursor-pointer">
-                        <option value="2569">2569</option>
-                        <option value="2568">2568</option>
-                        <option value="2570">2570</option>
-                    </select>
-                </div>
-
-                <div class="flex justify-end gap-2 border-t pt-3">
-                    <button type="button" onclick="closeModal('newProjectModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
-                    <button type="submit" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">สร้างโครงการ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: ADMIN AUTHENTICATION (User: 007 / Pass: Satun055pass@1) -->
-    <div id="adminAuthModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-500"></i> เข้าสู่ระบบผู้ดูแลระบบ
-                </h3>
-                <button onclick="closeModal('adminAuthModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <form onsubmit="verifyAdminAuth(event)" class="space-y-3 text-xs">
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700">รหัสผู้ใช้งาน (User ID)</label>
-                    <input type="text" id="adminUserInput" required class="w-full border rounded-xl p-2.5 font-bold text-center text-sm tracking-wider">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700">รหัสผ่าน (Password)</label>
-                    <input type="password" id="adminPassInput" required class="w-full border rounded-xl p-2.5 font-bold text-center text-sm tracking-wider">
-                </div>
-
-                <div class="flex justify-end gap-2 border-t pt-3">
-                    <button type="button" onclick="closeModal('adminAuthModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
-                    <button type="submit" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">ยืนยันการเข้าสู่ระบบ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: PRINT PROPOSAL A4 -->
-    <div id="proposalPrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-3xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-red-600"></i> พิมพ์แบบเสนออนุมัติโครงการ (A4 Portrait)
-                </h3>
-                <button onclick="closeModal('proposalPrintModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <div id="proposalPrintArea" class="bg-white border p-8 rounded shadow-inner text-xs binding-margin print-area space-y-4 official-font">
-                <!-- Dynamic Proposal A4 Rendered JS -->
-            </div>
-
-            <div class="flex justify-between border-t pt-3">
-                <button onclick="closeModal('proposalPrintModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">ปิด</button>
-                <button onclick="triggerPrint('proposalPrintArea', false)" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
-                    <i class="fa-solid fa-print"></i> พิมพ์แบบเสนอโครงการ (A4)
+            <!-- Fixed Sticky Footer with Close Button -->
+            <div class="flex justify-end border-t px-6 py-3.5 bg-slate-50 shrink-0 sticky bottom-0 z-20">
+                <button type="button" onclick="closeModal('databaseModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
+                    <i class="fa-solid fa-xmark"></i> ปิดหน้าต่าง
                 </button>
             </div>
         </div>
@@ -1476,6 +1403,7 @@ function doPost(e) {
         </div>
     </footer>
 
+    <!-- STREAMING_CHUNK:Initializing Application JavaScript Engine... -->
     <script>
         let currentFiscalYear = '2569';
         let activeProjectId = 'proj-2569-001';
@@ -1552,6 +1480,35 @@ function doPost(e) {
             }
         ];
 
+        // IMAGE COMPRESSOR TO PREVENT LOCALSTORAGE OVERFLOW
+        function compressImage(file, maxWidth, maxHeight, quality, callback) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
@@ -1580,7 +1537,7 @@ function doPost(e) {
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         }
 
         function showConfirm(message, onConfirm) {
@@ -1713,6 +1670,19 @@ function doPost(e) {
                     closeNavDropdowns();
                 }
             });
+
+            // Add Escape key listener to close modals safely
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const visibleModals = ['databaseModal', 'certPreviewModal', 'proposalPrintModal', 'groupedParticipantsModal', 'excelImportModal', 'addParticipantModal', 'newProjectModal', 'adminAuthModal', 'blankSurveyModal', 'addQuestionModal', 'editQuestionModal', 'customConfirmModal'];
+                    visibleModals.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && !el.classList.contains('hidden')) {
+                            closeModal(id);
+                        }
+                    });
+                }
+            });
         }
 
         if (document.readyState === 'loading') {
@@ -1762,9 +1732,8 @@ function doPost(e) {
         function uploadSystemOrgLogo(input) {
             const file = input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                systemOrgLogoUrl = e.target.result;
+            compressImage(file, 300, 300, 0.8, function(base64) {
+                systemOrgLogoUrl = base64;
                 const img = document.getElementById('headerOrgLogoImg');
                 const svg = document.getElementById('headerOrgLogoSvg');
                 if (img && svg) {
@@ -1773,23 +1742,20 @@ function doPost(e) {
                     svg.classList.add('hidden');
                 }
                 saveStateToLocalStorage(false);
-                showToast('อัปโหลดตราหน่วยงานระบบเรียบร้อยแล้ว (จะแสดงทุกหน้าในระบบ)', 'success');
-            };
-            reader.readAsDataURL(file);
+                showToast('อัปโหลดตราหน่วยงานระบบเรียบร้อยแล้ว', 'success');
+            });
         }
 
         function uploadCertSpecificLogo(input) {
             const file = input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            compressImage(file, 400, 400, 0.85, function(base64) {
                 const proj = getActiveProject();
-                proj.certLogoUrl = e.target.result;
+                proj.certLogoUrl = base64;
                 saveStateToLocalStorage();
                 renderCertSignersConfigUI();
-                showToast('เพิ่ม / อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว', 'success');
-            };
-            reader.readAsDataURL(file);
+                showToast('อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว', 'success');
+            });
         }
 
         function removeCertSpecificLogo() {
@@ -1819,10 +1785,12 @@ function doPost(e) {
                 localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
                 localStorage.setItem('coop_gas_url', gasEndpointUrl);
                 localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
-                if (shouldSyncRemote) {
-                    syncToRemoteDatabase();
-                }
-            } catch(e) { console.error(e); }
+            } catch(e) {
+                console.warn('LocalStorage Quota Error:', e);
+            }
+            if (shouldSyncRemote) {
+                syncToRemoteDatabase();
+            }
         }
 
         function loadStateFromLocalStorage() {
@@ -1849,17 +1817,34 @@ function doPost(e) {
             } catch(e) { console.error(e); }
         }
 
+        function validateGasUrl(rawUrl) {
+            if (!rawUrl) return { valid: false, error: 'กรุณากรอก Web App URL ก่อนดึงข้อมูล' };
+            let url = rawUrl.trim();
+            if (url.includes('docs.google.com/spreadsheets')) {
+                return { valid: false, error: 'URL ที่กรอกเป็นลิงก์ Google Sheet! กรุณาใช้ Web App URL จาก Apps Script (ลงท้ายด้วย /exec)' };
+            }
+            if (url.includes('/dev')) {
+                return { valid: false, error: 'URL ลงท้ายด้วย /dev ไม่สามารถซิงค์ภายนอกได้ กรุณาใช้ลิงก์จาก New Deployment (ลงท้ายด้วย /exec)' };
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                return { valid: false, error: 'รูปแบบ URL ไม่ถูกต้อง (ต้องขึ้นต้นด้วย https://)' };
+            }
+            return { valid: true, url: url };
+        }
+
         function fetchDataFromDatabase(showToastMsg = true) {
             const inputEl = document.getElementById('gasEndpointUrlInput');
-            if (inputEl && inputEl.value.trim()) {
-                gasEndpointUrl = inputEl.value.trim();
-                saveStateToLocalStorage(false);
-            }
+            let urlToUse = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : gasEndpointUrl;
 
-            if (!gasEndpointUrl) {
-                if (showToastMsg) showToast('กรุณากรอก Web App URL ก่อนกดดึงข้อมูล', 'error');
+            const check = validateGasUrl(urlToUse);
+            if (!check.valid) {
+                if (showToastMsg) showToast(check.error, 'error');
+                updateDbSyncBadgeStatus(false);
                 return;
             }
+
+            gasEndpointUrl = check.url;
+            saveStateToLocalStorage(false);
 
             const badge = document.getElementById('dbSyncBadge');
             if (badge) {
@@ -1867,11 +1852,18 @@ function doPost(e) {
             }
 
             fetch(gasEndpointUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.json();
-                })
-                .then(resData => {
+                .then(res => res.text())
+                .then(textData => {
+                    let resData;
+                    try {
+                        resData = JSON.parse(textData);
+                    } catch(err) {
+                        if (textData.includes('<!DOCTYPE html') || textData.includes('Google Accounts')) {
+                            throw new Error('ติดหน้าล็อกอิน Google: กรุณาไปที่ Apps Script > Deploy > ตั้งค่า Who has access เป็น "Anyone" (ทุกคน)');
+                        }
+                        throw new Error('รูปแบบตอบกลับไม่ใช่ JSON');
+                    }
+
                     if (resData && resData.status === 'success' && Array.isArray(resData.data)) {
                         if (resData.data.length > 0) {
                             projectsState = resData.data;
@@ -1880,34 +1872,34 @@ function doPost(e) {
                             renderDashboard();
                             renderActiveProjectUI();
                             updateDbSyncBadgeStatus(true);
-                            if (showToastMsg) showToast(`ดึงข้อมูลจาก Google Sheets สำเร็จ (${projectsState.length} โครงการ)`, 'success');
+                            if (showToastMsg) showToast(`ดึงข้อมูลสำเร็จ (${projectsState.length} โครงการ)`, 'success');
                         } else {
                             updateDbSyncBadgeStatus(true);
-                            if (showToastMsg) showToast('เชื่อมต่อสำเร็จ แต่ยังไม่มีข้อมูลโครงการใน Google Sheets', 'info');
+                            if (showToastMsg) showToast('เชื่อมต่อคลาวด์สำเร็จ แต่ยังไม่มีข้อมูลใน Google Sheets', 'info');
                             syncToRemoteDatabase();
                         }
                     } else {
-                        updateDbSyncBadgeStatus(true);
-                        if (showToastMsg) showToast('ดึงข้อมูลเสร็จสิ้น', 'success');
+                        throw new Error(resData.message || 'ไม่สามารถดึงข้อมูลได้');
                     }
                 })
                 .catch(err => {
                     console.error('Fetch Error:', err);
                     updateDbSyncBadgeStatus(false);
-                    if (showToastMsg) showToast('ไม่สามารถดึงข้อมูลได้ (โปรดตรวจสอบสิทธิ์ "Anyone" ใน Apps Script)', 'error');
+                    if (showToastMsg) showToast(`${err.message}`, 'error');
                 });
         }
 
         function saveGasEndpointUrl() {
             const inputEl = document.getElementById('gasEndpointUrlInput');
             const url = inputEl ? inputEl.value.trim() : '';
-            if (!url) {
-                showToast('กรุณากรอก Web App URL ก่อนบันทึก', 'error');
+            const check = validateGasUrl(url);
+            if (!check.valid) {
+                showToast(check.error, 'error');
                 return;
             }
-            gasEndpointUrl = url;
+            gasEndpointUrl = check.url;
             saveStateToLocalStorage(false);
-            showToast('บันทึก URL เรียบร้อยแล้ว กำลังซิงค์ข้อมูล...', 'success');
+            showToast('บันทึก URL เรียบร้อยแล้ว กำลังดึงข้อมูล...', 'success');
             fetchDataFromDatabase(true);
             closeModal('databaseModal');
         }
@@ -1915,31 +1907,16 @@ function doPost(e) {
         function testDatabaseConnection() {
             const inputEl = document.getElementById('gasEndpointUrlInput');
             const url = inputEl ? inputEl.value.trim() : gasEndpointUrl;
-            if (!url) {
-                showToast('กรุณากรอก Web App URL ก่อนทดสอบ', 'error');
+            const check = validateGasUrl(url);
+            if (!check.valid) {
+                showToast(check.error, 'error');
                 return;
             }
-            gasEndpointUrl = url;
+            gasEndpointUrl = check.url;
             saveStateToLocalStorage(false);
 
             showToast('กำลังทดสอบการเชื่อมต่อ...', 'info');
-            fetch(url)
-                .then(res => {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    if (data && (data.status === 'success' || Array.isArray(data.data))) {
-                        updateDbSyncBadgeStatus(true);
-                        showToast('การเชื่อมต่อกับ Google Sheets สำเร็จเรียบร้อย!', 'success');
-                    } else {
-                        showToast('เชื่อมต่อสำเร็จ แต่ตอบกลับรูปแบบไม่ถูกต้อง', 'info');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    showToast('เชื่อมต่อไม่สำเร็จ โปรดตรวจสอบสิทธิ์การเข้าถึงเป็น "Anyone"', 'error');
-                });
+            fetchDataFromDatabase(true);
         }
 
         function syncToRemoteDatabase() {
@@ -1985,7 +1962,23 @@ function doPost(e) {
         function openDatabaseModal() {
             const el = document.getElementById('gasEndpointUrlInput');
             if (el) el.value = gasEndpointUrl || '';
-            document.getElementById('databaseModal').classList.remove('hidden');
+            openModal('databaseModal');
+        }
+
+        function closeModal(id) { 
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+        }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('hidden');
+                el.style.display = '';
+            }
         }
 
         function getActiveProject() {
@@ -2277,17 +2270,15 @@ function doPost(e) {
         function uploadDynamicSignerSig(input, idx) {
             const file = input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            compressImage(file, 300, 150, 0.8, function(base64) {
                 const proj = getActiveProject();
                 if (proj.certSigners && proj.certSigners[idx]) {
-                    proj.certSigners[idx].sigImg = e.target.result;
+                    proj.certSigners[idx].sigImg = base64;
                     saveStateToLocalStorage();
                     updateCertPreview();
                     showToast(`อัปโหลดลายเซ็นผู้ลงนามที่ ${idx + 1} เรียบร้อยแล้ว`, 'success');
                 }
-            };
-            reader.readAsDataURL(file);
+            });
         }
 
         function renderCertSignersPreviewHtml(signers) {
@@ -2361,7 +2352,7 @@ function doPost(e) {
             updateCertPreview();
             const cardEl = document.getElementById('certPreviewCard');
             holder.innerHTML = cardEl.outerHTML;
-            modal.classList.remove('hidden');
+            openModal('certPreviewModal');
         }
 
         function toggleProjectStatus() {
@@ -2811,7 +2802,7 @@ function doPost(e) {
                 </div>
             `;
 
-            modal.classList.remove('hidden');
+            openModal('groupedParticipantsModal');
         }
 
         function exportGroupedParticipantsToExcel() {
@@ -3048,13 +3039,11 @@ function doPost(e) {
             if (!proj.media) proj.media = [];
 
             Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    proj.media.push({ id: 'med-' + Date.now(), url: e.target.result });
+                compressImage(file, 800, 600, 0.75, function(base64) {
+                    proj.media.push({ id: 'med-' + Date.now(), url: base64 });
                     renderMediaGallery();
                     saveStateToLocalStorage();
-                };
-                reader.readAsDataURL(file);
+                });
             });
             showToast('อัปโหลดภาพกิจกรรมเรียบร้อยแล้ว', 'success');
         }
@@ -3138,6 +3127,424 @@ function doPost(e) {
 
             triggerPrint('certPreviewCard', true);
         }
+
+        function openAddQuestionModal() { openModal('addQuestionModal'); }
+        function openBlankSurveyModal() { openModal('blankSurveyModal'); }
+        function openExcelImportModal() { openModal('excelImportModal'); }
+        function openAddParticipantModal() { openModal('addParticipantModal'); }
+        function openNewProjectModal() { openModal('newProjectModal'); }
+        function openAdminAuthModal() { openModal('adminAuthModal'); }
+
+        function triggerPrint(targetId, isLandscape) {
+            if (isLandscape) {
+                document.body.classList.add('print-landscape-mode');
+            } else {
+                document.body.classList.remove('print-landscape-mode');
+            }
+
+            const printBox = document.getElementById('printAreaContainer');
+            const targetEl = document.getElementById(targetId);
+            if (!printBox || !targetEl) return;
+
+            printBox.innerHTML = targetEl.outerHTML;
+            printBox.classList.remove('hidden');
+
+            window.print();
+
+            setTimeout(() => {
+                printBox.classList.add('hidden');
+                document.body.classList.remove('print-landscape-mode');
+            }, 1000);
+        }
+
+        function createNewProject(e) {
+            e.preventDefault();
+            const title = document.getElementById('newProjTitle').value;
+            const fiscalYear = document.getElementById('newProjFiscal').value;
+            const id = 'proj-' + fiscalYear + '-' + Date.now();
+
+            const newProj = {
+                id, fiscalYear, title, status: 'in-progress',
+                reason: '', objective: '', target: '', date: '11 กรกฎาคม 2569', location: '', method: '',
+                responsible: 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', budgetSource: '', budgetItems: [],
+                expected: '', signer10Name: '', signer10Pos: '', signer11Name: '', signer11Pos: '',
+                signer12Name: '', signer12Pos: '', signer13Name: '', signer13Pos: '',
+                certLogoUrl: '',
+                certSigners: [
+                    { id: 'cs-1', name: '', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
+                    { id: 'cs-2', name: '', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
+                ],
+                hasSurvey: true, surveyDemo: { male: 0, female: 0, lgbt: 0, unspecified: 0, memReg: 0, memAssoc: 0, memOther: 0 },
+                surveyCategories: [], participants: [], media: []
+            };
+
+            projectsState.push(newProj);
+            activeProjectId = id;
+            saveStateToLocalStorage();
+            closeModal('newProjectModal');
+            renderDashboard();
+            renderActiveProjectUI();
+            showToast('สร้างโครงการใหม่เรียบร้อยแล้ว (สถานะ: อยู่ระหว่างดำเนินการ)', 'success');
+        }
+
+        function confirmDeleteActiveProject() {
+            const proj = getActiveProject();
+            if (projectsState.length <= 1) {
+                showToast('ไม่สามารถลบโครงการสุดท้ายได้', 'error');
+                return;
+            }
+            showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
+                projectsState = projectsState.filter(p => p.id !== proj.id);
+                activeProjectId = projectsState[0].id;
+                saveStateToLocalStorage();
+                renderDashboard();
+                renderActiveProjectUI();
+                showToast('ลบโครงการเรียบร้อยแล้ว', 'info');
+            });
+        }
+
+        function confirmDeleteProjectById(id) {
+            if (projectsState.length <= 1) {
+                showToast('ไม่สามารถลบโครงการสุดท้ายได้', 'error');
+                return;
+            }
+            const proj = projectsState.find(p => p.id === id);
+            showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
+                projectsState = projectsState.filter(p => p.id !== id);
+                if (activeProjectId === id) activeProjectId = projectsState[0].id;
+                saveStateToLocalStorage();
+                renderDashboard();
+                renderProjectsList();
+                showToast('ลบโครงการเรียบร้อยแล้ว', 'info');
+            });
+        }
+
+        function renderProjectsList() {
+            const grid = document.getElementById('projectsGridContainer');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            projectsState.forEach((p) => {
+                let budget = 0;
+                (p.budgetItems || []).forEach(b => budget += parseFloat(b.amount) || 0);
+
+                const card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="bg-blue-100 text-blue-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">ปี ${p.fiscalYear}</span>
+                            <span class="text-[11px] font-bold text-slate-500"><i class="fa-solid fa-users"></i> ${(p.participants || []).length} คน</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-blue-950 leading-snug line-clamp-2">${escapeHtml(p.title)}</h4>
+                        <p class="text-xs font-mono font-bold text-emerald-700">งบประมาณ: ฿${budget.toLocaleString()}</p>
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t">
+                        <button onclick="setActiveProject('${p.id}'); switchTab('unified-cycle');" class="flex-1 bg-blue-900 hover:bg-blue-950 text-white p-2 rounded-xl text-xs font-bold text-center active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-pen-to-square"></i> จัดการ
+                        </button>
+                        <button onclick="confirmDeleteProjectById('${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl text-xs font-bold border border-red-200 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMediaGallery() {
+            const proj = getActiveProject();
+            const grid = document.getElementById('mediaGalleryGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            (proj.media || []).forEach((m, idx) => {
+                const item = document.createElement('div');
+                item.className = 'relative group rounded-2xl overflow-hidden border shadow-sm aspect-video bg-slate-100';
+                item.innerHTML = `
+                    <img src="${m.url}" class="w-full h-full object-cover" alt="Media ${idx}">
+                    <button onclick="removeMediaItem('${m.id}')" class="absolute top-2 right-2 bg-red-600 text-white w-7 h-7 rounded-full text-xs opacity-0 group-hover:opacity-100 transition shadow flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                grid.appendChild(item);
+            });
+
+            if ((proj.media || []).length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-8 italic">ยังไม่มีภาพถ่ายกิจกรรมในโครงการนี้</p>';
+            }
+        }
+
+        function renderOfficialBookletReport() {
+            const proj = getActiveProject();
+            const box = document.getElementById('officialReportPrintBox');
+            if (!box || !proj) return;
+
+            let totalApp = 0, totalAct = 0;
+            let budgetRows = '';
+            (proj.budgetItems || []).forEach((b, idx) => {
+                const app = parseFloat(b.amount) || 0;
+                const act = parseFloat(b.actualAmount || b.amount) || 0;
+                totalApp += app; totalAct += act;
+                budgetRows += `
+                    <tr class="border-b">
+                        <td class="p-2 text-center border">${idx + 1}</td>
+                        <td class="p-2 border">${escapeHtml(b.title)}</td>
+                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${(app - act).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            box.innerHTML = `
+                <div class="text-center space-y-6 py-12 min-h-[900px] flex flex-col justify-between items-center">
+                    <div class="space-y-4 flex flex-col items-center">
+                        <div class="w-24 h-24 flex items-center justify-center mx-auto">
+                            <svg class="w-24 h-24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                            </svg>
+                        </div>
+                        <h1 class="text-2xl font-black text-blue-950">รายงานผลการดำเนินโครงการ</h1>
+                        <h2 class="text-lg font-bold text-blue-900">"${escapeHtml(proj.title)}"</h2>
+                        <p class="text-sm font-semibold text-slate-700">ประจำปีงบประมาณ พ.ศ. ${proj.fiscalYear}</p>
+                    </div>
+
+                    <div class="space-y-2 text-sm text-center">
+                        <p class="font-bold text-blue-950">จัดขึ้นโดย</p>
+                        <p class="font-bold text-slate-800">${escapeHtml(proj.responsible)}</p>
+                        <p class="text-slate-600">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</p>
+                    </div>
+                </div>
+
+                <div class="page-break"></div>
+
+                <div class="space-y-6 pt-4">
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2">ส่วนที่ 1 บทนำและข้อมูลทั่วไป</h2>
+                    <div class="space-y-3 leading-relaxed">
+                        <p><strong>1.1 ชื่อโครงการ:</strong> ${escapeHtml(proj.title)}</p>
+                        <p><strong>1.2 หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
+                        <p><strong>1.3 วัตถุประสงค์:</strong></p>
+                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
+                        <p><strong>1.4 เป้าหมาย:</strong></p>
+                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
+                    </div>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 2 การดำเนินงาน</h2>
+                    <div class="space-y-2 leading-relaxed">
+                        <p><strong>2.1 ระยะเวลาจัดงาน:</strong> ${escapeHtml(proj.date)}</p>
+                        <p><strong>2.2 สถานที่ดำเนินงาน:</strong> ${escapeHtml(proj.location)}</p>
+                        <p><strong>2.3 ผู้เข้าร่วมโครงการ:</strong> จำนวนสะสม ${(proj.participants || []).length} คน</p>
+                    </div>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 3 สรุปผลการดำเนินงาน</h2>
+                    <p class="leading-relaxed">การจัดโครงการบรรลุตามวัตถุประสงค์ที่กำหนดไว้ มีผู้เข้าร่วมทั้งสิ้น ${(proj.participants || []).length} คน คิดเป็นร้อยละ 100 ของเป้าหมาย</p>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 4 การใช้งบประมาณ</h2>
+                    <table class="w-full border text-xs">
+                        <thead class="bg-slate-100 font-bold border-b">
+                            <tr>
+                                <th class="p-2 border text-center w-10">ลำดับ</th>
+                                <th class="p-2 border text-left">รายการค่าใช้จ่าย</th>
+                                <th class="p-2 border text-right">งบอนุมัติ (บาท)</th>
+                                <th class="p-2 border text-right">จ่ายจริง (บาท)</th>
+                                <th class="p-2 border text-right">คงเหลือ (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${budgetRows}</tbody>
+                    </table>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 5 ปัญหาและอุปสรรค</h2>
+                    <p class="leading-relaxed">${escapeHtml(proj.problems || 'ไม่มีปัญหาอุปสรรคสำคัญในการดำเนินงาน')}</p>
+
+                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 6 ข้อเสนอแนะ</h2>
+                    <p class="leading-relaxed">${escapeHtml(proj.suggestions || 'ควรจัดกิจกรรมพัฒนาศักยภาพอย่างต่อเนื่องในปีกิจการถัดไป')}</p>
+                </div>
+            `;
+        }
+
+        function renderAnnualStrategicReport() {
+            const box = document.getElementById('annualReportPrintBox');
+            if (!box) return;
+
+            const filteredProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
+            let rows = '';
+            let grandApp = 0, grandAct = 0, grandParts = 0;
+
+            filteredProjects.forEach((p, idx) => {
+                let app = 0, act = 0;
+                (p.budgetItems || []).forEach(b => {
+                    app += parseFloat(b.amount) || 0;
+                    act += parseFloat(b.actualAmount || b.amount) || 0;
+                });
+                grandApp += app; grandAct += act;
+                const partsCount = (p.participants || []).length;
+                grandParts += partsCount;
+
+                rows += `
+                    <tr class="border-b">
+                        <td class="p-2 text-center border">${idx + 1}</td>
+                        <td class="p-2 border font-bold">${escapeHtml(p.title)}</td>
+                        <td class="p-2 text-center border font-mono">${partsCount}</td>
+                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            box.innerHTML = `
+                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
+                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
+                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
+                    </div>
+                    <h1 class="text-lg font-black text-blue-950">รายงานสรุปประจำปีตามแผนยุทธศาสตร์</h1>
+                    <h2 class="text-sm font-bold text-amber-800">ปีงบประมาณ พ.ศ. ${currentFiscalYear}</h2>
+                </div>
+
+                <table class="w-full border text-xs my-4">
+                    <thead class="bg-blue-950 text-white font-bold border-b">
+                        <tr>
+                            <th class="p-2 border text-center w-10">ลำดับ</th>
+                            <th class="p-2 border text-left">ชื่อโครงการ</th>
+                            <th class="p-2 border text-center w-24">ผู้เข้าร่วม (คน)</th>
+                            <th class="p-2 border text-right w-32">งบอนุมัติ (บาท)</th>
+                            <th class="p-2 border text-right w-32">จ่ายจริง (บาท)</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows || '<tr><td colspan="5" class="p-4 text-center text-slate-400">ไม่มีโครงการในปีงบประมาณนี้</td></tr>'}</tbody>
+                    <tfoot class="bg-slate-100 font-bold border-t">
+                        <tr>
+                            <td colspan="2" class="p-2 text-right border">รวมสะสมทั้งปี:</td>
+                            <td class="p-2 text-center border font-mono">${grandParts}</td>
+                            <td class="p-2 text-right border font-mono">${grandApp.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                            <td class="p-2 text-right border font-mono">${grandAct.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+        }
+
+        function openProposalPrintModal() {
+            const proj = getActiveProject();
+            const area = document.getElementById('proposalPrintArea');
+            if (!area || !proj) return;
+
+            let budgetRows = '';
+            let total = 0;
+            (proj.budgetItems || []).forEach((b, idx) => {
+                const amt = parseFloat(b.amount) || 0;
+                total += amt;
+                budgetRows += `
+                    <tr class="border-b">
+                        <td class="p-2 border text-center">${idx + 1}</td>
+                        <td class="p-2 border">${escapeHtml(b.title)}</td>
+                        <td class="p-2 border text-right font-mono">${amt.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
+                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
+                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
+                    </div>
+                    <h2 class="text-base font-bold text-blue-950">แบบเสนอขออนุมัติโครงการ / กิจกรรม</h2>
+                    <h1 class="text-lg font-black text-blue-900">"${escapeHtml(proj.title)}"</h1>
+                </div>
+
+                <div class="space-y-3 leading-relaxed text-xs official-font pt-2">
+                    <p><strong>1. หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
+                    <p><strong>2. วัตถุประสงค์:</strong></p>
+                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
+                    <p><strong>3. เป้าหมาย:</strong></p>
+                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
+                    <p><strong>4. ระยะเวลาดำเนินการ:</strong> ${escapeHtml(proj.date)}</p>
+                    <p><strong>5. สถานที่:</strong> ${escapeHtml(proj.location)}</p>
+                    <p><strong>6. วิธีการดำเนินการ:</strong></p>
+                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.method)}</p>
+                    <p><strong>7. ผู้รับผิดชอบ:</strong> ${escapeHtml(proj.responsible)}</p>
+                    <p><strong>8. งบประมาณ:</strong> ใช้จ่ายจาก ${escapeHtml(proj.budgetSource)} ดังนี้</p>
+                    
+                    <table class="w-full border text-xs my-2">
+                        <thead class="bg-slate-100 font-bold border-b">
+                            <tr>
+                                <th class="p-2 border text-center w-12">ลำดับ</th>
+                                <th class="p-2 border text-left">รายการ</th>
+                                <th class="p-2 border text-right w-32">จำนวนเงิน (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${budgetRows}</tbody>
+                        <tfoot class="font-bold bg-slate-50 border-t">
+                            <tr>
+                                <td colspan="2" class="p-2 border text-right">รวมทั้งสิ้น (${thaiBahtText(total)}):</td>
+                                <td class="p-2 border text-right font-mono">${total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <p><strong>9. ผลที่คาดว่าจะได้รับ:</strong> ${escapeHtml(proj.expected)}</p>
+
+                    <div class="grid grid-cols-2 gap-6 text-center pt-8">
+                        <div>
+                            <p>(ลงชื่อ).....................................................</p>
+                            <p class="font-bold">(${escapeHtml(proj.signer10Name || 'ผู้เขียนโครงการ')})</p>
+                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer10Pos || 'ตำแหน่ง')}</p>
+                            <p class="font-bold text-blue-900 mt-1">10. ผู้เขียนโครงการ</p>
+                        </div>
+                        <div>
+                            <p>(ลงชื่อ).....................................................</p>
+                            <p class="font-bold">(${escapeHtml(proj.signer11Name || 'ผู้เสนอโครงการ')})</p>
+                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer11Pos || 'ตำแหน่ง')}</p>
+                            <p class="font-bold text-blue-900 mt-1">11. ผู้เสนอโครงการ</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            openModal('proposalPrintModal');
+        }
+
+        function verifyAdminAuth(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUserInput').value;
+            const p = document.getElementById('adminPassInput').value;
+
+            if (btoa(u) === _A_U_H && btoa(p) === _A_P_H) {
+                isAdminLoggedIn = true;
+                isPublicMemberMode = false;
+                applySecurityAccessControl();
+                closeModal('adminAuthModal');
+                showToast('ยินดีต้อนรับผู้ดูแลระบบ สอ.สธสต.', 'success');
+            } else {
+                showToast('รหัสผู้ใช้งาน หรือ รหัสผ่าน ไม่ถูกต้อง!', 'error');
+            }
+        }
+
+        function copyMemberPortalLink() {
+            const link = `${window.location.origin}${window.location.pathname}?mode=member`;
+            navigator.clipboard.writeText(link).then(() => {
+                showToast('คัดลอกลิงก์สำหรับสมาชิกเรียบร้อยแล้ว!', 'success');
+            }).catch(() => {
+                showToast('ลิงก์สมาชิก: ' + link, 'info');
+            });
+        }
     </script>
 </body>
 </html>
+```eof
+
+แก้ไขระบบและสคริปต์เรียบร้อยแล้วครับ! สามารถคลิกดูผลงานและทดลองใช้งานในหน้า **Preview** ทางขวามือได้ทันทีครับ

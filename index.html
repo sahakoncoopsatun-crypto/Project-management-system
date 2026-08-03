@@ -944,7 +944,7 @@
                     </div>
 
                     <div class="space-y-4 text-xs">
-                        <!-- Dedicated Certificate Emblem Control Card (Add / Change / Delete) -->
+                        <!-- Dedicated Certificate Emblems Control Card (Multi Logo) -->
                         <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200/90 space-y-3">
                             <div class="flex justify-between items-center border-b border-amber-200/70 pb-2">
                                 <label class="font-extrabold text-xs text-amber-950 flex items-center gap-1.5">
@@ -955,42 +955,19 @@
                                 </span>
                             </div>
                             <p class="text-[11px] text-slate-600 leading-relaxed">
-                                สามารถอัปโหลดภาพตราประจำหน่วยงานเพื่อแสดงบนเกียรติบัตร หรือลบออกเพื่อสลับไปใช้ตราเวกเตอร์มาตรฐานของ สอ.สธสต.
+                                สามารถอัปโหลดตราหน่วยงานได้ <strong>หลายตราพร้อมกัน</strong> เรียงแถวซ้าย→ขวา ใช้ PNG/SVG พื้นโปร่งใสเพื่อผลลัพธ์สวยงามที่สุด
                             </p>
 
-                            <!-- Emblem Action Controls Box -->
-                            <div id="certLogoManagerBox" class="space-y-2 pt-1">
-                                <!-- Upload New Logo Button Area -->
-                                <div id="certLogoUploadArea" class="flex flex-col gap-2">
-                                    <label class="w-full bg-blue-900 hover:bg-blue-950 text-white py-2.5 px-4 rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-                                        <i class="fa-solid fa-cloud-arrow-up text-amber-300 text-sm"></i>
-                                        <span>+ เพิ่ม / เปลี่ยนตราเกียรติบัตร</span>
-                                        <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="hidden">
-                                    </label>
-                                </div>
-
-                                <!-- Logo Active Display with Edit / Delete Actions -->
-                                <div id="certLogoActiveArea" class="hidden flex items-center justify-between bg-white p-3 rounded-xl border border-amber-300 shadow-sm">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 border rounded-lg p-1 bg-slate-50 flex items-center justify-center shrink-0">
-                                            <img id="certLogoPreviewImg" src="" class="max-h-full max-w-full object-contain" alt="Cert Emblem">
-                                        </div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-800">มีตราเกียรติบัตรแล้ว</p>
-                                            <p class="text-[10px] text-slate-500">พร้อมแสดงผลบนเกียรติบัตร</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <label class="bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm active:scale-95 cursor-pointer flex items-center gap-1">
-                                            <i class="fa-solid fa-pen-to-square"></i> เปลี่ยนตรา
-                                            <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="hidden">
-                                        </label>
-                                        <button type="button" onclick="removeCertSpecificLogo()" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow active:scale-95 cursor-pointer flex items-center gap-1">
-                                            <i class="fa-solid fa-trash-can"></i> ลบตรา
-                                        </button>
-                                    </div>
-                                </div>
+                            <!-- Multi Logo Manager -->
+                            <div id="certLogosManagerBox" class="space-y-2">
+                                <!-- Dynamic Logo Items rendered by JS -->
                             </div>
+
+                            <label class="w-full bg-blue-900 hover:bg-blue-950 text-white py-2.5 px-4 rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95 mt-2">
+                                <i class="fa-solid fa-plus text-amber-300 text-sm"></i>
+                                <span>เพิ่มตราหน่วยงาน</span>
+                                <input type="file" accept="image/*" multiple onchange="uploadCertLogos(this)" class="hidden">
+                            </label>
                         </div>
 
                         <!-- Dynamic Signers Configuration List -->
@@ -1024,14 +1001,14 @@
 
                             <!-- Top Org Logo & Header -->
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
-                                <div id="previewCertLogoBox" class="w-20 h-20 flex items-center justify-center mx-auto relative">
+                                <div id="previewCertLogoBox" class="flex items-center justify-center gap-3 mx-auto">
                                     <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                                         <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                                         <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
                                         <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
                                     </svg>
-                                    <img id="previewCertLogoImg" src="" class="w-20 h-20 object-contain mx-auto hidden" alt="Cert Specific Logo">
+                                    <!-- Custom logos appended here by JS -->
                                 </div>
                                 <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                 <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
@@ -2323,25 +2300,43 @@ function doPost(e) {
             const container = document.getElementById('certSignersConfigList');
             if (!container || !proj) return;
 
-            const logoUploadArea = document.getElementById('certLogoUploadArea');
-            const logoActiveArea = document.getElementById('certLogoActiveArea');
-            const logoPreviewImg = document.getElementById('certLogoPreviewImg');
+            // Migrate legacy single logo to array
+            if (proj.certLogoUrl && !proj.certLogos) {
+                proj.certLogos = [proj.certLogoUrl];
+                proj.certLogoUrl = '';
+            }
+            if (!proj.certLogos) proj.certLogos = [];
+
+            // Render multi-logo manager
+            const logosBox = document.getElementById('certLogosManagerBox');
             const certLogoStatusBadge = document.getElementById('certLogoStatusBadge');
 
-            if (proj.certLogoUrl) {
-                if (logoUploadArea) logoUploadArea.classList.add('hidden');
-                if (logoActiveArea) logoActiveArea.classList.remove('hidden');
-                if (logoPreviewImg) logoPreviewImg.src = proj.certLogoUrl;
-                if (certLogoStatusBadge) {
-                    certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
-                    certLogoStatusBadge.innerText = '🟢 ตรากำหนดเอง';
-                }
-            } else {
-                if (logoUploadArea) logoUploadArea.classList.remove('hidden');
-                if (logoActiveArea) logoActiveArea.classList.add('hidden');
-                if (certLogoStatusBadge) {
-                    certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300';
-                    certLogoStatusBadge.innerText = '🔵 ตรามาตรฐานระบบ';
+            if (logosBox) {
+                logosBox.innerHTML = '';
+                if (proj.certLogos.length === 0) {
+                    logosBox.innerHTML = '<p class="text-[11px] text-slate-500 italic text-center py-2">ใช้ตรา SVG มาตรฐานระบบ (ยังไม่ได้อัปโหลดตรากำหนดเอง)</p>';
+                    if (certLogoStatusBadge) {
+                        certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300';
+                        certLogoStatusBadge.innerText = '🔵 ตรามาตรฐานระบบ';
+                    }
+                } else {
+                    if (certLogoStatusBadge) {
+                        certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
+                        certLogoStatusBadge.innerText = `🟢 ตรากำหนดเอง ${proj.certLogos.length} รายการ`;
+                    }
+                    proj.certLogos.forEach((logoUrl, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'flex items-center gap-3 bg-white p-2.5 rounded-xl border border-amber-200 shadow-sm';
+                        item.innerHTML = `
+                            <img src="${logoUrl}" class="w-10 h-10 object-contain" alt="ตรา ${idx+1}" style="background:transparent">
+                            <span class="flex-1 text-xs font-semibold text-slate-700">ตราที่ ${idx+1}</span>
+                            <button type="button" onclick="removeCertLogoByIndex(${idx})"
+                                class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg cursor-pointer active:scale-95 flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> ลบ
+                            </button>
+                        `;
+                        logosBox.appendChild(item);
+                    });
                 }
             }
 
@@ -2475,15 +2470,32 @@ function doPost(e) {
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
-            const certLogoImg = document.getElementById('previewCertLogoImg');
-            const certLogoSvg = document.getElementById('previewCertLogoSvg');
-            if (proj.certLogoUrl) {
-                certLogoImg.src = proj.certLogoUrl;
-                certLogoImg.classList.remove('hidden');
-                certLogoSvg.classList.add('hidden');
-            } else {
-                certLogoImg.classList.add('hidden');
-                certLogoSvg.classList.remove('hidden');
+            // Migrate legacy
+            if (proj.certLogoUrl && !proj.certLogos) { proj.certLogos = [proj.certLogoUrl]; proj.certLogoUrl = ''; }
+            if (!proj.certLogos) proj.certLogos = [];
+
+            // Render logos in preview box — transparent, no border
+            const logoBox = document.getElementById('previewCertLogoBox');
+            if (logoBox) {
+                const svgEl = document.getElementById('previewCertLogoSvg');
+                if (proj.certLogos.length > 0) {
+                    // Hide default SVG, show custom logos
+                    if (svgEl) svgEl.style.display = 'none';
+                    // Remove old custom logo imgs
+                    logoBox.querySelectorAll('img.cert-custom-logo').forEach(e => e.remove());
+                    proj.certLogos.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.className = 'cert-custom-logo w-20 h-20 object-contain';
+                        img.style.cssText = 'background:transparent;border:none;box-shadow:none;';
+                        img.alt = 'ตราหน่วยงาน';
+                        logoBox.appendChild(img);
+                    });
+                } else {
+                    // Show default SVG
+                    if (svgEl) svgEl.style.display = '';
+                    logoBox.querySelectorAll('img.cert-custom-logo').forEach(e => e.remove());
+                }
             }
 
             const container = document.getElementById('previewCertSignersContainer');
@@ -2799,7 +2811,16 @@ function doPost(e) {
             const cleanDate = formatCertDate(proj.date);
             const signersHtml = renderCertSignersPreviewHtml(proj.certSigners);
 
-            const certLogoSource = proj.certLogoUrl ? `<img src="${proj.certLogoUrl}" class="w-20 h-20 object-contain mx-auto" alt="Logo">` : `
+            // Migrate legacy
+            if (proj.certLogoUrl && !proj.certLogos) { proj.certLogos = [proj.certLogoUrl]; proj.certLogoUrl = ''; }
+            if (!proj.certLogos) proj.certLogos = [];
+
+            // Build logo HTML — transparent, no border, multiple logos side by side
+            const certLogoSource = proj.certLogos.length > 0
+                ? proj.certLogos.map(url =>
+                    `<img src="${url}" class="w-20 h-20 object-contain" style="background:transparent;border:none;box-shadow:none;" alt="ตราหน่วยงาน">`
+                  ).join('')
+                : `
                 <svg class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                     <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
@@ -2817,7 +2838,7 @@ function doPost(e) {
                                 เลขที่อ้างอิง: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
                             </div>
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
-                                <div class="w-20 h-20 flex items-center justify-center mx-auto">
+                                <div class="flex items-center justify-center gap-3 mx-auto">
                                     ${certLogoSource}
                                 </div>
                                 <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>

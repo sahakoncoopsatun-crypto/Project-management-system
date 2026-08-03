@@ -208,7 +208,7 @@
                     <!-- Database Connect Modal Trigger -->
                     <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-database text-amber-300"></i>
-                        <span class="hidden sm:inline">ฐานข้อมูล Cloud</span>
+                        <span class="font-extrabold">ฐานข้อมูล Cloud</span>
                     </button>
 
                     <!-- Member Portal Direct Link Generator -->
@@ -293,6 +293,25 @@
                 </div>
                 <button onclick="openNewProjectModal()" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2.5 rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-2 shrink-0 active:scale-95 cursor-pointer">
                     <i class="fa-solid fa-plus text-amber-400"></i> เขียนโครงการใหม่
+                </button>
+            </div>
+
+            <!-- PROMINENT DATABASE CONNECTION CALLOUT BANNER -->
+            <div class="bg-gradient-to-r from-emerald-900 via-teal-900 to-blue-950 text-white p-5 rounded-3xl shadow-md border border-emerald-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-xl text-emerald-300 shrink-0">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-sm text-emerald-300 flex items-center gap-2">
+                            สถานะการเชื่อมต่อฐานข้อมูล Google Sheets
+                            <span id="dashDbStatusBadge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">⚪ Offline / Local Mode</span>
+                        </h3>
+                        <p class="text-xs text-emerald-100/80 mt-0.5">ซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นคลาวด์ได้แบบเรียลไทม์ผ่าน Google Apps Script</p>
+                    </div>
+                </div>
+                <button onclick="openDatabaseModal()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-5 py-2.5 rounded-2xl text-xs font-extrabold shadow-lg transition shrink-0 active:scale-95 cursor-pointer flex items-center gap-2">
+                    <i class="fa-solid fa-plug text-blue-900 text-sm"></i> ตั้งค่าเชื่อมต่อฐานข้อมูล
                 </button>
             </div>
 
@@ -1259,6 +1278,86 @@
                         <button onclick="saveGasEndpointUrl()" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95">บันทึก URL & ซิงค์ข้อมูล</button>
                     </div>
                 </div>
+
+                <div class="space-y-2 bg-amber-50 p-3.5 rounded-2xl border border-amber-200">
+                    <p class="font-extrabold text-amber-900 flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-amber-600"></i> ข้อแนะนำสำหรับการตั้งค่าสิทธิ์ใน Google Apps Script (สำคัญมาก):</p>
+                    <ol class="list-decimal pl-5 space-y-1 text-[11px] text-amber-900 font-medium">
+                        <li>เปิด Google Sheet แล้วไปที่ **ขยาย (Extensions) > Apps Script**</li>
+                        <li>คัดลอกโค้ด `Code.gs` ด้านล่างไปวางแทนที่โค้ดเดิมทั้งหมด</li>
+                        <li>กดปุ่ม **ทำให้ใช้งานได้อย่างเป็นทางการ (Deploy) > การทำให้ใช้งานได้ใหม่ (New deployment)**</li>
+                        <li>ตั้งค่าประเภทเป็น **แอปเว็บ (Web App)**</li>
+                        <li>สิทธิ์การเข้าถึง (Who has access): **เลือก "ทุกคน" (Anyone)** *(หากเลือกเป็น Only myself ระบบจะไม่สามารถดึงข้อมูลได้)*</li>
+                    </ol>
+                </div>
+
+                <div class="space-y-1">
+                    <p class="font-bold text-slate-800">2. โค้ด Google Apps Script (Code.gs) ฉบับสมบูรณ์ (รองรับอ่าน/เขียนข้อมูล):</p>
+                    <textarea readonly rows="8" class="w-full border rounded-xl p-2.5 font-mono text-[11px] bg-slate-900 text-emerald-400">
+function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Projects');
+    if (!sheet) {
+      sheet = ss.insertSheet('Projects');
+      sheet.appendRow(['Timestamp', 'Project ID', 'Title', 'Fiscal Year', 'Full Data JSON']);
+    }
+    var values = sheet.getDataRange().getValues();
+    var projects = [];
+    for (var i = 1; i < values.length; i++) {
+      if (values[i][4]) {
+        try {
+          var p = JSON.parse(values[i][4]);
+          projects.push(p);
+        } catch(err) {}
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: projects }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('Projects');
+    if (!sheet) {
+      sheet = ss.insertSheet('Projects');
+      sheet.appendRow(['Timestamp', 'Project ID', 'Title', 'Fiscal Year', 'Full Data JSON']);
+    }
+    
+    var payload = JSON.parse(e.postData.contents);
+    var projectsToSave = Array.isArray(payload) ? payload : [payload];
+    var values = sheet.getDataRange().getValues();
+    
+    projectsToSave.forEach(function(proj) {
+      if (!proj || !proj.id) return;
+      var foundRow = -1;
+      for (var i = 1; i < values.length; i++) {
+        if (values[i][1] == proj.id) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+      
+      var rowData = [new Date(), proj.id, proj.title, proj.fiscalYear, JSON.stringify(proj)];
+      if (foundRow > 0) {
+        sheet.getRange(foundRow, 1, 1, rowData.length).setValues([rowData]);
+      } else {
+        sheet.appendRow(rowData);
+      }
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</textarea>
+                </div>
             </div>
 
             <div class="flex justify-end border-t pt-3">
@@ -1796,14 +1895,33 @@
 
         function updateDbSyncBadgeStatus(isOnline) {
             const badge = document.getElementById('dbSyncBadge');
-            if (!badge) return;
+            const dashBadge = document.getElementById('dashDbStatusBadge');
+
             if (gasEndpointUrl) {
-                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300';
-                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
+                if (badge) {
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300';
+                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
+                }
+                if (dashBadge) {
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+                    dashBadge.innerHTML = '🟢 เชื่อมต่อ Google Sheets แล้ว';
+                }
             } else {
-                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
-                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
+                if (badge) {
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
+                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
+                }
+                if (dashBadge) {
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700';
+                    dashBadge.innerHTML = '⚪ Offline / Local Mode';
+                }
             }
+        }
+
+        function openDatabaseModal() {
+            const el = document.getElementById('gasEndpointUrlInput');
+            if (el) el.value = gasEndpointUrl || '';
+            document.getElementById('databaseModal').classList.remove('hidden');
         }
 
         function getActiveProject() {
@@ -1991,7 +2109,6 @@
             const container = document.getElementById('certSignersConfigList');
             if (!container || !proj) return;
 
-            // Update Certificate Emblem Box Controls
             const logoUploadArea = document.getElementById('certLogoUploadArea');
             const logoActiveArea = document.getElementById('certLogoActiveArea');
             const logoPreviewImg = document.getElementById('certLogoPreviewImg');
@@ -2146,7 +2263,6 @@
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
-            // Handle Cert Specific Logo Display
             const certLogoImg = document.getElementById('previewCertLogoImg');
             const certLogoSvg = document.getElementById('previewCertLogoSvg');
             if (proj.certLogoUrl) {

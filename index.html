@@ -38,7 +38,7 @@
                 display: none !important;
             }
             #printAreaContainer, #printAreaContainer * {
-                visibility: visible;
+                visibility: visible !important;
             }
             #printAreaContainer {
                 position: absolute;
@@ -66,30 +66,34 @@
                 margin: 0 !important;
             }
             body.print-landscape-mode #printAreaContainer {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
                 width: 297mm !important;
                 height: 210mm !important;
-                padding: 10mm !important;
+                padding: 8mm !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 background: #ffffff !important;
+                overflow: hidden !important;
             }
             body.print-landscape-mode .cert-canvas-frame {
                 width: 100% !important;
                 height: 100% !important;
-                border: 12px double #1e3a8a !important;
+                border: 10px double #1e3a8a !important;
                 box-shadow: none !important;
                 margin: 0 !important;
-                padding: 8px !important;
+                padding: 6px !important;
                 box-sizing: border-box !important;
                 background: #ffffff !important;
             }
             body.print-landscape-mode .cert-inner-border {
-                border: 2.5px solid #d97706 !important;
+                border: 2px solid #d97706 !important;
                 margin: 0 !important;
                 height: 100% !important;
-                padding: 16px !important;
+                padding: 12px 16px !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -114,15 +118,15 @@
         .cert-canvas-frame {
             aspect-ratio: 1.414 / 1; /* A4 Landscape aspect ratio */
             background: #ffffff;
-            border: 14px double #1e3a8a;
+            border: 12px double #1e3a8a;
             box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.15);
             position: relative;
         }
 
         .cert-inner-border {
             border: 2.5px solid #d97706;
-            margin: 10px;
-            height: calc(100% - 20px);
+            margin: 8px;
+            height: calc(100% - 16px);
             position: relative;
             background: radial-gradient(circle at center, #ffffff 60%, #fafaf9 100%);
         }
@@ -145,8 +149,13 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Org Title & Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" onclick="handleHeaderLogoClick()">
-                    <div id="headerLogoBox" class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center p-1 overflow-hidden shadow-inner">
-                        <img id="headerOrgLogo" src="https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต." class="w-full h-full object-contain rounded-full" alt="Logo">
+                    <div id="headerLogoBox" class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center p-1 overflow-hidden shadow-inner shrink-0">
+                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
                     </div>
                     <div>
                         <h1 id="headerOrgName" class="font-black text-sm sm:text-base leading-tight text-amber-300 tracking-wide">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h1>
@@ -871,7 +880,7 @@
                         </button>
                     </div>
 
-                    <!-- Certificate Card Frame Official Sarabun Design (All text & images centered except Ref No) -->
+                    <!-- Certificate Card Frame Official Sarabun Design (Vector SVG emblem + Perfect Center Alignment) -->
                     <div id="certPreviewCard" class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font">
                         <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center">
                             <!-- Top Left Cert Reference No (Only Left-Aligned Element) -->
@@ -879,9 +888,17 @@
                                 เลขที่อ้างอิง: <span id="previewCertNo" class="text-blue-900">สอ.สธสต.69/0001</span>
                             </div>
 
-                            <!-- Top Org Logo & Header (Centered) -->
+                            <!-- Top Org Logo & Header (Centered Vector Logo) -->
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
-                                <img id="previewCertLogo" src="https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต." class="w-20 h-20 object-contain mx-auto" alt="Logo">
+                                <div id="previewCertLogoBox" class="w-20 h-20 flex items-center justify-center mx-auto">
+                                    <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                        <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                        <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                        <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                                    </svg>
+                                    <img id="previewCertLogoImg" src="" class="w-20 h-20 object-contain mx-auto hidden" alt="Logo">
+                                </div>
                                 <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                 <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
@@ -1180,7 +1197,7 @@ function doPost(e) {
                 <div class="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl p-6 text-center space-y-2">
                     <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-600"></i>
                     <p class="font-bold text-slate-700">ลากไฟล์ Excel (.xlsx) มาวางที่นี่ หรือคลิกปุ่มเลือกไฟล์</p>
-                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="handleExcelFileUpload(this)" class="block mx-auto text-xs text-slate-500">
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="handleExcelFileUpload(this)" class="block mx-auto text-xs text-slate-500 cursor-pointer">
                 </div>
 
                 <div id="excelPreviewContainer" class="hidden space-y-2">
@@ -1359,8 +1376,8 @@ function doPost(e) {
         let activeProjectId = 'proj-2569-001';
         let isAdminLoggedIn = true; // Admin enabled by default for Preview
         let isPublicMemberMode = false;
-        let globalOrgLogoUrl = 'https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต.';
-        let certLogoUrl = 'https://placehold.co/100x100/1e3a8a/ffffff?text=สอ.สธสต.';
+        let globalOrgLogoUrl = '';
+        let certLogoUrl = '';
         let gasEndpointUrl = '';
         let excelParsedData = [];
 
@@ -2279,7 +2296,14 @@ function doPost(e) {
 
             box.innerHTML = `
                 <div class="text-center space-y-1.5 border-b pb-4">
-                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
+                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
+                    </div>
                     <h2 class="text-base font-bold text-blue-950">${document.getElementById('headerOrgName').innerText}</h2>
                     <h1 class="text-lg font-black text-blue-900">แบบประเมินความพึงพอใจผู้เข้าร่วมโครงการ</h1>
                     <h3 class="text-xs font-bold text-slate-800">โครงการ: "${escapeHtml(proj.title)}"</h3>
@@ -2341,15 +2365,22 @@ function doPost(e) {
 
             box.innerHTML = `
                 <!-- PAGE 1: COVER PAGE -->
-                <div class="text-center space-y-6 py-12 min-h-[900px] flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <img src="${globalOrgLogoUrl}" class="w-24 h-24 object-contain mx-auto" alt="Logo">
+                <div class="text-center space-y-6 py-12 min-h-[900px] flex flex-col justify-between items-center">
+                    <div class="space-y-4 flex flex-col items-center">
+                        <div class="w-24 h-24 flex items-center justify-center mx-auto">
+                            <svg class="w-24 h-24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                            </svg>
+                        </div>
                         <h1 class="text-2xl font-black text-blue-950">รายงานผลการดำเนินโครงการ</h1>
                         <h2 class="text-lg font-bold text-blue-900">"${escapeHtml(proj.title)}"</h2>
                         <p class="text-sm font-semibold text-slate-700">ประจำปีงบประมาณ พ.ศ. ${proj.fiscalYear}</p>
                     </div>
 
-                    <div class="space-y-2 text-sm">
+                    <div class="space-y-2 text-sm text-center">
                         <p class="font-bold text-blue-950">จัดขึ้นโดย</p>
                         <p class="font-bold text-slate-800">${escapeHtml(proj.responsible)}</p>
                         <p class="text-slate-600">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</p>
@@ -2434,8 +2465,15 @@ function doPost(e) {
             });
 
             box.innerHTML = `
-                <div class="text-center space-y-2 border-b pb-4">
-                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
+                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
+                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
+                    </div>
                     <h1 class="text-lg font-black text-blue-950">รายงานสรุปประจำปีตามแผนยุทธศาสตร์</h1>
                     <h2 class="text-sm font-bold text-amber-800">ปีงบประมาณ พ.ศ. ${currentFiscalYear}</h2>
                 </div>
@@ -2531,6 +2569,7 @@ function doPost(e) {
             const targetEl = document.getElementById(targetId);
             if (!printBox || !targetEl) return;
 
+            // Must copy targetEl.outerHTML so outer container classes (.cert-canvas-frame) are preserved!
             printBox.innerHTML = targetEl.outerHTML;
             printBox.classList.remove('hidden');
 
@@ -2562,8 +2601,15 @@ function doPost(e) {
             });
 
             area.innerHTML = `
-                <div class="text-center space-y-2 border-b pb-4">
-                    <img src="${globalOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">
+                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
+                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
+                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                        </svg>
+                    </div>
                     <h2 class="text-base font-bold text-blue-950">แบบเสนอขออนุมัติโครงการ / กิจกรรม</h2>
                     <h1 class="text-lg font-black text-blue-900">"${escapeHtml(proj.title)}"</h1>
                 </div>
@@ -2768,6 +2814,36 @@ function doPost(e) {
             });
         }
 
+        function extractExcelRowData(row) {
+            if (!row || typeof row !== 'object') return { name: '', code: '', pos: '', type: 'สมาชิกสามัญ' };
+
+            let name = '', code = '', pos = '', type = 'สมาชิกสามัญ';
+            const keys = Object.keys(row);
+
+            keys.forEach(key => {
+                const kLower = key.trim().toLowerCase();
+                const val = String(row[key] || '').trim();
+
+                if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
+                    name = val;
+                } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก'))) {
+                    code = val;
+                } else if (!pos && (kLower.includes('ตำแหน่ง') || kLower.includes('สังกัด') || kLower.includes('หน่วยงาน') || kLower.includes('pos') || kLower.includes('role'))) {
+                    pos = val;
+                } else if (kLower.includes('ประเภท') || kLower.includes('type')) {
+                    type = val || 'สมาชิกสามัญ';
+                }
+            });
+
+            if (!name && keys.length > 0) {
+                name = String(row[keys[0]] || '').trim();
+                if (keys.length > 1 && !code) code = String(row[keys[1]] || '').trim();
+                if (keys.length > 2 && !pos) pos = String(row[keys[2]] || '').trim();
+            }
+
+            return { name, code, pos, type };
+        }
+
         function handleExcelFileUpload(input) {
             const file = input.files[0];
             if (!file) return;
@@ -2787,14 +2863,17 @@ function doPost(e) {
                     const tbody = document.getElementById('excelPreviewTableBody');
                     tbody.innerHTML = '';
                     json.slice(0, 5).forEach(row => {
-                        const tr = document.createElement('tr');
-                        tr.className = 'border-b';
-                        tr.innerHTML = `
-                            <td class="p-1">${escapeHtml(row['ชื่อ-นามสกุล'] || row['ชื่อ'] || row['Name'] || '-')}</td>
-                            <td class="p-1">${escapeHtml(row['เลขสมาชิก'] || row['เลขบัตรประชาชน'] || row['Code'] || '-')}</td>
-                            <td class="p-1">${escapeHtml(row['ตำแหน่ง'] || row['Position'] || '-')}</td>
-                        `;
-                        tbody.appendChild(tr);
+                        const parsed = extractExcelRowData(row);
+                        if (parsed.name) {
+                            const tr = document.createElement('tr');
+                            tr.className = 'border-b';
+                            tr.innerHTML = `
+                                <td class="p-1 font-semibold">${escapeHtml(parsed.name)}</td>
+                                <td class="p-1 font-mono">${escapeHtml(parsed.code || '-')}</td>
+                                <td class="p-1">${escapeHtml(parsed.pos || '-')}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
                     });
 
                     document.getElementById('excelPreviewContainer').classList.remove('hidden');
@@ -2810,27 +2889,30 @@ function doPost(e) {
             const proj = getActiveProject();
             if (!proj.participants) proj.participants = [];
 
+            let importedCount = 0;
             excelParsedData.forEach(row => {
-                const name = row['ชื่อ-นามสกุล'] || row['ชื่อ'] || row['Name'] || '';
-                if (name) {
+                const parsed = extractExcelRowData(row);
+                if (parsed.name) {
                     proj.participants.push({
                         id: 'part-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
                         certNo: generateNextCertNo(proj.fiscalYear),
-                        name,
-                        code: row['เลขสมาชิก'] || row['เลขบัตรประชาชน'] || row['Code'] || '',
-                        pos: row['ตำแหน่ง'] || row['Position'] || '',
-                        type: row['ประเภทสมาชิก'] || 'สมาชิกสามัญ',
+                        name: parsed.name,
+                        code: parsed.code,
+                        pos: parsed.pos,
+                        type: parsed.type || 'สมาชิกสามัญ',
                         checked: true
                     });
+                    importedCount++;
                 }
             });
 
             reindexParticipantCertNos();
+            saveStateToLocalStorage();
             closeModal('excelImportModal');
             renderUnStep2Participants();
             renderParticipantsList();
             renderDashboard();
-            showToast(`นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${excelParsedData.length} รายการ`, 'success');
+            showToast(`นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`, 'success');
         }
 
         function exportParticipantsToExcel() {
@@ -2891,7 +2973,13 @@ function doPost(e) {
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('previewCertLogo').src = e.target.result;
+                const img = document.getElementById('previewCertLogoImg');
+                const svg = document.getElementById('previewCertLogoSvg');
+                if (img && svg) {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    svg.classList.add('hidden');
+                }
             };
             reader.readAsDataURL(file);
             showToast('อัปโหลดโลโก้เรียบร้อยแล้ว', 'success');

@@ -505,6 +505,9 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="printAllCertificatesForProject()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
+                            </button>
                             <button onclick="openExcelImportModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-file-excel text-amber-300"></i> นำเข้าไฟล์ Excel (.xlsx)
                             </button>
@@ -752,6 +755,9 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="printAllCertificatesForProject()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
+                        </button>
                         <button onclick="openExcelImportModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                             <i class="fa-solid fa-file-excel text-amber-300"></i> นำเข้า Excel
                         </button>
@@ -2680,6 +2686,82 @@ function doPost(e) {
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
             triggerPrint('certPreviewCard', true);
+        }
+
+        function printAllCertificatesForProject() {
+            const proj = getActiveProject();
+            if (!proj || !proj.participants || proj.participants.length === 0) {
+                showToast('ไม่มีรายชื่อผู้เข้าร่วมในโครงการนี้', 'error');
+                return;
+            }
+
+            let allCertsHtml = '';
+            const cleanDate = formatCertDate(proj.date);
+            const s1Name = document.getElementById('certSigner1Name')?.value || proj.signer12Name;
+            const s1Pos = document.getElementById('certSigner1Pos')?.value || proj.signer12Pos;
+            const s2Name = document.getElementById('certSigner2Name')?.value || proj.signer13Name;
+            const s2Pos = document.getElementById('certSigner2Pos')?.value || proj.signer13Pos;
+
+            proj.participants.forEach((part, index) => {
+                const pageBreakClass = index < proj.participants.length - 1 ? 'page-break' : '';
+                allCertsHtml += `
+                    <div class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font ${pageBreakClass}" style="width: 100%; height: 100%; min-height: 200mm;">
+                        <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center">
+                            <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
+                                เลขที่อ้างอิง: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
+                            </div>
+                            <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
+                                <div class="w-20 h-20 flex items-center justify-center mx-auto">
+                                    <svg class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                        <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                        <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                        <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                                    </svg>
+                                </div>
+                                <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                            </div>
+                            <div class="my-auto py-2 w-full text-center">
+                                <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center">${escapeHtml(part.name)}</h2>
+                            </div>
+                            <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+                                <p class="text-sm font-extrabold text-blue-900 text-center">${escapeHtml(proj.title)}</p>
+                                <p class="text-center">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                <p class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                            </div>
+                            <div class="pt-4 space-y-4 w-full text-center">
+                                <p class="text-xs font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ ${cleanDate}</p>
+                                <div class="grid grid-cols-2 gap-10 max-w-xl mx-auto text-xs pt-2">
+                                    <div class="text-center space-y-1 flex flex-col items-center justify-center">
+                                        <p class="font-bold text-blue-950 text-center">(${escapeHtml(s1Name || '...................................................')})</p>
+                                        <p class="text-[11px] text-slate-600 font-medium text-center">${escapeHtml(s1Pos || 'ผู้จัดการสหกรณ์')}</p>
+                                    </div>
+                                    <div class="text-center space-y-1 flex flex-col items-center justify-center">
+                                        <p class="font-bold text-blue-950 text-center">(${escapeHtml(s2Name || '...................................................')})</p>
+                                        <p class="text-[11px] text-slate-600 font-medium text-center">${escapeHtml(s2Pos || 'ประธานกรรมการ')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.body.classList.add('print-landscape-mode');
+            const printBox = document.getElementById('printAreaContainer');
+            if (!printBox) return;
+
+            printBox.innerHTML = allCertsHtml;
+            printBox.classList.remove('hidden');
+
+            window.print();
+
+            setTimeout(() => {
+                printBox.classList.add('hidden');
+                document.body.classList.remove('print-landscape-mode');
+            }, 1000);
         }
 
         function updateCertPreview() {

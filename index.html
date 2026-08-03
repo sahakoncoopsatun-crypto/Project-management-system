@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* CRITICAL FALLBACK CSS RULES TO GUARANTEE INSTANT AND CLEAN RENDERING */
+        /* CRITICAL FALLBACK CSS RULES */
         .hidden, [hidden] {
             display: none !important;
         }
@@ -57,13 +57,17 @@
                 visibility: visible !important;
             }
             #printAreaContainer {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 background: #ffffff !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
             .page-break {
                 page-break-before: always;
@@ -94,13 +98,14 @@
                 justify-content: center !important;
                 background: #ffffff !important;
                 overflow: hidden !important;
+                margin: auto !important;
             }
             body.print-landscape-mode .cert-canvas-frame {
                 width: 100% !important;
                 height: 100% !important;
                 border: 10px double #1e3a8a !important;
                 box-shadow: none !important;
-                margin: 0 !important;
+                margin: 0 auto !important;
                 padding: 6px !important;
                 box-sizing: border-box !important;
                 background: #ffffff !important;
@@ -158,15 +163,16 @@
     <header class="bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white shadow-xl sticky top-0 z-40 no-print border-b border-blue-800/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Org Title & Logo -->
+                <!-- Org Title & System Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" onclick="handleHeaderLogoClick()">
-                    <div id="headerLogoBox" class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center p-1 overflow-hidden shadow-inner shrink-0">
-                        <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div id="headerLogoBox" class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center p-1 overflow-hidden shadow-inner shrink-0 relative">
+                        <svg id="headerOrgLogoSvg" class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                             <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                             <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
                             <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
                         </svg>
+                        <img id="headerOrgLogoImg" src="" class="w-full h-full object-contain hidden" alt="System Org Logo">
                     </div>
                     <div>
                         <h1 id="headerOrgName" class="font-black text-sm sm:text-base leading-tight text-amber-300 tracking-wide">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h1>
@@ -176,6 +182,13 @@
 
                 <!-- Header Actions -->
                 <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Upload System Logo Trigger -->
+                    <label class="admin-only-ctrl bg-blue-900/80 hover:bg-blue-800 text-blue-100 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm flex items-center gap-1.5 cursor-pointer transition active:scale-95" title="อัปโหลดตราหน่วยงานระบบ (ใช้ทุกหน้า)">
+                        <i class="fa-solid fa-image text-amber-400"></i>
+                        <span class="hidden xl:inline">ตราหน่วยงานระบบ</span>
+                        <input type="file" accept="image/*" onchange="uploadSystemOrgLogo(this)" class="hidden">
+                    </label>
+
                     <!-- Cloud Sync Indicator -->
                     <div id="dbSyncBadge" class="admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300">
                         <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
@@ -513,7 +526,7 @@
             <!-- UNIFIED STEP 2: EXECUTION & PARTICIPANTS REGISTER / EXCEL IMPORT -->
             <div id="un-step-panel-2" class="un-step-panel space-y-6 hidden">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b pb-4">
                         <div>
                             <h3 class="font-extrabold text-base text-blue-950 flex items-center gap-2">
                                 <i class="fa-solid fa-users-viewfinder text-blue-600"></i> ดำเนินงาน & ทะเบียนผู้เข้าร่วมโครงการ
@@ -521,15 +534,25 @@
                             <p class="text-xs text-slate-500">* สมาชิกสามารถรับเกียรติบัตรได้เมื่อโครงการขึ้นสถานะ **เสร็จสิ้นโครงการ** แล้วเท่านั้น</p>
                         </div>
 
+                        <!-- Action Toolbar with Batch Delete & Select All -->
                         <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="toggleSelectAllParticipants('unStep2ParticipantsTable')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-square-check text-blue-700"></i> เลือกทั้งหมด
+                            </button>
+                            <button onclick="deleteSelectedParticipants('unStep2ParticipantsTable')" class="bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-trash-can"></i> ลบรายการที่เลือก
+                            </button>
+                            <button onclick="deleteAllParticipantsPrompt()" class="bg-red-700 hover:bg-red-800 text-white px-3 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-circle-xmark"></i> ลบทั้งหมด
+                            </button>
                             <button onclick="printParticipantsGroupedByType()" class="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-print text-amber-300"></i> พิมพ์รายชื่อ (แยกประเภทสมาชิก)
+                                <i class="fa-solid fa-print text-amber-300"></i> พิมพ์รายชื่อ (1-7)
                             </button>
                             <button onclick="printAllCertificatesForProject()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
                             </button>
                             <button onclick="openExcelImportModal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-file-excel text-amber-300"></i> นำเข้าไฟล์ Excel (.xlsx)
+                                <i class="fa-solid fa-file-excel text-amber-300"></i> นำเข้าไฟล์ Excel
                             </button>
                             <button onclick="openAddParticipantModal()" class="bg-blue-900 hover:bg-blue-950 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-user-plus text-amber-400"></i> เพิ่มผู้เข้าร่วม
@@ -545,13 +568,16 @@
                         <table class="w-full text-left text-xs">
                             <thead class="bg-blue-950 text-white font-bold">
                                 <tr>
+                                    <th class="p-3 text-center w-10">
+                                        <input type="checkbox" onchange="toggleTableCheckboxes('unStep2ParticipantsTable', this.checked)" class="rounded border-slate-300 cursor-pointer">
+                                    </th>
                                     <th class="p-3 text-center w-12">ลำดับ</th>
                                     <th class="p-3">เลขที่เกียรติบัตร (สอ.สธสต.)</th>
                                     <th class="p-3">ชื่อ-นามสกุล</th>
                                     <th class="p-3">เลขสมาชิก / บัตรประชาชน</th>
                                     <th class="p-3">ตำแหน่ง / สังกัด</th>
                                     <th class="p-3 text-center">สถานะเกียรติบัตร</th>
-                                    <th class="p-3 text-center w-28">พิมพ์เกียรติบัตร</th>
+                                    <th class="p-3 text-center w-36">พรีวิว / พิมพ์</th>
                                     <th class="p-3 text-center w-16">ลบ</th>
                                 </tr>
                             </thead>
@@ -763,10 +789,10 @@
             </div>
         </section>
 
-        <!-- VIEW 4: PARTICIPANTS MANAGER -->
+        <!-- VIEW 4: PARTICIPANTS MANAGER WITH MULTI-SELECT -->
         <section id="view-participants" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b pb-4">
                     <div>
                         <h2 class="text-lg font-black text-blue-950 flex items-center gap-2">
                             <i class="fa-solid fa-users-gear text-blue-600"></i> รายชื่อผู้เข้าร่วมโครงการ & พิมพ์เกียรติบัตร
@@ -774,9 +800,19 @@
                         <p id="partViewProjectTitle" class="text-xs text-amber-700 font-bold mt-0.5">โครงการ: -</p>
                     </div>
 
+                    <!-- Toolbar Actions -->
                     <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="toggleSelectAllParticipants('mainParticipantsTableBody')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-square-check text-blue-700"></i> เลือกทั้งหมด
+                        </button>
+                        <button onclick="deleteSelectedParticipants('mainParticipantsTableBody')" class="bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i> ลบรายการที่เลือก
+                        </button>
+                        <button onclick="deleteAllParticipantsPrompt()" class="bg-red-700 hover:bg-red-800 text-white px-3 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-circle-xmark"></i> ลบทั้งหมด
+                        </button>
                         <button onclick="printParticipantsGroupedByType()" class="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-print text-amber-300"></i> พิมพ์รายชื่อ (แยกประเภทสมาชิก)
+                            <i class="fa-solid fa-print text-amber-300"></i> พิมพ์รายชื่อ (1-7)
                         </button>
                         <button onclick="printAllCertificatesForProject()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
                             <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
@@ -797,13 +833,16 @@
                     <table class="w-full text-left text-xs">
                         <thead class="bg-blue-950 text-white font-bold">
                             <tr>
+                                <th class="p-3 text-center w-10">
+                                    <input type="checkbox" onchange="toggleTableCheckboxes('mainParticipantsTableBody', this.checked)" class="rounded border-slate-300 cursor-pointer">
+                                </th>
                                 <th class="p-3 text-center w-12">ลำดับ</th>
                                 <th class="p-3">เลขที่เกียรติบัตร</th>
                                 <th class="p-3">ชื่อ-นามสกุล</th>
                                 <th class="p-3">เลขสมาชิก/บัตรประชาชน</th>
                                 <th class="p-3">ตำแหน่ง/สังกัด</th>
                                 <th class="p-3 text-center">สถานะ</th>
-                                <th class="p-3 text-center w-28">พิมพ์เกียรติบัตร</th>
+                                <th class="p-3 text-center w-36">พรีวิว / พิมพ์</th>
                                 <th class="p-3 text-center w-16">ลบ</th>
                             </tr>
                         </thead>
@@ -867,7 +906,7 @@
             </div>
         </section>
 
-        <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH DYNAMIC ADD/DELETE SIGNERS -->
+        <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH SEPARATE CERTIFICATE LOGO & DYNAMIC SIGNERS -->
         <section id="view-cert-config" class="space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Cert Config Controls -->
@@ -882,9 +921,12 @@
                     </div>
 
                     <div class="space-y-4 text-xs">
-                        <div class="space-y-1">
-                            <label class="font-bold text-slate-700">อัปโหลดโลโก้เกียรติบัตร</label>
-                            <input type="file" accept="image/*" onchange="uploadCertLogo(this)" class="w-full text-xs border rounded-xl p-2 bg-slate-50">
+                        <div class="space-y-1 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
+                            <label class="font-bold text-amber-950 flex items-center gap-1.5">
+                                <i class="fa-solid fa-award text-amber-600"></i> อัปโหลดตราเกียรติบัตร (แยกเฉพาะเกียรติบัตร)
+                            </label>
+                            <p class="text-[11px] text-slate-500 mb-1">ตรานี้จะใช้เฉพาะบนเกียรติบัตร ไม่กระทบตราหลักของระบบ</p>
+                            <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="w-full text-xs border rounded-xl p-1.5 bg-white">
                         </div>
 
                         <!-- Dynamic Signers Configuration List -->
@@ -898,9 +940,14 @@
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex justify-between items-center bg-white p-4 rounded-2xl border">
                         <span class="font-extrabold text-xs text-slate-800">พรีวิวเกียรติบัตร (A4 แนวนอน รูปแบบสารบรรณ)</span>
-                        <button onclick="triggerPrint('certPreviewCard', true)" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร (A4 แนวนอน)
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openCertPreviewModal('p1')" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-magnifying-glass-plus text-amber-400"></i> ขยายดูตัวอย่างก่อนพิมพ์
+                            </button>
+                            <button onclick="triggerPrint('certPreviewCard', true)" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร (A4)
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Certificate Card Frame Official Sarabun Design -->
@@ -913,14 +960,14 @@
 
                             <!-- Top Org Logo & Header -->
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
-                                <div id="previewCertLogoBox" class="w-20 h-20 flex items-center justify-center mx-auto">
+                                <div id="previewCertLogoBox" class="w-20 h-20 flex items-center justify-center mx-auto relative">
                                     <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                                         <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                                         <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
                                         <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
                                     </svg>
-                                    <img id="previewCertLogoImg" src="" class="w-20 h-20 object-contain mx-auto hidden" alt="Logo">
+                                    <img id="previewCertLogoImg" src="" class="w-20 h-20 object-contain mx-auto hidden" alt="Cert Specific Logo">
                                 </div>
                                 <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                 <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
@@ -982,6 +1029,30 @@
         </section>
     </main>
 
+    <!-- MODAL: CERTIFICATE FULLSCREEN PREVIEW -->
+    <div id="certPreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4 no-print overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-5xl w-full p-6 space-y-4 shadow-2xl my-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-award text-amber-500"></i> ตรวจสอบตัวอย่างเกียรติบัตรก่อนสั่งพิมพ์ (A4 Landscape)
+                </h3>
+                <button onclick="closeModal('certPreviewModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- Certificate Frame Target Container -->
+            <div id="certModalFrameHolder" class="w-full flex justify-center py-2 bg-slate-100 rounded-2xl overflow-x-auto p-4">
+                <!-- Dynamic Cloned Cert Frame -->
+            </div>
+
+            <div class="flex justify-between border-t pt-3">
+                <button onclick="closeModal('certPreviewModal')" class="bg-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-semibold cursor-pointer">ปิดหน้าต่าง</button>
+                <button onclick="triggerPrint('certPreviewCard', true)" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตรฉบับนี้ (A4)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- CUSTOM TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 no-print"></div>
 
@@ -997,7 +1068,7 @@
         </div>
     </div>
 
-    <!-- MODAL: PRINT GROUPED PARTICIPANTS LIST (A4 PORTRAIT) -->
+    <!-- MODAL: PRINT GROUPED PARTICIPANTS LIST (A4 PORTRAIT - COLS 1-7) -->
     <div id="groupedParticipantsModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
         <div class="bg-white rounded-3xl max-w-4xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -1077,6 +1148,81 @@
                     <button type="submit" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">บันทึกรายชื่อ</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: EXCEL PARSER / IMPORT PARTICIPANTS -->
+    <div id="excelImportModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-emerald-950 flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel text-emerald-600"></i> นำเข้าไฟล์รายชื่อผู้เข้าร่วมจาก Excel (.xlsx / .csv)
+                </h3>
+                <button onclick="closeModal('excelImportModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div class="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl p-6 text-center space-y-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-600"></i>
+                    <p class="font-bold text-slate-700">ลากไฟล์ Excel (.xlsx) มาวางที่นี่ หรือคลิกปุ่มเลือกไฟล์</p>
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" onchange="handleExcelFileUpload(this)" class="block mx-auto text-xs text-slate-500 cursor-pointer">
+                </div>
+
+                <div id="excelPreviewContainer" class="hidden space-y-2">
+                    <p class="font-bold text-emerald-950">พรีวิวข้อมูลที่จะนำเข้า (<span id="excelRowCount">0</span> คน):</p>
+                    <div class="max-h-40 overflow-y-auto border rounded-xl p-2 text-[11px] bg-slate-50">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b font-bold text-slate-700">
+                                    <th class="p-1">ชื่อ - สกุล</th>
+                                    <th class="p-1">เลขสมาชิก</th>
+                                    <th class="p-1">ตำแหน่ง</th>
+                                    <th class="p-1">สังกัด</th>
+                                </tr>
+                            </thead>
+                            <tbody id="excelPreviewTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between border-t pt-3">
+                <button onclick="downloadSampleExcelTemplate()" class="text-blue-700 hover:underline text-xs font-bold flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-download"></i> ดาวน์โหลดไฟล์ตัวอย่าง</button>
+                <div class="flex gap-2">
+                    <button onclick="closeModal('excelImportModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">ยกเลิก</button>
+                    <button id="confirmExcelImportBtn" onclick="confirmExcelImport()" disabled class="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-bold shadow cursor-pointer active:scale-95">ยืนยันนำเข้าข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DATABASE CONNECTION GUIDE & LIVE SYNC ENGINE -->
+    <div id="databaseModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-database text-amber-500"></i> การเชื่อมต่อฐานข้อมูล Google Sheets & Apps Script
+                </h3>
+                <button onclick="closeModal('databaseModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <p class="text-slate-600">ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync:</p>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
+                    <p class="font-bold text-blue-950">1. วาง Web App URL ที่ได้จาก Google Apps Script</p>
+                    <input type="url" id="gasEndpointUrlInput" class="w-full border rounded-xl p-2.5 font-mono text-xs bg-white" placeholder="https://script.google.com/macros/s/.../exec">
+                    <div class="flex justify-end gap-2 pt-1">
+                        <button onclick="fetchDataFromDatabase(true)" class="bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95"><i class="fa-solid fa-cloud-arrow-down"></i> ดึงข้อมูลจาก Cloud</button>
+                        <button onclick="testDatabaseConnection()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95">ทดสอบการเชื่อมต่อ</button>
+                        <button onclick="saveGasEndpointUrl()" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer active:scale-95">บันทึก URL & ซิงค์ข้อมูล</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end border-t pt-3">
+                <button onclick="closeModal('databaseModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">ปิดหน้าต่าง</button>
+            </div>
         </div>
     </div>
 
@@ -1186,8 +1332,7 @@
         let activeProjectId = 'proj-2569-001';
         let isAdminLoggedIn = true; // Admin enabled by default for Preview
         let isPublicMemberMode = false;
-        let globalOrgLogoUrl = '';
-        let certLogoUrl = '';
+        let systemOrgLogoUrl = '';
         let gasEndpointUrl = '';
         let excelParsedData = [];
 
@@ -1219,6 +1364,7 @@
                 signer11Name: 'นายประเสริฐ สุวรรณโณ', signer11Pos: 'หัวหน้าฝ่ายบริหารงานทั่วไป',
                 signer12Name: 'นางสาวสุดารัตน์ ใจดี', signer12Pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
                 signer13Name: 'นายวิชาญ บุญทอง', signer13Pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
+                certLogoUrl: '', // Separate Certificate Specific Logo
                 certSigners: [
                     { id: 'cs-1', name: 'นางสาวสุดารัตน์ ใจดี', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
                     { id: 'cs-2', name: 'นายวิชาญ บุญทอง', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
@@ -1250,8 +1396,8 @@
                     }
                 ],
                 participants: [
-                    { id: 'p1', certNo: 'สอ.สธสต.69/0001', name: 'นายสมชาย รักดี', code: '05500123', pos: 'นักวิชาการสาธารณสุข', type: 'สมาชิกสามัญ', checked: true },
-                    { id: 'p2', certNo: 'สอ.สธสต.69/0002', name: 'นางสาววิไล พรประเสริฐ', code: '05500124', pos: 'พยาบาลวิชาชีพชำนาญการ', type: 'สมาชิกสามัญ', checked: true }
+                    { id: 'p1', certNo: 'สอ.สธสต.69/0001', name: 'นายสมชาย รักดี', code: '05500123', pos: 'นักวิชาการสาธารณสุข', org: 'รพ.สต.บ้านควน', type: 'สมาชิกสามัญ', remark: '', selected: false },
+                    { id: 'p2', certNo: 'สอ.สธสต.69/0002', name: 'นางสาววิไล พรประเสริฐ', code: '05500124', pos: 'พยาบาลวิชาชีพชำนาญการ', org: 'โรงพยาบาลสตูล', type: 'สมาชิกสามัญ', remark: '', selected: false }
                 ],
                 media: []
             }
@@ -1273,7 +1419,7 @@
                 iconClass = 'fa-circle-exclamation text-red-400';
             }
 
-            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm`;
+            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm z-50`;
             toast.innerHTML = `<i class="fa-solid ${iconClass} text-sm"></i> <span>${escapeHtml(message)}</span>`;
 
             container.appendChild(toast);
@@ -1464,6 +1610,39 @@
             }
         }
 
+        function uploadSystemOrgLogo(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                systemOrgLogoUrl = e.target.result;
+                const img = document.getElementById('headerOrgLogoImg');
+                const svg = document.getElementById('headerOrgLogoSvg');
+                if (img && svg) {
+                    img.src = systemOrgLogoUrl;
+                    img.classList.remove('hidden');
+                    svg.classList.add('hidden');
+                }
+                saveStateToLocalStorage(false);
+                showToast('อัปโหลดตราหน่วยงานระบบเรียบร้อยแล้ว (จะแสดงทุกหน้าในระบบ)', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadCertSpecificLogo(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const proj = getActiveProject();
+                proj.certLogoUrl = e.target.result;
+                saveStateToLocalStorage();
+                updateCertPreview();
+                showToast('อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว (แยกเฉพาะเกียรติบัตร)', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
         function toggleAdminAuthAction() {
             if (isAdminLoggedIn) {
                 showConfirm('คุณต้องการออกจากระบบผู้ดูแลระบบใช่หรือไม่?', function() {
@@ -1480,6 +1659,7 @@
             try {
                 localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
                 localStorage.setItem('coop_gas_url', gasEndpointUrl);
+                localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
                 if (shouldSyncRemote) {
                     syncToRemoteDatabase();
                 }
@@ -1495,6 +1675,17 @@
                     gasEndpointUrl = savedGas;
                     const el = document.getElementById('gasEndpointUrlInput');
                     if (el) el.value = savedGas;
+                }
+                const savedLogo = localStorage.getItem('coop_system_logo');
+                if (savedLogo) {
+                    systemOrgLogoUrl = savedLogo;
+                    const img = document.getElementById('headerOrgLogoImg');
+                    const svg = document.getElementById('headerOrgLogoSvg');
+                    if (img && svg) {
+                        img.src = systemOrgLogoUrl;
+                        img.classList.remove('hidden');
+                        svg.classList.add('hidden');
+                    }
                 }
             } catch(e) { console.error(e); }
         }
@@ -1881,10 +2072,42 @@
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
+            // Handle Cert Specific Logo
+            const certLogoImg = document.getElementById('previewCertLogoImg');
+            const certLogoSvg = document.getElementById('previewCertLogoSvg');
+            if (proj.certLogoUrl) {
+                certLogoImg.src = proj.certLogoUrl;
+                certLogoImg.classList.remove('hidden');
+                certLogoSvg.classList.add('hidden');
+            } else {
+                certLogoImg.classList.add('hidden');
+                certLogoSvg.classList.remove('hidden');
+            }
+
             const container = document.getElementById('previewCertSignersContainer');
             if (container) {
                 container.innerHTML = renderCertSignersPreviewHtml(proj.certSigners);
             }
+        }
+
+        function openCertPreviewModal(partId) {
+            const proj = getActiveProject();
+            const modal = document.getElementById('certPreviewModal');
+            const holder = document.getElementById('certModalFrameHolder');
+            if (!modal || !holder || !proj) return;
+
+            if (partId) {
+                const part = (proj.participants || []).find(p => p.id === partId);
+                if (part) {
+                    document.getElementById('previewCertNo').innerText = part.certNo;
+                    document.getElementById('previewCertName').innerText = part.name;
+                }
+            }
+
+            updateCertPreview();
+            const cardEl = document.getElementById('certPreviewCard');
+            holder.innerHTML = cardEl.outerHTML;
+            modal.classList.remove('hidden');
         }
 
         function toggleProjectStatus() {
@@ -1998,6 +2221,65 @@
             saveStateToLocalStorage();
         }
 
+        function toggleTableCheckboxes(tableBodyId, checked) {
+            const proj = getActiveProject();
+            (proj.participants || []).forEach(p => p.selected = checked);
+            const tbody = document.getElementById(tableBodyId);
+            if (tbody) {
+                tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = checked);
+            }
+        }
+
+        function toggleSingleParticipantSelect(partId, checked) {
+            const proj = getActiveProject();
+            const part = (proj.participants || []).find(p => p.id === partId);
+            if (part) part.selected = checked;
+        }
+
+        function toggleSelectAllParticipants(tableBodyId) {
+            const proj = getActiveProject();
+            const allSelected = (proj.participants || []).every(p => p.selected);
+            toggleTableCheckboxes(tableBodyId, !allSelected);
+            renderUnStep2Participants();
+            renderParticipantsList();
+            showToast(!allSelected ? 'เลือกรายชื่อทั้งหมดเรียบร้อยแล้ว' : 'ยกเลิกการเลือกทั้งหมดแล้ว', 'info');
+        }
+
+        function deleteSelectedParticipants(tableBodyId) {
+            const proj = getActiveProject();
+            const selectedList = (proj.participants || []).filter(p => p.selected);
+            if (selectedList.length === 0) {
+                showToast('กรุณาติ๊กเลือกรายชื่อที่ต้องการลบก่อน', 'error');
+                return;
+            }
+
+            showConfirm(`คุณต้องการลบรายชื่อที่เลือกจำนวน ${selectedList.length} รายการ ใช่หรือไม่?`, function() {
+                proj.participants = (proj.participants || []).filter(p => !p.selected);
+                reindexParticipantCertNos();
+                renderUnStep2Participants();
+                renderParticipantsList();
+                renderDashboard();
+                showToast(`ลบรายชื่อที่เลือกจำนวน ${selectedList.length} รายการเรียบร้อยแล้ว`, 'info');
+            });
+        }
+
+        function deleteAllParticipantsPrompt() {
+            const proj = getActiveProject();
+            if (!proj.participants || proj.participants.length === 0) {
+                showToast('ไม่มีรายชื่อผู้เข้าร่วมในโครงการนี้', 'error');
+                return;
+            }
+
+            showConfirm(`คุณแน่ใจหรือไม่ว่าต้องการลบรายชื่อผู้เข้าร่วมทั้งหมด ${proj.participants.length} คนในโครงการนี้?`, function() {
+                proj.participants = [];
+                saveStateToLocalStorage();
+                renderUnStep2Participants();
+                renderParticipantsList();
+                renderDashboard();
+                showToast('ลบรายชื่อผู้เข้าร่วมทั้งหมดเรียบร้อยแล้ว', 'info');
+            });
+        }
+
         function renderUnStep2Participants() {
             const proj = getActiveProject();
             const tbody = document.getElementById('unStep2ParticipantsTable');
@@ -2009,20 +2291,28 @@
             (proj.participants || []).forEach((p, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                    <td class="p-3 text-center">
+                        <input type="checkbox" ${p.selected ? 'checked' : ''} onchange="toggleSingleParticipantSelect('${p.id}', this.checked)" class="rounded border-slate-300 cursor-pointer">
+                    </td>
                     <td class="p-3 text-center font-bold">${idx + 1}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
                     <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
                     <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
-                    <td class="p-3">${escapeHtml(p.pos || '-')}</td>
+                    <td class="p-3">${escapeHtml(p.pos || '-')}${p.org ? ` (${escapeHtml(p.org)})` : ''}</td>
                     <td class="p-3 text-center">
                         ${isCompleted ? 
                             '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300"><i class="fa-solid fa-circle-check"></i> พร้อมพิมพ์เกียรติบัตร</span>' : 
                             '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-clock"></i> รอเสร็จสิ้นโครงการ</span>'}
                     </td>
                     <td class="p-3 text-center">
-                        <button type="button" onclick="printSingleCertificate('${p.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-bold px-2.5 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
-                            <i class="fa-solid fa-print"></i> พิมพ์
-                        </button>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" onclick="openCertPreviewModal('${p.id}')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
+                                <i class="fa-solid fa-eye"></i> พรีวิว
+                            </button>
+                            <button type="button" onclick="printSingleCertificate('${p.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
+                                <i class="fa-solid fa-print"></i> พิมพ์
+                            </button>
+                        </div>
                     </td>
                     <td class="p-3 text-center"><button type="button" onclick="removeParticipant('${p.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
                 `;
@@ -2041,20 +2331,28 @@
             (proj.participants || []).forEach((p, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                    <td class="p-3 text-center">
+                        <input type="checkbox" ${p.selected ? 'checked' : ''} onchange="toggleSingleParticipantSelect('${p.id}', this.checked)" class="rounded border-slate-300 cursor-pointer">
+                    </td>
                     <td class="p-3 text-center font-bold">${idx + 1}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
                     <td class="p-3 font-bold">${escapeHtml(p.name)}</td>
                     <td class="p-3 font-mono">${escapeHtml(p.code || '-')}</td>
-                    <td class="p-3">${escapeHtml(p.pos || '-')}</td>
+                    <td class="p-3">${escapeHtml(p.pos || '-')}${p.org ? ` (${escapeHtml(p.org)})` : ''}</td>
                     <td class="p-3 text-center">
                         ${isCompleted ? 
                             '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300"><i class="fa-solid fa-circle-check"></i> พร้อมใช้งาน</span>' : 
                             '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-clock"></i> รอเสร็จสิ้นโครงการ</span>'}
                     </td>
                     <td class="p-3 text-center">
-                        <button type="button" onclick="printSingleCertificate('${p.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-bold px-2.5 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
-                            <i class="fa-solid fa-print"></i> พิมพ์
-                        </button>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" onclick="openCertPreviewModal('${p.id}')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
+                                <i class="fa-solid fa-eye"></i> พรีวิว
+                            </button>
+                            <button type="button" onclick="printSingleCertificate('${p.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
+                                <i class="fa-solid fa-print"></i> พิมพ์
+                            </button>
+                        </div>
                     </td>
                     <td class="p-3 text-center"><button type="button" onclick="removeParticipant('${p.id}')" class="text-red-500 hover:text-red-700 cursor-pointer"><i class="fa-solid fa-trash"></i></button></td>
                 `;
@@ -2099,6 +2397,15 @@
             const cleanDate = formatCertDate(proj.date);
             const signersHtml = renderCertSignersPreviewHtml(proj.certSigners);
 
+            const certLogoSource = proj.certLogoUrl ? `<img src="${proj.certLogoUrl}" class="w-20 h-20 object-contain mx-auto" alt="Logo">` : `
+                <svg class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                    <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                    <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                </svg>
+            `;
+
             proj.participants.forEach((part, index) => {
                 const pageBreakClass = index < proj.participants.length - 1 ? 'page-break' : '';
                 allCertsHtml += `
@@ -2109,12 +2416,7 @@
                             </div>
                             <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
                                 <div class="w-20 h-20 flex items-center justify-center mx-auto">
-                                    <svg class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                                        <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                                        <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                                        <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                                    </svg>
+                                    ${certLogoSource}
                                 </div>
                                 <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                 <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
@@ -2164,18 +2466,19 @@
                 return;
             }
 
-            const groups = {
-                'สมาชิกสามัญ': [],
-                'สมาชิกสมทบ': [],
-                'บุคคลภายนอก / วิทยากร': []
-            };
-
+            // Dynamic grouping based on participant types from uploaded data
+            const groups = {};
             participants.forEach(p => {
-                const type = (p.type || '').trim();
-                if (type.includes('สมทบ')) groups['สมาชิกสมทบ'].push(p);
-                else if (type.includes('บุคคลภายนอก') || type.includes('วิทยากร')) groups['บุคคลภายนอก / วิทยากร'].push(p);
-                else groups['สมาชิกสามัญ'].push(p);
+                const type = (p.type || 'สมาชิกสามัญ').trim();
+                if (!groups[type]) groups[type] = [];
+                groups[type].push(p);
             });
+
+            // Populate dynamic type datalist for manual adding
+            const datalist = document.getElementById('dynamicMemberTypeList');
+            if (datalist) {
+                datalist.innerHTML = Object.keys(groups).map(t => `<option value="${escapeHtml(t)}"></option>`).join('');
+            }
 
             let groupsHtml = '';
             let globalIndex = 1;
@@ -2188,10 +2491,12 @@
                         rows += `
                             <tr class="border-b text-slate-800">
                                 <td class="p-2 border text-center font-bold">${globalIndex++}</td>
-                                <td class="p-2 border font-mono font-bold text-blue-900">${escapeHtml(item.certNo)}</td>
+                                <td class="p-2 border font-mono font-bold text-blue-900">${escapeHtml(item.code || item.certNo || '-')}</td>
                                 <td class="p-2 border font-bold">${escapeHtml(item.name)}</td>
-                                <td class="p-2 border font-mono">${escapeHtml(item.code || '-')}</td>
                                 <td class="p-2 border">${escapeHtml(item.pos || '-')}</td>
+                                <td class="p-2 border">${escapeHtml(item.org || '-')}</td>
+                                <td class="p-2 border text-center text-slate-300 font-mono text-[10px]">...........................</td>
+                                <td class="p-2 border text-slate-600">${escapeHtml(item.remark || '')}</td>
                             </tr>
                         `;
                     });
@@ -2199,17 +2504,19 @@
                     groupsHtml += `
                         <div class="space-y-2 pt-2">
                             <h4 class="font-extrabold text-sm text-blue-950 flex items-center justify-between border-b-2 border-blue-900 pb-1">
-                                <span><i class="fa-solid fa-layer-group text-amber-600"></i> ${typeKey}</span>
+                                <span><i class="fa-solid fa-layer-group text-amber-600"></i> ${escapeHtml(typeKey)}</span>
                                 <span class="text-xs bg-blue-100 text-blue-900 font-mono px-2.5 py-0.5 rounded-full">จำนวน ${list.length} คน</span>
                             </h4>
                             <table class="w-full border text-xs">
                                 <thead class="bg-blue-950 text-white font-bold border-b">
                                     <tr>
-                                        <th class="p-2 border text-center w-12">ลำดับ</th>
-                                        <th class="p-2 border text-left">เลขที่เกียรติบัตร</th>
-                                        <th class="p-2 border text-left">ชื่อ-นามสกุล</th>
-                                        <th class="p-2 border text-left">เลขสมาชิก/บัตร</th>
-                                        <th class="p-2 border text-left">ตำแหน่ง/สังกัด</th>
+                                        <th class="p-2 border text-center w-10">1. ลำดับ</th>
+                                        <th class="p-2 border text-left w-24">2. เลขที่สมาชิก</th>
+                                        <th class="p-2 border text-left">3. ชื่อ - สกุล</th>
+                                        <th class="p-2 border text-left">4. ตำแหน่ง</th>
+                                        <th class="p-2 border text-left">5. หน่วยงานต้นสังกัด</th>
+                                        <th class="p-2 border text-center w-32">6. ลงชื่อ</th>
+                                        <th class="p-2 border text-left w-24">7. หมายเหตุ</th>
                                     </tr>
                                 </thead>
                                 <tbody>${rows}</tbody>
@@ -2255,6 +2562,56 @@
             modal.classList.remove('hidden');
         }
 
+        function exportGroupedParticipantsToExcel() {
+            const proj = getActiveProject();
+            if (!proj || !proj.participants || proj.participants.length === 0) {
+                showToast('ไม่มีข้อมูลรายชื่อผู้เข้าร่วมในการส่งออก', 'error');
+                return;
+            }
+
+            const groups = {};
+            proj.participants.forEach(p => {
+                const type = (p.type || 'สมาชิกสามัญ').trim();
+                if (!groups[type]) groups[type] = [];
+                groups[type].push(p);
+            });
+
+            const exportRows = [];
+            let globalIndex = 1;
+
+            Object.keys(groups).forEach(typeKey => {
+                exportRows.push({
+                    '1. ลำดับ': `=== ${typeKey} (จำนวน ${groups[typeKey].length} คน) ===`,
+                    '2. เลขที่สมาชิก': '',
+                    '3. ชื่อ - สกุล': '',
+                    '4. ตำแหน่ง': '',
+                    '5. หน่วยงานต้นสังกัด': '',
+                    '6. ลงชื่อ': '',
+                    '7. หมายเหตุ': '',
+                    'ประเภทสมาชิก': typeKey
+                });
+
+                groups[typeKey].forEach(p => {
+                    exportRows.push({
+                        '1. ลำดับ': globalIndex++,
+                        '2. เลขที่สมาชิก': p.code || p.certNo || '',
+                        '3. ชื่อ - สกุล': p.name || '',
+                        '4. ตำแหน่ง': p.pos || '',
+                        '5. หน่วยงานต้นสังกัด': p.org || '',
+                        '6. ลงชื่อ': '',
+                        '7. หมายเหตุ': p.remark || '',
+                        'ประเภทสมาชิก': typeKey
+                    });
+                });
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(exportRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Grouped_Participants');
+            XLSX.writeFile(workbook, `Participants_Grouped_${proj.fiscalYear}.xlsx`);
+            showToast('ส่งออกไฟล์ Excel แยกตามประเภทสมาชิกเรียบร้อยแล้ว', 'success');
+        }
+
         function removeParticipant(partId) {
             const proj = getActiveProject();
             proj.participants = (proj.participants || []).filter(p => p.id !== partId);
@@ -2273,12 +2630,14 @@
             const name = document.getElementById('partInputName').value;
             const code = document.getElementById('partInputCode').value;
             const pos = document.getElementById('partInputPos').value;
-            const type = document.getElementById('partInputType').value;
+            const org = document.getElementById('partInputOrg').value;
+            const type = document.getElementById('partInputType').value || 'สมาชิกสามัญ';
+            const remark = document.getElementById('partInputRemark').value;
 
             proj.participants.push({
                 id: 'part-' + Date.now(),
                 certNo: generateNextCertNo(proj.fiscalYear),
-                name, code, pos, type, checked: true
+                name, code, pos, org, type, remark, checked: true, selected: false
             });
 
             reindexParticipantCertNos();
@@ -2287,6 +2646,173 @@
             renderParticipantsList();
             renderDashboard();
             showToast('เพิ่มผู้เข้าร่วมเรียบร้อยแล้ว', 'success');
+        }
+
+        function extractExcelRowData(row) {
+            if (!row || typeof row !== 'object') return { name: '', code: '', pos: '', org: '', type: 'สมาชิกสามัญ', remark: '' };
+
+            let name = '', code = '', pos = '', org = '', type = '', remark = '';
+            const keys = Object.keys(row);
+
+            keys.forEach(key => {
+                const kLower = key.trim().toLowerCase();
+                const val = String(row[key] || '').trim();
+
+                if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
+                    name = val;
+                } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก'))) {
+                    code = val;
+                } else if (!pos && (kLower.includes('ตำแหน่ง') || kLower.includes('pos') || kLower.includes('role'))) {
+                    pos = val;
+                } else if (!org && (kLower.includes('หน่วยงาน') || kLower.includes('สังกัด') || kLower.includes('ต้นสังกัด') || kLower.includes('org') || kLower.includes('dept'))) {
+                    org = val;
+                } else if (!type && (kLower.includes('ประเภท') || kLower.includes('type') || kLower.includes('สถานะสมาชิก'))) {
+                    type = val;
+                } else if (!remark && (kLower.includes('หมายเหตุ') || kLower.includes('remark') || kLower.includes('note'))) {
+                    remark = val;
+                }
+            });
+
+            if (!type) type = 'สมาชิกสามัญ';
+
+            if (!name && keys.length > 0) {
+                name = String(row[keys[0]] || '').trim();
+                if (keys.length > 1 && !code) code = String(row[keys[1]] || '').trim();
+                if (keys.length > 2 && !pos) pos = String(row[keys[2]] || '').trim();
+                if (keys.length > 3 && !org) org = String(row[keys[3]] || '').trim();
+            }
+
+            return { name, code, pos, org, type, remark };
+        }
+
+        function handleExcelFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheet];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+                    excelParsedData = json;
+                    document.getElementById('excelRowCount').innerText = json.length;
+                    
+                    const tbody = document.getElementById('excelPreviewTableBody');
+                    tbody.innerHTML = '';
+                    json.slice(0, 5).forEach(row => {
+                        const parsed = extractExcelRowData(row);
+                        if (parsed.name) {
+                            const tr = document.createElement('tr');
+                            tr.className = 'border-b';
+                            tr.innerHTML = `
+                                <td class="p-1 font-semibold">${escapeHtml(parsed.name)}</td>
+                                <td class="p-1 font-mono">${escapeHtml(parsed.code || '-')}</td>
+                                <td class="p-1">${escapeHtml(parsed.pos || '-')}</td>
+                                <td class="p-1">${escapeHtml(parsed.org || '-')}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    });
+
+                    document.getElementById('excelPreviewContainer').classList.remove('hidden');
+                    document.getElementById('confirmExcelImportBtn').disabled = false;
+                } catch(err) {
+                    showToast('เกิดข้อผิดพลาดในการอ่านไฟล์ Excel: ' + err.toString(), 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function confirmExcelImport() {
+            const proj = getActiveProject();
+            if (!proj.participants) proj.participants = [];
+
+            let importedCount = 0;
+            excelParsedData.forEach(row => {
+                const parsed = extractExcelRowData(row);
+                if (parsed.name && parsed.name !== 'ชื่อ - สกุล' && parsed.name !== 'ชื่อ-นามสกุล') {
+                    proj.participants.push({
+                        id: 'part-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+                        certNo: generateNextCertNo(proj.fiscalYear),
+                        name: parsed.name,
+                        code: parsed.code,
+                        pos: parsed.pos,
+                        org: parsed.org,
+                        type: parsed.type || 'สมาชิกสามัญ',
+                        remark: parsed.remark,
+                        checked: true,
+                        selected: false
+                    });
+                    importedCount++;
+                }
+            });
+
+            reindexParticipantCertNos();
+            saveStateToLocalStorage();
+            closeModal('excelImportModal');
+            renderUnStep2Participants();
+            renderParticipantsList();
+            renderDashboard();
+            showToast(`นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`, 'success');
+        }
+
+        function exportParticipantsToExcel() {
+            const proj = getActiveProject();
+            const data = (proj.participants || []).map((p, idx) => ({
+                '1. ลำดับ': idx + 1,
+                '2. เลขที่สมาชิก': p.code || p.certNo || '',
+                '3. ชื่อ - สกุล': p.name || '',
+                '4. ตำแหน่ง': p.pos || '',
+                '5. หน่วยงานต้นสังกัด': p.org || '',
+                '6. ลงชื่อ': '',
+                '7. หมายเหตุ': p.remark || '',
+                'ประเภทสมาชิก': p.type || 'สมาชิกสามัญ'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
+            XLSX.writeFile(workbook, `Participants_${proj.fiscalYear}.xlsx`);
+            showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว', 'success');
+        }
+
+        function downloadSampleExcelTemplate() {
+            const sampleData = [
+                { '1. ลำดับ': 1, '2. เลขที่สมาชิก': '05500123', '3. ชื่อ - สกุล': 'นายสมชาย รักดี', '4. ตำแหน่ง': 'นักวิชาการสาธารณสุข', '5. หน่วยงานต้นสังกัด': 'รพ.สต.บ้านควน', 'ประเภทสมาชิก': 'สมาชิกสามัญ', '7. หมายเหตุ': '' },
+                { '1. ลำดับ': 2, '2. เลขที่สมาชิก': '05500124', '3. ชื่อ - สกุล': 'นางสาววิไล พรประเสริฐ', '4. ตำแหน่ง': 'พยาบาลวิชาชีพชำนาญการ', '5. หน่วยงานต้นสังกัด': 'โรงพยาบาลสตูล', 'ประเภทสมาชิก': 'สมาชิกสมทบ', '7. หมายเหตุ': '' }
+            ];
+            const worksheet = XLSX.utils.json_to_sheet(sampleData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'SampleTemplate');
+            XLSX.writeFile(workbook, 'Sample_Participant_Import_Template.xlsx');
+        }
+
+        function uploadProjectMedia(input) {
+            const proj = getActiveProject();
+            if (!proj.media) proj.media = [];
+
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    proj.media.push({ id: 'med-' + Date.now(), url: e.target.result });
+                    renderMediaGallery();
+                    saveStateToLocalStorage();
+                };
+                reader.readAsDataURL(file);
+            });
+            showToast('อัปโหลดภาพกิจกรรมเรียบร้อยแล้ว', 'success');
+        }
+
+        function removeMediaItem(id) {
+            const proj = getActiveProject();
+            proj.media = (proj.media || []).filter(m => m.id !== id);
+            renderMediaGallery();
+            saveStateToLocalStorage();
+            showToast('ลบภาพกิจกรรมแล้ว', 'info');
         }
 
         function renderUnStep3MediaAndBudget() {
@@ -2939,6 +3465,7 @@
                 responsible: 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', budgetSource: '', budgetItems: [],
                 expected: '', signer10Name: '', signer10Pos: '', signer11Name: '', signer11Pos: '',
                 signer12Name: '', signer12Pos: '', signer13Name: '', signer13Pos: '',
+                certLogoUrl: '',
                 certSigners: [
                     { id: 'cs-1', name: '', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
                     { id: 'cs-2', name: '', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
@@ -3009,330 +3536,6 @@
             });
         }
 
-        function extractExcelRowData(row) {
-            if (!row || typeof row !== 'object') return { name: '', code: '', pos: '', org: '', type: 'สมาชิกสามัญ', remark: '' };
-
-            let name = '', code = '', pos = '', org = '', type = '', remark = '';
-            const keys = Object.keys(row);
-
-            keys.forEach(key => {
-                const kLower = key.trim().toLowerCase();
-                const val = String(row[key] || '').trim();
-
-                if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
-                    name = val;
-                } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก'))) {
-                    code = val;
-                } else if (!pos && (kLower.includes('ตำแหน่ง') || kLower.includes('pos') || kLower.includes('role'))) {
-                    pos = val;
-                } else if (!org && (kLower.includes('หน่วยงาน') || kLower.includes('สังกัด') || kLower.includes('ต้นสังกัด') || kLower.includes('org') || kLower.includes('dept'))) {
-                    org = val;
-                } else if (!type && (kLower.includes('ประเภท') || kLower.includes('type') || kLower.includes('สถานะสมาชิก'))) {
-                    type = val;
-                } else if (!remark && (kLower.includes('หมายเหตุ') || kLower.includes('remark') || kLower.includes('note'))) {
-                    remark = val;
-                }
-            });
-
-            if (!type) type = 'สมาชิกสามัญ';
-
-            if (!name && keys.length > 0) {
-                name = String(row[keys[0]] || '').trim();
-                if (keys.length > 1 && !code) code = String(row[keys[1]] || '').trim();
-                if (keys.length > 2 && !pos) pos = String(row[keys[2]] || '').trim();
-            }
-
-            return { name, code, pos, org, type, remark };
-        }
-
-        function printParticipantsGroupedByType() {
-            const proj = getActiveProject();
-            const modal = document.getElementById('groupedParticipantsModal');
-            const box = document.getElementById('groupedParticipantsPrintBox');
-            if (!modal || !box || !proj) return;
-
-            const participants = proj.participants || [];
-            if (participants.length === 0) {
-                showToast('ไม่มีรายชื่อผู้เข้าร่วมในโครงการนี้', 'error');
-                return;
-            }
-
-            // Dynamic grouping based on participant types from uploaded data
-            const groups = {};
-            participants.forEach(p => {
-                const type = (p.type || 'สมาชิกสามัญ').trim();
-                if (!groups[type]) groups[type] = [];
-                groups[type].push(p);
-            });
-
-            // Populate dynamic type datalist for manual adding
-            const datalist = document.getElementById('dynamicMemberTypeList');
-            if (datalist) {
-                datalist.innerHTML = Object.keys(groups).map(t => `<option value="${escapeHtml(t)}"></option>`).join('');
-            }
-
-            let groupsHtml = '';
-            let globalIndex = 1;
-
-            Object.keys(groups).forEach(typeKey => {
-                const list = groups[typeKey];
-                if (list.length > 0) {
-                    let rows = '';
-                    list.forEach((item) => {
-                        rows += `
-                            <tr class="border-b text-slate-800">
-                                <td class="p-2 border text-center font-bold">${globalIndex++}</td>
-                                <td class="p-2 border font-mono font-bold text-blue-900">${escapeHtml(item.code || item.certNo || '-')}</td>
-                                <td class="p-2 border font-bold">${escapeHtml(item.name)}</td>
-                                <td class="p-2 border">${escapeHtml(item.pos || '-')}</td>
-                                <td class="p-2 border">${escapeHtml(item.org || '-')}</td>
-                                <td class="p-2 border text-center text-slate-300 font-mono text-[10px]">...........................</td>
-                                <td class="p-2 border text-slate-600">${escapeHtml(item.remark || '')}</td>
-                            </tr>
-                        `;
-                    });
-
-                    groupsHtml += `
-                        <div class="space-y-2 pt-2">
-                            <h4 class="font-extrabold text-sm text-blue-950 flex items-center justify-between border-b-2 border-blue-900 pb-1">
-                                <span><i class="fa-solid fa-layer-group text-amber-600"></i> ${escapeHtml(typeKey)}</span>
-                                <span class="text-xs bg-blue-100 text-blue-900 font-mono px-2.5 py-0.5 rounded-full">จำนวน ${list.length} คน</span>
-                            </h4>
-                            <table class="w-full border text-xs">
-                                <thead class="bg-blue-950 text-white font-bold border-b">
-                                    <tr>
-                                        <th class="p-2 border text-center w-10">1. ลำดับ</th>
-                                        <th class="p-2 border text-left w-24">2. เลขที่สมาชิก</th>
-                                        <th class="p-2 border text-left">3. ชื่อ - สกุล</th>
-                                        <th class="p-2 border text-left">4. ตำแหน่ง</th>
-                                        <th class="p-2 border text-left">5. หน่วยงานต้นสังกัด</th>
-                                        <th class="p-2 border text-center w-32">6. ลงชื่อ</th>
-                                        <th class="p-2 border text-left w-24">7. หมายเหตุ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${rows}</tbody>
-                            </table>
-                        </div>
-                    `;
-                }
-            });
-
-            box.innerHTML = `
-                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
-                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
-                    </div>
-                    <h1 class="text-lg font-black text-blue-950">ทะเบียนรายชื่อผู้เข้าร่วมโครงการ (จำแนกตามประเภทสมาชิก)</h1>
-                    <h2 class="text-sm font-bold text-amber-800">"${escapeHtml(proj.title)}"</h2>
-                    <p class="text-xs text-slate-600">ปีงบประมาณ พ.ศ. ${proj.fiscalYear} | วันที่จัดกิจกรรม: ${escapeHtml(proj.date)} | ผู้เข้าร่วมรวมทั้งสิ้น: ${participants.length} คน</p>
-                </div>
-
-                <div class="space-y-6 pt-2">
-                    ${groupsHtml}
-                </div>
-
-                <div class="grid grid-cols-2 gap-8 text-center pt-8 text-xs">
-                    <div>
-                        <p>(ลงชื่อ).....................................................</p>
-                        <p class="font-bold mt-1">(${escapeHtml(proj.signer10Name || 'ผู้รายงานข้อมูล')})</p>
-                        <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer10Pos || 'เจ้าหน้าที่ธุรการ')}</p>
-                    </div>
-                    <div>
-                        <p>(ลงชื่อ).....................................................</p>
-                        <p class="font-bold mt-1">(${escapeHtml(proj.signer12Name || 'ผู้ตรวจทาน')})</p>
-                        <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer12Pos || 'ผู้จัดการสหกรณ์')}</p>
-                    </div>
-                </div>
-            `;
-
-            modal.classList.remove('hidden');
-        }
-
-        function exportGroupedParticipantsToExcel() {
-            const proj = getActiveProject();
-            if (!proj || !proj.participants || proj.participants.length === 0) {
-                showToast('ไม่มีข้อมูลรายชื่อผู้เข้าร่วมในการส่งออก', 'error');
-                return;
-            }
-
-            const groups = {};
-            proj.participants.forEach(p => {
-                const type = (p.type || 'สมาชิกสามัญ').trim();
-                if (!groups[type]) groups[type] = [];
-                groups[type].push(p);
-            });
-
-            const exportRows = [];
-            let globalIndex = 1;
-
-            Object.keys(groups).forEach(typeKey => {
-                exportRows.push({
-                    'ลำดับ': `=== ${typeKey} (จำนวน ${groups[typeKey].length} คน) ===`,
-                    'เลขที่สมาชิก': '',
-                    'ชื่อ - สกุล': '',
-                    'ตำแหน่ง': '',
-                    'หน่วยงานต้นสังกัด': '',
-                    'ลงชื่อ': '',
-                    'หมายเหตุ': '',
-                    'ประเภทสมาชิก': typeKey
-                });
-
-                groups[typeKey].forEach(p => {
-                    exportRows.push({
-                        'ลำดับ': globalIndex++,
-                        'เลขที่สมาชิก': p.code || p.certNo || '',
-                        'ชื่อ - สกุล': p.name || '',
-                        'ตำแหน่ง': p.pos || '',
-                        'หน่วยงานต้นสังกัด': p.org || '',
-                        'ลงชื่อ': '',
-                        'หมายเหตุ': p.remark || '',
-                        'ประเภทสมาชิก': typeKey
-                    });
-                });
-            });
-
-            const worksheet = XLSX.utils.json_to_sheet(exportRows);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Grouped_Participants');
-            XLSX.writeFile(workbook, `Participants_Grouped_${proj.fiscalYear}.xlsx`);
-            showToast('ส่งออกไฟล์ Excel แยกตามประเภทสมาชิกเรียบร้อยแล้ว', 'success');
-        }
-
-        function saveSingleParticipant(e) {
-            e.preventDefault();
-            const proj = getActiveProject();
-            if (!proj.participants) proj.participants = [];
-
-            const name = document.getElementById('partInputName').value;
-            const code = document.getElementById('partInputCode').value;
-            const pos = document.getElementById('partInputPos').value;
-            const org = document.getElementById('partInputOrg').value;
-            const type = document.getElementById('partInputType').value || 'สมาชิกสามัญ';
-            const remark = document.getElementById('partInputRemark').value;
-
-            proj.participants.push({
-                id: 'part-' + Date.now(),
-                certNo: generateNextCertNo(proj.fiscalYear),
-                name, code, pos, org, type, remark, checked: true
-            });
-
-            reindexParticipantCertNos();
-            closeModal('addParticipantModal');
-            renderUnStep2Participants();
-            renderParticipantsList();
-            renderDashboard();
-            showToast('เพิ่มผู้เข้าร่วมเรียบร้อยแล้ว', 'success');
-        }
-
-        function confirmExcelImport() {
-            const proj = getActiveProject();
-            if (!proj.participants) proj.participants = [];
-
-            let importedCount = 0;
-            excelParsedData.forEach(row => {
-                const parsed = extractExcelRowData(row);
-                if (parsed.name) {
-                    proj.participants.push({
-                        id: 'part-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
-                        certNo: generateNextCertNo(proj.fiscalYear),
-                        name: parsed.name,
-                        code: parsed.code,
-                        pos: parsed.pos,
-                        org: parsed.org,
-                        type: parsed.type || 'สมาชิกสามัญ',
-                        remark: parsed.remark,
-                        checked: true
-                    });
-                    importedCount++;
-                }
-            });
-
-            reindexParticipantCertNos();
-            saveStateToLocalStorage();
-            closeModal('excelImportModal');
-            renderUnStep2Participants();
-            renderParticipantsList();
-            renderDashboard();
-            showToast(`นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`, 'success');
-        }
-
-        function exportParticipantsToExcel() {
-            const proj = getActiveProject();
-            const data = (proj.participants || []).map((p, idx) => ({
-                'ลำดับ': idx + 1,
-                'เลขที่สมาชิก': p.code || p.certNo || '',
-                'ชื่อ - สกุล': p.name || '',
-                'ตำแหน่ง': p.pos || '',
-                'หน่วยงานต้นสังกัด': p.org || '',
-                'ลงชื่อ': '',
-                'หมายเหตุ': p.remark || '',
-                'ประเภทสมาชิก': p.type || 'สมาชิกสามัญ'
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
-            XLSX.writeFile(workbook, `Participants_${proj.fiscalYear}.xlsx`);
-            showToast('ส่งออกไฟล์ Excel เรียบร้อยแล้ว', 'success');
-        }
-
-        function downloadSampleExcelTemplate() {
-            const sampleData = [
-                { 'ลำดับ': 1, 'เลขที่สมาชิก': '05500123', 'ชื่อ - สกุล': 'นายสมชาย รักดี', 'ตำแหน่ง': 'นักวิชาการสาธารณสุข', 'หน่วยงานต้นสังกัด': 'รพ.สต.บ้านควน', 'ประเภทสมาชิก': 'สมาชิกสามัญ', 'หมายเหตุ': '' },
-                { 'ลำดับ': 2, 'เลขที่สมาชิก': '05500124', 'ชื่อ - สกุล': 'นางสาววิไล พรประเสริฐ', 'ตำแหน่ง': 'พยาบาลวิชาชีพชำนาญการ', 'หน่วยงานต้นสังกัด': 'โรงพยาบาลสตูล', 'ประเภทสมาชิก': 'สมาชิกสมทบ', 'หมายเหตุ': '' }
-            ];
-            const worksheet = XLSX.utils.json_to_sheet(sampleData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'SampleTemplate');
-            XLSX.writeFile(workbook, 'Sample_Participant_Import_Template.xlsx');
-        }
-
-        function uploadProjectMedia(input) {
-            const proj = getActiveProject();
-            if (!proj.media) proj.media = [];
-
-            Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    proj.media.push({ id: 'med-' + Date.now(), url: e.target.result });
-                    renderMediaGallery();
-                    saveStateToLocalStorage();
-                };
-                reader.readAsDataURL(file);
-            });
-            showToast('อัปโหลดภาพกิจกรรมเรียบร้อยแล้ว', 'success');
-        }
-
-        function removeMediaItem(id) {
-            const proj = getActiveProject();
-            proj.media = (proj.media || []).filter(m => m.id !== id);
-            renderMediaGallery();
-            saveStateToLocalStorage();
-            showToast('ลบภาพกิจกรรมแล้ว', 'info');
-        }
-
-        function uploadCertLogo(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('previewCertLogoImg');
-                const svg = document.getElementById('previewCertLogoSvg');
-                if (img && svg) {
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                    svg.classList.add('hidden');
-                }
-            };
-            reader.readAsDataURL(file);
-            showToast('อัปโหลดโลโก้เรียบร้อยแล้ว', 'success');
-        }
-
         function searchMemberCertificates() {
             const query = document.getElementById('memberSearchQuery').value.trim().toLowerCase();
             const box = document.getElementById('memberSearchResultBox');
@@ -3371,9 +3574,14 @@
                             สถานะ: ${isCompleted ? '🟢 เสร็จสิ้นโครงการ (พร้อมรับเกียรติบัตร)' : '🟡 อยู่ระหว่างดำเนินการ (ยังไม่เปิดพิมพ์)'}
                         </p>
                     </div>
-                    <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95">
-                        <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openCertPreviewModal('${res.part.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95">
+                            <i class="fa-solid fa-eye"></i> พรีวิว
+                        </button>
+                        <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95">
+                            <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
+                        </button>
+                    </div>
                 `;
                 box.appendChild(div);
             });

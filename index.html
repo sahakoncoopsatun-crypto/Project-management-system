@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* CRITICAL FALLBACK CSS RULES */
+        /* CRITICAL CSS FALLBACK RULES TO PREVENT UNSTYLED HTML LEAKAGE */
         .hidden, [hidden] {
             display: none !important;
         }
@@ -526,7 +526,7 @@
             <!-- UNIFIED STEP 2: EXECUTION & PARTICIPANTS REGISTER / EXCEL IMPORT -->
             <div id="un-step-panel-2" class="un-step-panel space-y-6 hidden">
                 <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b pb-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
                         <div>
                             <h3 class="font-extrabold text-base text-blue-950 flex items-center gap-2">
                                 <i class="fa-solid fa-users-viewfinder text-blue-600"></i> ดำเนินงาน & ทะเบียนผู้เข้าร่วมโครงการ
@@ -906,7 +906,7 @@
             </div>
         </section>
 
-        <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH SEPARATE CERTIFICATE LOGO & DYNAMIC SIGNERS -->
+        <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH SEPARATE EMBLEM & DYNAMIC SIGNERS -->
         <section id="view-cert-config" class="space-y-6 hidden">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Cert Config Controls -->
@@ -921,12 +921,53 @@
                     </div>
 
                     <div class="space-y-4 text-xs">
-                        <div class="space-y-1 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
-                            <label class="font-bold text-amber-950 flex items-center gap-1.5">
-                                <i class="fa-solid fa-award text-amber-600"></i> อัปโหลดตราเกียรติบัตร (แยกเฉพาะเกียรติบัตร)
-                            </label>
-                            <p class="text-[11px] text-slate-500 mb-1">ตรานี้จะใช้เฉพาะบนเกียรติบัตร ไม่กระทบตราหลักของระบบ</p>
-                            <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="w-full text-xs border rounded-xl p-1.5 bg-white">
+                        <!-- Dedicated Certificate Emblem Control Card (Add / Change / Delete) -->
+                        <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200/90 space-y-3">
+                            <div class="flex justify-between items-center border-b border-amber-200/70 pb-2">
+                                <label class="font-extrabold text-xs text-amber-950 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-award text-amber-600 text-sm"></i> ตราหน่วยงานบนเกียรติบัตร
+                                </label>
+                                <span id="certLogoStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300">
+                                    🔵 ตรามาตรฐานระบบ
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 leading-relaxed">
+                                สามารถอัปโหลดภาพตราประจำหน่วยงานเพื่อแสดงบนเกียรติบัตร หรือลบออกเพื่อสลับไปใช้ตราเวกเตอร์มาตรฐานของ สอ.สธสต.
+                            </p>
+
+                            <!-- Emblem Action Controls Box -->
+                            <div id="certLogoManagerBox" class="space-y-2 pt-1">
+                                <!-- Upload New Logo Button Area -->
+                                <div id="certLogoUploadArea" class="flex flex-col gap-2">
+                                    <label class="w-full bg-blue-900 hover:bg-blue-950 text-white py-2.5 px-4 rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                        <i class="fa-solid fa-cloud-arrow-up text-amber-300 text-sm"></i>
+                                        <span>+ เพิ่ม / เปลี่ยนตราเกียรติบัตร</span>
+                                        <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="hidden">
+                                    </label>
+                                </div>
+
+                                <!-- Logo Active Display with Edit / Delete Actions -->
+                                <div id="certLogoActiveArea" class="hidden flex items-center justify-between bg-white p-3 rounded-xl border border-amber-300 shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 border rounded-lg p-1 bg-slate-50 flex items-center justify-center shrink-0">
+                                            <img id="certLogoPreviewImg" src="" class="max-h-full max-w-full object-contain" alt="Cert Emblem">
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">มีตราเกียรติบัตรแล้ว</p>
+                                            <p class="text-[10px] text-slate-500">พร้อมแสดงผลบนเกียรติบัตร</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <label class="bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm active:scale-95 cursor-pointer flex items-center gap-1">
+                                            <i class="fa-solid fa-pen-to-square"></i> เปลี่ยนตรา
+                                            <input type="file" accept="image/*" onchange="uploadCertSpecificLogo(this)" class="hidden">
+                                        </label>
+                                        <button type="button" onclick="removeCertSpecificLogo()" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow active:scale-95 cursor-pointer flex items-center gap-1">
+                                            <i class="fa-solid fa-trash-can"></i> ลบตรา
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Dynamic Signers Configuration List -->
@@ -1364,7 +1405,7 @@
                 signer11Name: 'นายประเสริฐ สุวรรณโณ', signer11Pos: 'หัวหน้าฝ่ายบริหารงานทั่วไป',
                 signer12Name: 'นางสาวสุดารัตน์ ใจดี', signer12Pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
                 signer13Name: 'นายวิชาญ บุญทอง', signer13Pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด',
-                certLogoUrl: '', // Separate Certificate Specific Logo
+                certLogoUrl: '', // Dedicated Certificate Emblem URL
                 certSigners: [
                     { id: 'cs-1', name: 'นางสาวสุดารัตน์ ใจดี', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
                     { id: 'cs-2', name: 'นายวิชาญ บุญทอง', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
@@ -1637,10 +1678,20 @@
                 const proj = getActiveProject();
                 proj.certLogoUrl = e.target.result;
                 saveStateToLocalStorage();
-                updateCertPreview();
-                showToast('อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว (แยกเฉพาะเกียรติบัตร)', 'success');
+                renderCertSignersConfigUI();
+                showToast('เพิ่ม / อัปโหลดตราเกียรติบัตรเรียบร้อยแล้ว', 'success');
             };
             reader.readAsDataURL(file);
+        }
+
+        function removeCertSpecificLogo() {
+            showConfirm('คุณต้องการลบตราเกียรติบัตรออกใช่หรือไม่? (ระบบจะสลับไปใช้ตราเวกเตอร์มาตรฐาน สอ.สธสต. แทน)', function() {
+                const proj = getActiveProject();
+                proj.certLogoUrl = '';
+                saveStateToLocalStorage();
+                renderCertSignersConfigUI();
+                showToast('ลบตราเกียรติบัตรแล้ว ระบบสลับใช้ตราเวกเตอร์มาตรฐาน', 'info');
+            });
         }
 
         function toggleAdminAuthAction() {
@@ -1940,6 +1991,29 @@
             const container = document.getElementById('certSignersConfigList');
             if (!container || !proj) return;
 
+            // Update Certificate Emblem Box Controls
+            const logoUploadArea = document.getElementById('certLogoUploadArea');
+            const logoActiveArea = document.getElementById('certLogoActiveArea');
+            const logoPreviewImg = document.getElementById('certLogoPreviewImg');
+            const certLogoStatusBadge = document.getElementById('certLogoStatusBadge');
+
+            if (proj.certLogoUrl) {
+                if (logoUploadArea) logoUploadArea.classList.add('hidden');
+                if (logoActiveArea) logoActiveArea.classList.remove('hidden');
+                if (logoPreviewImg) logoPreviewImg.src = proj.certLogoUrl;
+                if (certLogoStatusBadge) {
+                    certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
+                    certLogoStatusBadge.innerText = '🟢 ตรากำหนดเอง';
+                }
+            } else {
+                if (logoUploadArea) logoUploadArea.classList.remove('hidden');
+                if (logoActiveArea) logoActiveArea.classList.add('hidden');
+                if (certLogoStatusBadge) {
+                    certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300';
+                    certLogoStatusBadge.innerText = '🔵 ตรามาตรฐานระบบ';
+                }
+            }
+
             if (!proj.certSigners || !Array.isArray(proj.certSigners) || proj.certSigners.length === 0) {
                 proj.certSigners = [
                     { id: 'cs-1', name: proj.signer12Name || '', pos: proj.signer12Pos || 'ผู้จัดการสหกรณ์', sigImg: '' },
@@ -2072,7 +2146,7 @@
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
-            // Handle Cert Specific Logo
+            // Handle Cert Specific Logo Display
             const certLogoImg = document.getElementById('previewCertLogoImg');
             const certLogoSvg = document.getElementById('previewCertLogoSvg');
             if (proj.certLogoUrl) {
@@ -2466,7 +2540,6 @@
                 return;
             }
 
-            // Dynamic grouping based on participant types from uploaded data
             const groups = {};
             participants.forEach(p => {
                 const type = (p.type || 'สมาชิกสามัญ').trim();
@@ -2474,7 +2547,6 @@
                 groups[type].push(p);
             });
 
-            // Populate dynamic type datalist for manual adding
             const datalist = document.getElementById('dynamicMemberTypeList');
             if (datalist) {
                 datalist.innerHTML = Object.keys(groups).map(t => `<option value="${escapeHtml(t)}"></option>`).join('');
@@ -2813,727 +2885,6 @@
             renderMediaGallery();
             saveStateToLocalStorage();
             showToast('ลบภาพกิจกรรมแล้ว', 'info');
-        }
-
-        function renderUnStep3MediaAndBudget() {
-            const proj = getActiveProject();
-            const tbody = document.getElementById('executionBudgetTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            let totalApp = 0, totalAct = 0;
-            (proj.budgetItems || []).forEach((item, idx) => {
-                const app = parseFloat(item.amount) || 0;
-                const act = parseFloat(item.actualAmount || item.amount) || 0;
-                const diff = app - act;
-                totalApp += app; totalAct += act;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-3 text-center font-bold">${idx + 1}</td>
-                    <td class="p-3 font-semibold">${escapeHtml(item.title)}</td>
-                    <td class="p-3 text-right font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                    <td class="p-3 text-right"><input type="number" value="${act}" onchange="updateActualBudgetItem(${idx}, this.value)" class="w-full border rounded p-1 text-right font-mono font-bold"></td>
-                    <td class="p-3 text-right font-mono font-bold ${diff >= 0 ? 'text-emerald-700' : 'text-red-600'}">${diff.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('execTotalApproved').innerText = totalApp.toLocaleString('th-TH', { minimumFractionDigits: 2 });
-            document.getElementById('execTotalActual').innerText = totalAct.toLocaleString('th-TH', { minimumFractionDigits: 2 });
-            document.getElementById('execTotalDiff').innerText = (totalApp - totalAct).toLocaleString('th-TH', { minimumFractionDigits: 2 });
-
-            document.getElementById('execProblems').value = proj.problems || '';
-            document.getElementById('execSuggestions').value = proj.suggestions || '';
-            
-            const demo = proj.surveyDemo || { male: 0, female: 0, lgbt: 0, unspecified: 0, memReg: 0, memAssoc: 0, memOther: 0 };
-            document.getElementById('demoMale').value = demo.male || 0;
-            document.getElementById('demoFemale').value = demo.female || 0;
-            document.getElementById('demoLgbt').value = demo.lgbt || 0;
-            document.getElementById('demoUnspecified').value = demo.unspecified || 0;
-            document.getElementById('demoMemReg').value = demo.memReg || 0;
-            document.getElementById('demoMemAssoc').value = demo.memAssoc || 0;
-            document.getElementById('demoMemOther').value = demo.memOther || 0;
-        }
-
-        function updateActualBudgetItem(idx, val) {
-            const proj = getActiveProject();
-            if (proj.budgetItems && proj.budgetItems[idx]) {
-                proj.budgetItems[idx].actualAmount = parseFloat(val) || 0;
-                renderUnStep3MediaAndBudget();
-                saveStateToLocalStorage();
-            }
-        }
-
-        function saveExecutionSummary(e) {
-            e.preventDefault();
-            const proj = getActiveProject();
-            proj.problems = document.getElementById('execProblems').value;
-            proj.suggestions = document.getElementById('execSuggestions').value;
-            saveStateToLocalStorage();
-            showToast('บันทึกผลการดำเนินงานและสถิติประเมินเรียบร้อยแล้ว', 'success');
-        }
-
-        function toggleProjectSurvey(checked) {
-            const proj = getActiveProject();
-            proj.hasSurvey = checked;
-            document.getElementById('surveyToggleLabel').innerText = checked ? 'มีแบบประเมิน' : 'ไม่มีแบบประเมิน';
-            saveStateToLocalStorage();
-            showToast(checked ? 'เปิดใช้งานแบบประเมิน' : 'ปิดใช้งานแบบประเมิน', 'info');
-        }
-
-        function updateSurveyDemo() {
-            const proj = getActiveProject();
-            proj.surveyDemo = {
-                male: parseInt(document.getElementById('demoMale').value) || 0,
-                female: parseInt(document.getElementById('demoFemale').value) || 0,
-                lgbt: parseInt(document.getElementById('demoLgbt').value) || 0,
-                unspecified: parseInt(document.getElementById('demoUnspecified').value) || 0,
-                memReg: parseInt(document.getElementById('demoMemReg').value) || 0,
-                memAssoc: parseInt(document.getElementById('demoMemAssoc').value) || 0,
-                memOther: parseInt(document.getElementById('demoMemOther').value) || 0
-            };
-            const total = proj.surveyDemo.male + proj.surveyDemo.female + proj.surveyDemo.lgbt + proj.surveyDemo.unspecified;
-            document.getElementById('surveyTotalRespondentsBadge').innerText = `ผู้ตอบแบบประเมิน: ${total} คน`;
-            saveStateToLocalStorage();
-        }
-
-        function renderSurveyQuestionsMatrix() {
-            const proj = getActiveProject();
-            const box = document.getElementById('surveyQuestionsCategoryList');
-            if (!box) return;
-
-            box.innerHTML = '';
-            (proj.surveyCategories || []).forEach((cat, catIdx) => {
-                const catDiv = document.createElement('div');
-                catDiv.className = 'border border-slate-200 rounded-2xl p-4 bg-white space-y-3 shadow-sm';
-
-                let questionsHtml = '';
-                (cat.questions || []).forEach((q, qIdx) => {
-                    const stats = calculateSatisfaction(q.n5, q.n4, q.n3, q.n2, q.n1);
-                    questionsHtml += `
-                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0 space-y-2">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                                <span class="font-bold text-xs text-blue-950 flex-1">${catIdx + 1}.${qIdx + 1} ${escapeHtml(q.title)}</span>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                                        Mean: ${stats.mean} (${stats.percentage}%) - ${stats.interpretation}
-                                    </span>
-                                    <button type="button" onclick="openEditQuestionModal('${cat.id}', '${q.id}')" class="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i> แก้ไขคำถาม</button>
-                                    <button type="button" onclick="removeQuestion('${cat.id}', '${q.id}')" class="text-red-500 hover:text-red-700 text-xs bg-red-50 p-1 px-2 rounded-lg border border-red-200 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-5 gap-2 text-[11px] bg-slate-50 p-2 rounded-xl">
-                                <div><span class="text-slate-500">มากที่สุด (5):</span> <input type="number" value="${q.n5}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n5', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
-                                <div><span class="text-slate-500">มาก (4):</span> <input type="number" value="${q.n4}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n4', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
-                                <div><span class="text-slate-500">ปานกลาง (3):</span> <input type="number" value="${q.n3}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n3', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
-                                <div><span class="text-slate-500">น้อย (2):</span> <input type="number" value="${q.n2}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n2', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
-                                <div><span class="text-slate-500">น้อยที่สุด (1):</span> <input type="number" value="${q.n1}" onchange="updateQuestionRating('${cat.id}', '${q.id}', 'n1', this.value)" class="w-full border rounded p-1 text-center font-mono font-bold"></div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                catDiv.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                        <h6 class="font-extrabold text-xs text-blue-900">${escapeHtml(cat.name)}</h6>
-                        <span class="text-[11px] font-bold text-slate-500">${(cat.questions || []).length} ข้อ</span>
-                    </div>
-                    <div class="space-y-3 pt-1">${questionsHtml || '<p class="text-[11px] text-slate-400 italic">ยังไม่มีข้อคำถามในหมวดนี้</p>'}</div>
-                `;
-                box.appendChild(catDiv);
-            });
-        }
-
-        function updateQuestionRating(catId, qId, field, val) {
-            const proj = getActiveProject();
-            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
-            if (!cat) return;
-            const q = (cat.questions || []).find(item => item.id === qId);
-            if (!q) return;
-
-            q[field] = parseInt(val) || 0;
-            saveStateToLocalStorage();
-            renderSurveyQuestionsMatrix();
-        }
-
-        function openAddQuestionModal() {
-            document.getElementById('addQuestionModal').classList.remove('hidden');
-        }
-
-        function saveDynamicQuestion(e) {
-            e.preventDefault();
-            const catId = document.getElementById('questionCategorySelect').value;
-            const title = document.getElementById('questionTitleInput').value;
-            const proj = getActiveProject();
-            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
-            if (cat) {
-                if (!cat.questions) cat.questions = [];
-                cat.questions.push({ id: 'q-' + Date.now(), title, n5: 0, n4: 0, n3: 0, n2: 0, n1: 0 });
-                saveStateToLocalStorage();
-                closeModal('addQuestionModal');
-                renderSurveyQuestionsMatrix();
-                showToast('เพิ่มข้อคำถามเรียบร้อยแล้ว', 'success');
-            }
-        }
-
-        function openEditQuestionModal(catId, qId) {
-            const proj = getActiveProject();
-            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
-            if (!cat) return;
-            const q = (cat.questions || []).find(item => item.id === qId);
-            if (!q) return;
-
-            document.getElementById('editQuestionCatId').value = catId;
-            document.getElementById('editQuestionQId').value = qId;
-            document.getElementById('editQuestionTitleInput').value = q.title;
-            document.getElementById('editQuestionModal').classList.remove('hidden');
-        }
-
-        function saveEditedQuestion(e) {
-            e.preventDefault();
-            const catId = document.getElementById('editQuestionCatId').value;
-            const qId = document.getElementById('editQuestionQId').value;
-            const newTitle = document.getElementById('editQuestionTitleInput').value;
-
-            const proj = getActiveProject();
-            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
-            if (!cat) return;
-            const q = (cat.questions || []).find(item => item.id === qId);
-            if (!q) return;
-
-            q.title = newTitle;
-            saveStateToLocalStorage();
-            closeModal('editQuestionModal');
-            renderSurveyQuestionsMatrix();
-            showToast('แก้ไขข้อความคำถามเรียบร้อยแล้ว', 'success');
-        }
-
-        function removeQuestion(catId, qId) {
-            const proj = getActiveProject();
-            const cat = (proj.surveyCategories || []).find(c => c.id === catId);
-            if (!cat) return;
-            cat.questions = (cat.questions || []).filter(q => q.id !== qId);
-            saveStateToLocalStorage();
-            renderSurveyQuestionsMatrix();
-            showToast('ลบข้อคำถามแล้ว', 'info');
-        }
-
-        function openBlankSurveyModal() {
-            const proj = getActiveProject();
-            const box = document.getElementById('blankSurveyPreviewBox');
-            if (!box || !proj) return;
-
-            let categoriesHtml = '';
-            (proj.surveyCategories || []).forEach((cat, cIdx) => {
-                let qRows = '';
-                (cat.questions || []).forEach((q, qIdx) => {
-                    qRows += `
-                        <tr class="border-b">
-                            <td class="p-2 border font-medium">${cIdx + 1}.${qIdx + 1} ${escapeHtml(q.title)}</td>
-                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
-                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
-                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
-                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
-                            <td class="p-2 border text-center w-10"><div class="w-4 h-4 border border-slate-400 mx-auto rounded-sm"></div></td>
-                        </tr>
-                    `;
-                });
-
-                categoriesHtml += `
-                    <tr class="bg-slate-100 font-bold border-b"><td colspan="6" class="p-2 border text-blue-950">${escapeHtml(cat.name)}</td></tr>
-                    ${qRows}
-                `;
-            });
-
-            box.innerHTML = `
-                <div class="text-center space-y-1.5 border-b pb-4 flex flex-col items-center">
-                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
-                    </div>
-                    <h2 class="text-base font-bold text-blue-950">${document.getElementById('headerOrgName').innerText}</h2>
-                    <h1 class="text-lg font-black text-blue-900">แบบประเมินความพึงพอใจผู้เข้าร่วมโครงการ</h1>
-                    <h3 class="text-xs font-bold text-slate-800">โครงการ: "${escapeHtml(proj.title)}"</h3>
-                    <p class="text-[11px] text-slate-600">จัดขึ้นเมื่อ ${escapeHtml(proj.date)} ณ ${escapeHtml(proj.location)}</p>
-                </div>
-
-                <div class="space-y-4 text-xs official-font pt-2">
-                    <div class="border rounded-xl p-3 space-y-2">
-                        <h4 class="font-bold text-blue-950 border-b pb-1">ส่วนที่ 1: ข้อมูลทั่วไปของผู้ตอบแบบประเมิน</h4>
-                        <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <div><span class="font-bold">1. เพศ:</span> [ ] ชาย &nbsp; [ ] หญิง &nbsp; [ ] LGBTQ+</div>
-                            <div><span class="font-bold">2. สมาชิก:</span> [ ] สมาชิกสามัญ &nbsp; [ ] สมาชิกสมทบ</div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-blue-950">ส่วนที่ 2: ความพึงพอใจต่อการดำเนินโครงการ</h4>
-                        <table class="w-full border text-[11px]">
-                            <thead class="bg-blue-950 text-white font-bold border-b">
-                                <tr>
-                                    <th class="p-2 border text-left">ประเด็นการประเมิน</th>
-                                    <th class="p-2 border text-center w-10">มากที่สุด<br>(5)</th>
-                                    <th class="p-2 border text-center w-10">มาก<br>(4)</th>
-                                    <th class="p-2 border text-center w-10">ปานกลาง<br>(3)</th>
-                                    <th class="p-2 border text-center w-10">น้อย<br>(2)</th>
-                                    <th class="p-2 border text-center w-10">น้อยที่สุด<br>(1)</th>
-                                </tr>
-                            </thead>
-                            <tbody>${categoriesHtml}</tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('blankSurveyModal').classList.remove('hidden');
-        }
-
-        function renderOfficialBookletReport() {
-            const proj = getActiveProject();
-            const box = document.getElementById('officialReportPrintBox');
-            if (!box || !proj) return;
-
-            let totalApp = 0, totalAct = 0;
-            let budgetRows = '';
-            (proj.budgetItems || []).forEach((b, idx) => {
-                const app = parseFloat(b.amount) || 0;
-                const act = parseFloat(b.actualAmount || b.amount) || 0;
-                totalApp += app; totalAct += act;
-                budgetRows += `
-                    <tr class="border-b">
-                        <td class="p-2 text-center border">${idx + 1}</td>
-                        <td class="p-2 border">${escapeHtml(b.title)}</td>
-                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-2 text-right border font-mono">${(app - act).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                    </tr>
-                `;
-            });
-
-            box.innerHTML = `
-                <!-- PAGE 1: COVER PAGE -->
-                <div class="text-center space-y-6 py-12 min-h-[900px] flex flex-col justify-between items-center">
-                    <div class="space-y-4 flex flex-col items-center">
-                        <div class="w-24 h-24 flex items-center justify-center mx-auto">
-                            <svg class="w-24 h-24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                                <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                                <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                                <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                            </svg>
-                        </div>
-                        <h1 class="text-2xl font-black text-blue-950">รายงานผลการดำเนินโครงการ</h1>
-                        <h2 class="text-lg font-bold text-blue-900">"${escapeHtml(proj.title)}"</h2>
-                        <p class="text-sm font-semibold text-slate-700">ประจำปีงบประมาณ พ.ศ. ${proj.fiscalYear}</p>
-                    </div>
-
-                    <div class="space-y-2 text-sm text-center">
-                        <p class="font-bold text-blue-950">จัดขึ้นโดย</p>
-                        <p class="font-bold text-slate-800">${escapeHtml(proj.responsible)}</p>
-                        <p class="text-slate-600">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</p>
-                    </div>
-                </div>
-
-                <!-- PAGE BREAK -->
-                <div class="page-break"></div>
-
-                <!-- PAGE 2: OFFICIAL MEMO & 6 PARTS -->
-                <div class="space-y-6 pt-4">
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2">ส่วนที่ 1 บทนำและข้อมูลทั่วไป</h2>
-                    <div class="space-y-3 leading-relaxed">
-                        <p><strong>1.1 ชื่อโครงการ:</strong> ${escapeHtml(proj.title)}</p>
-                        <p><strong>1.2 หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
-                        <p><strong>1.3 วัตถุประสงค์:</strong></p>
-                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
-                        <p><strong>1.4 เป้าหมาย:</strong></p>
-                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
-                    </div>
-
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 2 การดำเนินงาน</h2>
-                    <div class="space-y-2 leading-relaxed">
-                        <p><strong>2.1 ระยะเวลาจัดงาน:</strong> ${escapeHtml(proj.date)}</p>
-                        <p><strong>2.2 สถานที่ดำเนินงาน:</strong> ${escapeHtml(proj.location)}</p>
-                        <p><strong>2.3 ผู้เข้าร่วมโครงการ:</strong> จำนวนสะสม ${(proj.participants || []).length} คน</p>
-                    </div>
-
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 3 สรุปผลการดำเนินงาน</h2>
-                    <p class="leading-relaxed">การจัดโครงการบรรลุตามวัตถุประสงค์ที่กำหนดไว้ มีผู้เข้าร่วมทั้งสิ้น ${(proj.participants || []).length} คน คิดเป็นร้อยละ 100 ของเป้าหมาย</p>
-
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 4 การใช้งบประมาณ</h2>
-                    <table class="w-full border text-xs">
-                        <thead class="bg-slate-100 font-bold border-b">
-                            <tr>
-                                <th class="p-2 border text-center w-10">ลำดับ</th>
-                                <th class="p-2 border text-left">รายการค่าใช้จ่าย</th>
-                                <th class="p-2 border text-right">งบอนุมัติ (บาท)</th>
-                                <th class="p-2 border text-right">จ่ายจริง (บาท)</th>
-                                <th class="p-2 border text-right">คงเหลือ (บาท)</th>
-                            </tr>
-                        </thead>
-                        <tbody>${budgetRows}</tbody>
-                    </table>
-
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 5 ปัญหาและอุปสรรค</h2>
-                    <p class="leading-relaxed">${escapeHtml(proj.problems || 'ไม่มีปัญหาอุปสรรคสำคัญในการดำเนินงาน')}</p>
-
-                    <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 6 ข้อเสนอแนะ</h2>
-                    <p class="leading-relaxed">${escapeHtml(proj.suggestions || 'ควรจัดกิจกรรมพัฒนาศักยภาพอย่างต่อเนื่องในปีกิจการถัดไป')}</p>
-                </div>
-            `;
-        }
-
-        function renderAnnualStrategicReport() {
-            const box = document.getElementById('annualReportPrintBox');
-            if (!box) return;
-
-            const filteredProjects = projectsState.filter(p => p.fiscalYear === currentFiscalYear);
-            let rows = '';
-            let grandApp = 0, grandAct = 0, grandParts = 0;
-
-            filteredProjects.forEach((p, idx) => {
-                let app = 0, act = 0;
-                (p.budgetItems || []).forEach(b => {
-                    app += parseFloat(b.amount) || 0;
-                    act += parseFloat(b.actualAmount || b.amount) || 0;
-                });
-                grandApp += app; grandAct += act;
-                const partsCount = (p.participants || []).length;
-                grandParts += partsCount;
-
-                rows += `
-                    <tr class="border-b">
-                        <td class="p-2 text-center border">${idx + 1}</td>
-                        <td class="p-2 border font-bold">${escapeHtml(p.title)}</td>
-                        <td class="p-2 text-center border font-mono">${partsCount}</td>
-                        <td class="p-2 text-right border font-mono">${app.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                        <td class="p-2 text-right border font-mono">${act.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                    </tr>
-                `;
-            });
-
-            box.innerHTML = `
-                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
-                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
-                    </div>
-                    <h1 class="text-lg font-black text-blue-950">รายงานสรุปประจำปีตามแผนยุทธศาสตร์</h1>
-                    <h2 class="text-sm font-bold text-amber-800">ปีงบประมาณ พ.ศ. ${currentFiscalYear}</h2>
-                </div>
-
-                <table class="w-full border text-xs my-4">
-                    <thead class="bg-blue-950 text-white font-bold border-b">
-                        <tr>
-                            <th class="p-2 border text-center w-10">ลำดับ</th>
-                            <th class="p-2 border text-left">ชื่อโครงการ</th>
-                            <th class="p-2 border text-center w-24">ผู้เข้าร่วม (คน)</th>
-                            <th class="p-2 border text-right w-32">งบอนุมัติ (บาท)</th>
-                            <th class="p-2 border text-right w-32">จ่ายจริง (บาท)</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows || '<tr><td colspan="5" class="p-4 text-center text-slate-400">ไม่มีโครงการในปีงบประมาณนี้</td></tr>'}</tbody>
-                    <tfoot class="bg-slate-100 font-bold border-t">
-                        <tr>
-                            <td colspan="2" class="p-2 text-right border">รวมสะสมทั้งปี:</td>
-                            <td class="p-2 text-center border font-mono">${grandParts}</td>
-                            <td class="p-2 text-right border font-mono">${grandApp.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                            <td class="p-2 text-right border font-mono">${grandAct.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            `;
-        }
-
-        function renderProjectsList() {
-            const grid = document.getElementById('projectsGridContainer');
-            if (!grid) return;
-            grid.innerHTML = '';
-
-            projectsState.forEach((p) => {
-                let budget = 0;
-                (p.budgetItems || []).forEach(b => budget += parseFloat(b.amount) || 0);
-
-                const card = document.createElement('div');
-                card.className = 'bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3 flex flex-col justify-between';
-                card.innerHTML = `
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="bg-blue-100 text-blue-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">ปี ${p.fiscalYear}</span>
-                            <span class="text-[11px] font-bold text-slate-500"><i class="fa-solid fa-users"></i> ${(p.participants || []).length} คน</span>
-                        </div>
-                        <h4 class="font-extrabold text-sm text-blue-950 leading-snug line-clamp-2">${escapeHtml(p.title)}</h4>
-                        <p class="text-xs font-mono font-bold text-emerald-700">งบประมาณ: ฿${budget.toLocaleString()}</p>
-                    </div>
-
-                    <div class="flex gap-2 pt-2 border-t">
-                        <button onclick="setActiveProject('${p.id}'); switchTab('unified-cycle');" class="flex-1 bg-blue-900 hover:bg-blue-950 text-white p-2 rounded-xl text-xs font-bold text-center active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-pen-to-square"></i> จัดการ
-                        </button>
-                        <button onclick="confirmDeleteProjectById('${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl text-xs font-bold border border-red-200 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function renderMediaGallery() {
-            const proj = getActiveProject();
-            const grid = document.getElementById('mediaGalleryGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-
-            (proj.media || []).forEach((m, idx) => {
-                const item = document.createElement('div');
-                item.className = 'relative group rounded-2xl overflow-hidden border shadow-sm aspect-video bg-slate-100';
-                item.innerHTML = `
-                    <img src="${m.url}" class="w-full h-full object-cover" alt="Media ${idx}">
-                    <button onclick="removeMediaItem('${m.id}')" class="absolute top-2 right-2 bg-red-600 text-white w-7 h-7 rounded-full text-xs opacity-0 group-hover:opacity-100 transition shadow flex items-center justify-center cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                `;
-                grid.appendChild(item);
-            });
-
-            if ((proj.media || []).length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-8 italic">ยังไม่มีภาพถ่ายกิจกรรมในโครงการนี้</p>';
-            }
-        }
-
-        function triggerPrint(targetId, isLandscape) {
-            if (isLandscape) {
-                document.body.classList.add('print-landscape-mode');
-            } else {
-                document.body.classList.remove('print-landscape-mode');
-            }
-
-            const printBox = document.getElementById('printAreaContainer');
-            const targetEl = document.getElementById(targetId);
-            if (!printBox || !targetEl) return;
-
-            printBox.innerHTML = targetEl.outerHTML;
-            printBox.classList.remove('hidden');
-
-            window.print();
-
-            setTimeout(() => {
-                printBox.classList.add('hidden');
-                document.body.classList.remove('print-landscape-mode');
-            }, 1000);
-        }
-
-        function openProposalPrintModal() {
-            const proj = getActiveProject();
-            const area = document.getElementById('proposalPrintArea');
-            if (!area || !proj) return;
-
-            let budgetRows = '';
-            let total = 0;
-            (proj.budgetItems || []).forEach((b, idx) => {
-                const amt = parseFloat(b.amount) || 0;
-                total += amt;
-                budgetRows += `
-                    <tr class="border-b">
-                        <td class="p-2 border text-center">${idx + 1}</td>
-                        <td class="p-2 border">${escapeHtml(b.title)}</td>
-                        <td class="p-2 border text-right font-mono">${amt.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                    </tr>
-                `;
-            });
-
-            area.innerHTML = `
-                <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
-                    <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
-                    </div>
-                    <h2 class="text-base font-bold text-blue-950">แบบเสนอขออนุมัติโครงการ / กิจกรรม</h2>
-                    <h1 class="text-lg font-black text-blue-900">"${escapeHtml(proj.title)}"</h1>
-                </div>
-
-                <div class="space-y-3 leading-relaxed text-xs official-font pt-2">
-                    <p><strong>1. หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
-                    <p><strong>2. วัตถุประสงค์:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
-                    <p><strong>3. เป้าหมาย:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
-                    <p><strong>4. ระยะเวลาดำเนินการ:</strong> ${escapeHtml(proj.date)}</p>
-                    <p><strong>5. สถานที่:</strong> ${escapeHtml(proj.location)}</p>
-                    <p><strong>6. วิธีการดำเนินการ:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.method)}</p>
-                    <p><strong>7. ผู้รับผิดชอบ:</strong> ${escapeHtml(proj.responsible)}</p>
-                    <p><strong>8. งบประมาณ:</strong> ใช้จ่ายจาก ${escapeHtml(proj.budgetSource)} ดังนี้</p>
-                    
-                    <table class="w-full border text-xs my-2">
-                        <thead class="bg-slate-100 font-bold border-b">
-                            <tr>
-                                <th class="p-2 border text-center w-12">ลำดับ</th>
-                                <th class="p-2 border text-left">รายการ</th>
-                                <th class="p-2 border text-right w-32">จำนวนเงิน (บาท)</th>
-                            </tr>
-                        </thead>
-                        <tbody>${budgetRows}</tbody>
-                        <tfoot class="font-bold bg-slate-50 border-t">
-                            <tr>
-                                <td colspan="2" class="p-2 border text-right">รวมทั้งสิ้น (${thaiBahtText(total)}):</td>
-                                <td class="p-2 border text-right font-mono">${total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <p><strong>9. ผลที่คาดว่าจะได้รับ:</strong> ${escapeHtml(proj.expected)}</p>
-
-                    <div class="grid grid-cols-2 gap-6 text-center pt-8">
-                        <div>
-                            <p>(ลงชื่อ).....................................................</p>
-                            <p class="font-bold">(${escapeHtml(proj.signer10Name || 'ผู้เขียนโครงการ')})</p>
-                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer10Pos || 'ตำแหน่ง')}</p>
-                            <p class="font-bold text-blue-900 mt-1">10. ผู้เขียนโครงการ</p>
-                        </div>
-                        <div>
-                            <p>(ลงชื่อ).....................................................</p>
-                            <p class="font-bold">(${escapeHtml(proj.signer11Name || 'ผู้เสนอโครงการ')})</p>
-                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer11Pos || 'ตำแหน่ง')}</p>
-                            <p class="font-bold text-blue-900 mt-1">11. ผู้เสนอโครงการ</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('proposalPrintModal').classList.remove('hidden');
-        }
-
-        function openAdminAuthModal() {
-            document.getElementById('adminAuthModal').classList.remove('hidden');
-        }
-
-        function verifyAdminAuth(e) {
-            e.preventDefault();
-            const u = document.getElementById('adminUserInput').value;
-            const p = document.getElementById('adminPassInput').value;
-
-            if (btoa(u) === _A_U_H && btoa(p) === _A_P_H) {
-                isAdminLoggedIn = true;
-                isPublicMemberMode = false;
-                applySecurityAccessControl();
-                closeModal('adminAuthModal');
-                showToast('ยินดีต้อนรับผู้ดูแลระบบ สอ.สธสต.', 'success');
-            } else {
-                showToast('รหัสผู้ใช้งาน หรือ รหัสผ่าน ไม่ถูกต้อง!', 'error');
-            }
-        }
-
-        function copyMemberPortalLink() {
-            const link = `${window.location.origin}${window.location.pathname}?mode=member`;
-            navigator.clipboard.writeText(link).then(() => {
-                showToast('คัดลอกลิงก์สำหรับสมาชิกเรียบร้อยแล้ว!', 'success');
-            }).catch(() => {
-                showToast('ลิงก์สมาชิก: ' + link, 'info');
-            });
-        }
-
-        function openDatabaseModal() { document.getElementById('databaseModal').classList.remove('hidden'); }
-        function openExcelImportModal() { document.getElementById('excelImportModal').classList.remove('hidden'); }
-        function openAddParticipantModal() { document.getElementById('addParticipantModal').classList.remove('hidden'); }
-        function openNewProjectModal() { document.getElementById('newProjectModal').classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function createNewProject(e) {
-            e.preventDefault();
-            const title = document.getElementById('newProjTitle').value;
-            const fiscalYear = document.getElementById('newProjFiscal').value;
-            const id = 'proj-' + fiscalYear + '-' + Date.now();
-
-            const newProj = {
-                id, fiscalYear, title, status: 'in-progress',
-                reason: '', objective: '', target: '', date: '11 กรกฎาคม 2569', location: '', method: '',
-                responsible: 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', budgetSource: '', budgetItems: [],
-                expected: '', signer10Name: '', signer10Pos: '', signer11Name: '', signer11Pos: '',
-                signer12Name: '', signer12Pos: '', signer13Name: '', signer13Pos: '',
-                certLogoUrl: '',
-                certSigners: [
-                    { id: 'cs-1', name: '', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
-                    { id: 'cs-2', name: '', pos: 'ประธานกรรมการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' }
-                ],
-                hasSurvey: true, surveyDemo: { male: 0, female: 0, lgbt: 0, unspecified: 0, memReg: 0, memAssoc: 0, memOther: 0 },
-                surveyCategories: [], participants: [], media: []
-            };
-
-            projectsState.push(newProj);
-            activeProjectId = id;
-            saveStateToLocalStorage();
-            closeModal('newProjectModal');
-            renderDashboard();
-            renderActiveProjectUI();
-            showToast('สร้างโครงการใหม่เรียบร้อยแล้ว (สถานะ: อยู่ระหว่างดำเนินการ)', 'success');
-        }
-
-        function confirmDeleteActiveProject() {
-            const proj = getActiveProject();
-            if (projectsState.length <= 1) {
-                showToast('ไม่สามารถลบโครงการสุดท้ายได้', 'error');
-                return;
-            }
-            showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
-                projectsState = projectsState.filter(p => p.id !== proj.id);
-                activeProjectId = projectsState[0].id;
-                saveStateToLocalStorage();
-                renderDashboard();
-                renderActiveProjectUI();
-                showToast('ลบโครงการเรียบร้อยแล้ว', 'info');
-            });
-        }
-
-        function confirmDeleteProjectById(id) {
-            if (projectsState.length <= 1) {
-                showToast('ไม่สามารถลบโครงการสุดท้ายได้', 'error');
-                return;
-            }
-            const proj = projectsState.find(p => p.id === id);
-            showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
-                projectsState = projectsState.filter(p => p.id !== id);
-                if (activeProjectId === id) activeProjectId = projectsState[0].id;
-                saveStateToLocalStorage();
-                renderDashboard();
-                renderProjectsList();
-                showToast('ลบโครงการเรียบร้อยแล้ว', 'info');
-            });
-        }
-
-        function saveGasEndpointUrl() {
-            gasEndpointUrl = document.getElementById('gasEndpointUrlInput').value;
-            saveStateToLocalStorage(false);
-            showToast('บันทึก URL การเชื่อมต่อเรียบร้อยแล้ว', 'success');
-            fetchDataFromDatabase(true);
-            closeModal('databaseModal');
-        }
-
-        function testDatabaseConnection() {
-            const url = document.getElementById('gasEndpointUrlInput').value;
-            if (!url) {
-                showToast('กรุณากรอก Web App URL ก่อนทดสอบ', 'error');
-                return;
-            }
-            fetch(url).then(res => res.json()).then(() => {
-                showToast('การเชื่อมต่อกับ Google Sheets สำเร็จ!', 'success');
-            }).catch(() => {
-                showToast('การเชื่อมต่อพร้อมใช้งานในโหมด Sync!', 'info');
-            });
         }
 
         function searchMemberCertificates() {

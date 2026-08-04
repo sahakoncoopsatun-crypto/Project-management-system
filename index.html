@@ -1663,6 +1663,9 @@ function doPost(e) {
         let systemOrgLogoUrl = '';
         let gasEndpointUrl = '';
         let excelParsedData = [];
+        let _syncDebounceTimer = null;
+        let _pendingSyncCount = 0;
+        let _lastSyncTimestamp = 0;
 
         // Obfuscated Credentials (User: 007 / Pass: Satun055pass@1)
         const _A_U_H = 'MDA3';
@@ -1906,6 +1909,15 @@ function doPost(e) {
 
         function initApp() {
             loadStateFromLocalStorage();
+            
+            // Restore admin session from sessionStorage
+            try {
+                if (sessionStorage.getItem('coop_admin_session') === 'active') {
+                    isAdminLoggedIn = true;
+                    isPublicMemberMode = false;
+                }
+            } catch(e) { /* sessionStorage not available */ }
+            
             checkUrlParameters();
             applySecurityAccessControl();
             renderDashboard();
@@ -2044,6 +2056,7 @@ function doPost(e) {
             if (isAdminLoggedIn) {
                 showConfirm('คุณต้องการออกจากระบบผู้ดูแลระบบใช่หรือไม่?', function() {
                     isAdminLoggedIn = false;
+                    try { sessionStorage.removeItem('coop_admin_session'); } catch(e) {}
                     applySecurityAccessControl();
                     showToast('ออกจากระบบผู้ดูแลระบบแล้ว', 'info');
                 });
@@ -2054,14 +2067,25 @@ function doPost(e) {
 
         function saveStateToLocalStorage(shouldSyncRemote = true) {
             try {
+                // Add lastModified timestamp for merge strategy
+                const now = Date.now();
+                projectsState.forEach(p => {
+                    if (!p._lastModified || p._lastModified < _lastSyncTimestamp) {
+                        p._lastModified = now;
+                    }
+                });
                 localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
                 localStorage.setItem('coop_gas_url', gasEndpointUrl);
                 localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
+                localStorage.setItem('coop_last_modified', String(now));
             } catch(e) {
                 console.warn('LocalStorage Quota Error:', e);
+                if (e.name === 'QuotaExceededError' || e.code === 22) {
+                    showToast('⚠️ พื้นที่จัดเก็บข้อมูลในเบราว์เซอร์เต็ม! ข้อมูลอาจไม่ถูกบันทึก กรุณาลบรูปภาพที่ไม่จำเป็นออก', 'error');
+                }
             }
             if (shouldSyncRemote) {
-                syncToRemoteDatabase();
+                debouncedSyncToRemote();
             }
         }
 
@@ -2120,6 +2144,7 @@ function doPost(e) {
 
             const badge = document.getElementById('dbSyncBadge');
             if (badge) {
+                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
                 badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> 🟡 กำลังดึงข้อมูล...';
             }
 
@@ -2138,17 +2163,64 @@ function doPost(e) {
 
                     if (resData && resData.status === 'success' && Array.isArray(resData.data)) {
                         if (resData.data.length > 0) {
-                            projectsState = resData.data;
-                            activeProjectId = projectsState[0].id;
+                            // Timestamp-based merge strategy
+                            const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');
+                            const cloudData = resData.data;
+                            const cloudHasTimestamps = cloudData.some(p => p._lastModified);
+                            
+                            if (cloudHasTimestamps) {
+                                // Smart merge: compare per-project timestamps
+                                const mergedProjects = [];
+                                const allIds = new Set([...projectsState.map(p => p.id), ...cloudData.map(p => p.id)]);
+                                
+                                allIds.forEach(id => {
+                                    const localProj = projectsState.find(p => p.id === id);
+                                    const cloudProj = cloudData.find(p => p.id === id);
+                                    
+                                    if (localProj && cloudProj) {
+                                        // Both exist: use the newer one
+                                        if ((localProj._lastModified || 0) >= (cloudProj._lastModified || 0)) {
+                                            mergedProjects.push(localProj);
+                                        } else {
+                                            mergedProjects.push(cloudProj);
+                                        }
+                                    } else if (localProj) {
+                                        mergedProjects.push(localProj);
+                                    } else if (cloudProj) {
+                                        mergedProjects.push(cloudProj);
+                                    }
+                                });
+                                
+                                projectsState = mergedProjects;
+                            } else {
+                                // No timestamps in cloud: if local has newer changes, push to cloud instead
+                                if (localLastModified > 0 && projectsState.length > 0) {
+                                    // Local has data - push local to cloud instead of overwriting
+                                    projectsState.forEach(p => { if (!p._lastModified) p._lastModified = localLastModified; });
+                                    syncToRemoteDatabaseDirect();
+                                    updateDbSyncBadgeStatus(true);
+                                    if (showToastMsg) showToast(`ซิงค์ข้อมูลจากเครื่องนี้ขึ้น Cloud สำเร็จ (${projectsState.length} โครงการ)`, 'success');
+                                    return;
+                                } else {
+                                    projectsState = cloudData;
+                                }
+                            }
+                            
+                            if (projectsState.length > 0) {
+                                const currentProj = projectsState.find(p => p.id === activeProjectId);
+                                if (!currentProj) activeProjectId = projectsState[0].id;
+                            }
                             saveStateToLocalStorage(false);
                             renderDashboard();
                             renderActiveProjectUI();
                             updateDbSyncBadgeStatus(true);
+                            _pendingSyncCount = 0;
+                            updatePendingSyncBadge();
                             if (showToastMsg) showToast(`ดึงข้อมูลสำเร็จ (${projectsState.length} โครงการ)`, 'success');
                         } else {
                             updateDbSyncBadgeStatus(true);
                             if (showToastMsg) showToast('เชื่อมต่อคลาวด์สำเร็จ แต่ยังไม่มีข้อมูลใน Google Sheets', 'info');
-                            syncToRemoteDatabase();
+                            syncToRemoteDatabaseDirect();
                         }
                     } else {
                         throw new Error(resData.message || 'ไม่สามารถดึงข้อมูลได้');
@@ -2191,26 +2263,96 @@ function doPost(e) {
             fetchDataFromDatabase(true);
         }
 
-        function syncToRemoteDatabase() {
+        // Debounced sync: waits 2 seconds after last change before syncing
+        function debouncedSyncToRemote() {
             if (!gasEndpointUrl) return;
+            _pendingSyncCount++;
+            updatePendingSyncBadge();
+            
+            if (_syncDebounceTimer) clearTimeout(_syncDebounceTimer);
+            _syncDebounceTimer = setTimeout(() => {
+                syncToRemoteDatabaseDirect();
+            }, 2000);
+        }
+
+        // Direct sync with retry mechanism (no no-cors!)
+        function syncToRemoteDatabaseDirect(retryCount = 0) {
+            if (!gasEndpointUrl) return;
+
+            const badge = document.getElementById('dbSyncBadge');
+            if (badge) {
+                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 🟡 กำลังซิงค์...';
+            }
+
+            const payload = JSON.stringify(projectsState);
 
             fetch(gasEndpointUrl, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(projectsState)
-            }).then(() => {
-                updateDbSyncBadgeStatus(true);
-            }).catch(() => {
-                updateDbSyncBadgeStatus(false);
+                headers: { 'Content-Type': 'text/plain' },
+                body: payload
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.text();
+            })
+            .then(text => {
+                let resData;
+                try { resData = JSON.parse(text); } catch(e) { resData = {}; }
+                if (resData.status === 'success' || resData.status === 'ok') {
+                    _lastSyncTimestamp = Date.now();
+                    _pendingSyncCount = 0;
+                    updatePendingSyncBadge();
+                    updateDbSyncBadgeStatus(true);
+                    console.log('✅ Cloud sync successful at', new Date().toLocaleTimeString());
+                } else {
+                    throw new Error(resData.message || 'Sync response not ok');
+                }
+            })
+            .catch(err => {
+                console.error('Cloud sync error (attempt ' + (retryCount + 1) + '):', err);
+                if (retryCount < 2) {
+                    // Retry after exponential backoff
+                    const delay = Math.pow(2, retryCount + 1) * 1000;
+                    console.log(`🔄 Retrying sync in ${delay/1000}s...`);
+                    setTimeout(() => syncToRemoteDatabaseDirect(retryCount + 1), delay);
+                } else {
+                    // All retries failed
+                    updateDbSyncBadgeStatus(false);
+                    showToast('⚠️ ไม่สามารถซิงค์ข้อมูลขึ้น Cloud ได้ ข้อมูลถูกบันทึกในเครื่องเรียบร้อยแล้ว ระบบจะลองซิงค์อีกครั้งเมื่อมีการเปลี่ยนแปลงถัดไป', 'error');
+                }
             });
+        }
+
+        // Legacy alias for backward compatibility
+        function syncToRemoteDatabase() {
+            debouncedSyncToRemote();
+        }
+
+        function updatePendingSyncBadge() {
+            const dashBadge = document.getElementById('dashDbStatusBadge');
+            if (dashBadge && _pendingSyncCount > 0 && gasEndpointUrl) {
+                dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40';
+                dashBadge.innerHTML = `🟡 รอซิงค์ (${_pendingSyncCount} รายการ)`;
+            }
         }
 
         function updateDbSyncBadgeStatus(isOnline) {
             const badge = document.getElementById('dbSyncBadge');
             const dashBadge = document.getElementById('dashDbStatusBadge');
 
-            if (gasEndpointUrl) {
+            if (!gasEndpointUrl) {
+                // No URL configured - Offline mode
+                if (badge) {
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
+                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
+                }
+                if (dashBadge) {
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700';
+                    dashBadge.innerHTML = '⚪ Offline / Local Mode';
+                }
+            } else if (isOnline === true) {
+                // Successfully connected and synced
                 if (badge) {
                     badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300';
                     badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
@@ -2219,14 +2361,15 @@ function doPost(e) {
                     dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
                     dashBadge.innerHTML = '🟢 เชื่อมต่อ Google Sheets แล้ว';
                 }
-            } else {
+            } else if (isOnline === false) {
+                // Sync failed - show error state
                 if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
-                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300';
+                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span> 🔴 Sync ล้มเหลว';
                 }
                 if (dashBadge) {
-                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700';
-                    dashBadge.innerHTML = '⚪ Offline / Local Mode';
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-400/40';
+                    dashBadge.innerHTML = '🔴 ซิงค์ข้อมูลล้มเหลว - ข้อมูลบันทึกในเครื่องแล้ว';
                 }
             }
         }
@@ -2254,15 +2397,29 @@ function doPost(e) {
         }
 
         function getActiveProject() {
-            return projectsState.find(p => p.id === activeProjectId) || projectsState[0];
+            const found = projectsState.find(p => p.id === activeProjectId);
+            if (found) return found;
+            if (projectsState.length > 0) {
+                activeProjectId = projectsState[0].id;
+                return projectsState[0];
+            }
+            // Return null-safe empty structure to prevent crashes
+            return null;
         }
 
         function changeFiscalYear(year) {
             currentFiscalYear = year;
             const firstInYear = projectsState.find(p => p.fiscalYear === year);
-            if (firstInYear) activeProjectId = firstInYear.id;
+            if (firstInYear) {
+                activeProjectId = firstInYear.id;
+            } else {
+                activeProjectId = null;
+            }
             renderDashboard();
             renderActiveProjectUI();
+            if (!firstInYear) {
+                showToast(`ยังไม่มีโครงการในปีงบประมาณ ${year} กดปุ่ม "เขียนโครงการใหม่" เพื่อเริ่มต้น`, 'info');
+            }
         }
 
         function toggleNavDropdown(id) {
@@ -2526,15 +2683,38 @@ function doPost(e) {
                 radio.checked = (radio.value === (proj.certBgStyle || 'cover'));
             });
 
-            // Toggle Preview Panel based on project status
+            // Toggle Preview Panel based on project status and role
             const previewPanel = document.getElementById('certConfigPreviewPanel');
             const alertPanel = document.getElementById('certConfigAlertPanel');
-            if (proj.status === 'completed') {
+            if (isAdminLoggedIn) {
+                // Admin can ALWAYS see the preview panel (for design preview)
                 if (previewPanel) previewPanel.classList.remove('hidden');
-                if (alertPanel) alertPanel.classList.add('hidden');
+                if (alertPanel) {
+                    if (proj.status === 'completed') {
+                        alertPanel.classList.add('hidden');
+                    } else {
+                        // Show draft notice for admin
+                        alertPanel.classList.remove('hidden');
+                        alertPanel.innerHTML = `
+                            <div class="flex items-center gap-3 bg-amber-50 p-4 rounded-2xl border border-amber-300">
+                                <i class="fa-solid fa-eye text-amber-600 text-lg"></i>
+                                <div>
+                                    <p class="text-xs font-bold text-amber-900">โหมดดูตัวอย่าง (โครงการยังไม่เสร็จสิ้น)</p>
+                                    <p class="text-[11px] text-amber-700">ผู้ดูแลระบบสามารถดูตัวอย่างเกียรติบัตรได้ แต่จะพิมพ์ได้เมื่อกด "อนุมัติเสร็จสิ้นโครงการ" แล้วเท่านั้น</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
             } else {
-                if (previewPanel) previewPanel.classList.add('hidden');
-                if (alertPanel) alertPanel.classList.remove('hidden');
+                // Non-admin: hide preview if project not completed
+                if (proj.status === 'completed') {
+                    if (previewPanel) previewPanel.classList.remove('hidden');
+                    if (alertPanel) alertPanel.classList.add('hidden');
+                } else {
+                    if (previewPanel) previewPanel.classList.add('hidden');
+                    if (alertPanel) alertPanel.classList.remove('hidden');
+                }
             }
 
             updateCertPreview();
@@ -2603,12 +2783,18 @@ function doPost(e) {
             });
         }
 
+        // Debounced signer update to prevent excessive cloud syncs on every keystroke
+        let _signerDebounce = null;
         function updateCertSignerData(idx, field, value) {
             const proj = getActiveProject();
             if (proj.certSigners && proj.certSigners[idx]) {
                 proj.certSigners[idx][field] = value;
-                saveStateToLocalStorage();
                 updateCertPreview();
+                // Debounce save: only save after 800ms of no typing
+                if (_signerDebounce) clearTimeout(_signerDebounce);
+                _signerDebounce = setTimeout(() => {
+                    saveStateToLocalStorage();
+                }, 800);
             }
         }
 
@@ -2724,6 +2910,12 @@ function doPost(e) {
             const holder = document.getElementById('certModalFrameHolder');
             if (!modal || !holder || !proj) return;
 
+            // Non-admin (member portal): block preview if project not completed
+            if (!isAdminLoggedIn && proj.status !== 'completed') {
+                showToast('โครงการยังไม่เสร็จสิ้น ไม่สามารถดูเกียรติบัตรได้ในขณะนี้', 'error');
+                return;
+            }
+
             if (partId) {
                 const part = (proj.participants || []).find(p => p.id === partId);
                 if (part) {
@@ -2786,12 +2978,24 @@ function doPost(e) {
             saveStateToLocalStorage();
         }
 
+        // Debounced budget item updates to prevent input focus loss
+        let _budgetDebounce = null;
         function updateBudgetItem(idx, field, val) {
             const proj = getActiveProject();
-            if (proj.budgetItems && proj.budgetItems[idx]) {
+            if (proj && proj.budgetItems && proj.budgetItems[idx]) {
                 proj.budgetItems[idx][field] = field === 'amount' ? parseFloat(val) || 0 : val;
-                renderBudgetItemsTable();
-                saveStateToLocalStorage();
+                // Update total immediately without full re-render (prevents focus loss)
+                let total = 0;
+                (proj.budgetItems || []).forEach(item => { total += parseFloat(item.amount) || 0; });
+                const totalEl = document.getElementById('budgetTotalAmount');
+                const bahtEl = document.getElementById('budgetTotalBahtText');
+                if (totalEl) totalEl.innerText = total.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+                if (bahtEl) bahtEl.innerText = `(${thaiBahtText(total)})`;
+                // Debounce save
+                if (_budgetDebounce) clearTimeout(_budgetDebounce);
+                _budgetDebounce = setTimeout(() => {
+                    saveStateToLocalStorage();
+                }, 800);
             }
         }
 
@@ -3457,11 +3661,27 @@ function doPost(e) {
             if (!proj.participants) proj.participants = [];
 
             let importedCount = 0;
+            let duplicateCount = 0;
+            const existingNames = new Set((proj.participants || []).map(p => (p.name || '').trim().toLowerCase()));
+            const existingCodes = new Set((proj.participants || []).map(p => (p.code || '').trim().toLowerCase()).filter(c => c));
+
             excelParsedData.forEach(row => {
                 const parsed = extractExcelRowData(row);
                 if (parsed.name && parsed.name !== 'ชื่อ - สกุล' && parsed.name !== 'ชื่อ-นามสกุล') {
+                    const nameLower = parsed.name.trim().toLowerCase();
+                    const codeLower = (parsed.code || '').trim().toLowerCase();
+                    
+                    // Check for duplicates by name or code
+                    const isDuplicateName = existingNames.has(nameLower);
+                    const isDuplicateCode = codeLower && existingCodes.has(codeLower);
+                    
+                    if (isDuplicateName || isDuplicateCode) {
+                        duplicateCount++;
+                        return; // Skip duplicate
+                    }
+                    
                     proj.participants.push({
-                        id: 'part-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+                        id: 'part-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
                         certNo: generateNextCertNo(proj.fiscalYear),
                         name: parsed.name,
                         code: parsed.code,
@@ -3472,6 +3692,8 @@ function doPost(e) {
                         checked: true,
                         selected: false
                     });
+                    existingNames.add(nameLower);
+                    if (codeLower) existingCodes.add(codeLower);
                     importedCount++;
                 }
             });
@@ -3482,7 +3704,14 @@ function doPost(e) {
             renderUnStep2Participants();
             renderParticipantsList();
             renderDashboard();
-            showToast(`นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`, 'success');
+            
+            let msg = `นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`;
+            if (duplicateCount > 0) {
+                msg += ` (ข้ามรายชื่อซ้ำ ${duplicateCount} รายการ)`;
+                showToast(msg, 'info');
+            } else {
+                showToast(msg, 'success');
+            }
         }
 
         function exportParticipantsToExcel() {
@@ -3575,14 +3804,21 @@ function doPost(e) {
                         <p class="text-[11px] font-semibold ${isCompleted ? 'text-emerald-700' : 'text-amber-700'}">
                             สถานะ: ${isCompleted ? '🟢 เสร็จสิ้นโครงการ (พร้อมรับเกียรติบัตร)' : '🟡 อยู่ระหว่างดำเนินการ (ยังไม่เปิดพิมพ์)'}
                         </p>
+                        ${!isCompleted ? '<p class="text-[10px] text-slate-500 mt-1 italic">เกียรติบัตรจะพร้อมให้ดูและพิมพ์ได้เมื่อโครงการเสร็จสิ้นแล้ว</p>' : ''}
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openCertPreviewModal('${res.part.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95">
-                            <i class="fa-solid fa-eye"></i> พรีวิว
-                        </button>
-                        <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="${isCompleted ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 text-slate-500 cursor-not-allowed'} font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95">
-                            <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
-                        </button>
+                        ${isCompleted ? `
+                            <button onclick="openCertPreviewModal('${res.part.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-eye"></i> พรีวิว
+                            </button>
+                            <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
+                            </button>
+                        ` : `
+                            <button disabled class="bg-slate-300 text-slate-500 cursor-not-allowed font-bold px-3 py-2 rounded-xl shrink-0 shadow" onclick="return false;">
+                                <i class="fa-solid fa-lock"></i> รอเสร็จสิ้นโครงการ
+                            </button>
+                        `}
                     </div>
                 `;
                 box.appendChild(div);
@@ -4018,6 +4254,7 @@ function doPost(e) {
             if (btoa(u) === _A_U_H && btoa(p) === _A_P_H) {
                 isAdminLoggedIn = true;
                 isPublicMemberMode = false;
+                try { sessionStorage.setItem('coop_admin_session', 'active'); } catch(e) {}
                 applySecurityAccessControl();
                 closeModal('adminAuthModal');
                 showToast('ยินดีต้อนรับผู้ดูแลระบบ สอ.สธสต.', 'success');

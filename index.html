@@ -155,6 +155,25 @@
             scrollbar-width: none;
         }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        tinymce.init({
+            selector: '#propReason, #propObjective, #propTarget, #propMethod, #propExpected',
+            menubar: true,
+            plugins: 'lists link table code formatpainter',
+            toolbar: 'undo redo | fontfamily fontsize | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lineheight | table | code',
+            setup: function (editor) {
+                editor.on('change', function () {
+                    editor.save();
+                    var el = document.getElementById(editor.id);
+                    if (el) el.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            }
+        });
+    });
+    </script>
 </head>
 <body class="h-full flex flex-col bg-slate-100 min-h-screen text-slate-800">
 
@@ -1303,7 +1322,7 @@
 
     <!-- MODAL: PROPOSAL PRINT (A4 PORTRAIT) -->
     <div id="proposalPrintModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-4xl w-full flex flex-col max-h-[92vh] shadow-2xl overflow-hidden">
+        <div class="bg-white rounded-3xl w-full max-w-[95vw] h-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="flex justify-between items-center border-b px-6 py-4 bg-white shrink-0 sticky top-0 z-20">
                 <h3 class="text-base font-bold text-purple-950 flex items-center gap-2">
                     <i class="fa-solid fa-file-signature text-purple-600"></i> ตัวอย่างแบบเสนอขออนุมัติโครงการ (A4 Portrait)
@@ -2701,6 +2720,13 @@ function doPost(e) {
             document.getElementById('propBudgetSource').value = proj.budgetSource || '';
             document.getElementById('propExpected').value = proj.expected || '';
 
+            if (window.tinymce) {
+                ['propReason', 'propObjective', 'propTarget', 'propMethod', 'propExpected'].forEach(id => {
+                    const editor = tinymce.get(id);
+                    if (editor) editor.setContent(document.getElementById(id).value);
+                });
+            }
+
             document.getElementById('signer10Name').value = proj.signer10Name || '';
             document.getElementById('signer10Pos').value = proj.signer10Pos || '';
             document.getElementById('signer11Name').value = proj.signer11Name || '';
@@ -2857,14 +2883,20 @@ function doPost(e) {
         ];
 
         function initCertFonts(proj) {
-            if (!proj.certFonts) proj.certFonts = {};
+            // Auto-migrate to new aesthetic defaults
+            if (proj.certFonts && proj.certFonts._version !== 1) {
+                proj.certFonts = null;
+            }
+
+            if (!proj.certFonts) proj.certFonts = { _version: 1 };
+
             const defaults = {
                 'certNo': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
-                'orgName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'orgName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 110 },
                 'grantText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
-                'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 115 },
                 'actText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
-                'projTitle': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'projTitle': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 105 },
                 'dateText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
                 'quoteText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: true, scale: 100 },
                 'issueDate': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
@@ -4541,27 +4573,29 @@ function doPost(e) {
             area.innerHTML = `
                 <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
                     <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
+                        ${systemOrgLogoUrl 
+                            ? `<img src="${systemOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">` 
+                            : `<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                            </svg>`}
                     </div>
                     <h2 class="text-base font-bold text-blue-950">แบบเสนอขออนุมัติโครงการ / กิจกรรม</h2>
                     <h1 class="text-lg font-black text-blue-900">"${escapeHtml(proj.title)}"</h1>
                 </div>
 
                 <div class="space-y-3 leading-relaxed text-xs official-font pt-2">
-                    <p><strong>1. หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
-                    <p><strong>2. วัตถุประสงค์:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
-                    <p><strong>3. เป้าหมาย:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
+                    <div class="mt-1"><strong>1. หลักการและเหตุผล:</strong> ${proj.reason || ''}</div>
+                    <div class="mt-1"><strong>2. วัตถุประสงค์:</strong></div>
+                    <div class="pl-4">${proj.objective || ''}</div>
+                    <div class="mt-1"><strong>3. เป้าหมาย:</strong></div>
+                    <div class="pl-4">${proj.target || ''}</div>
                     <p><strong>4. ระยะเวลาดำเนินการ:</strong> ${escapeHtml(proj.date)}</p>
                     <p><strong>5. สถานที่:</strong> ${escapeHtml(proj.location)}</p>
-                    <p><strong>6. วิธีการดำเนินการ:</strong></p>
-                    <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.method)}</p>
+                    <div class="mt-1"><strong>6. วิธีการดำเนินการ:</strong></div>
+                    <div class="pl-4">${proj.method || ''}</div>
                     <p><strong>7. ผู้รับผิดชอบ:</strong> ${escapeHtml(proj.responsible)}</p>
                     <p><strong>8. งบประมาณ:</strong> ใช้จ่ายจาก ${escapeHtml(proj.budgetSource)} ดังนี้</p>
                     
@@ -4582,9 +4616,9 @@ function doPost(e) {
                         </tfoot>
                     </table>
 
-                    <p><strong>9. ผลที่คาดว่าจะได้รับ:</strong> ${escapeHtml(proj.expected)}</p>
+                    <div class="mt-1"><strong>9. ผลที่คาดว่าจะได้รับ:</strong> ${proj.expected || ''}</div>
 
-                    <div class="grid grid-cols-2 gap-6 text-center pt-8">
+                    <div class="grid grid-cols-3 gap-6 text-center pt-8">
                         <div>
                             <p>(ลงชื่อ).....................................................</p>
                             <p class="font-bold">(${escapeHtml(proj.signer10Name || 'ผู้เขียนโครงการ')})</p>
@@ -4596,6 +4630,12 @@ function doPost(e) {
                             <p class="font-bold">(${escapeHtml(proj.signer11Name || 'ผู้เสนอโครงการ')})</p>
                             <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer11Pos || 'ตำแหน่ง')}</p>
                             <p class="font-bold text-blue-900 mt-1">11. ผู้เสนอโครงการ</p>
+                        </div>
+                        <div>
+                            <p>(ลงชื่อ).....................................................</p>
+                            <p class="font-bold">(${escapeHtml(proj.signer12Name || 'ผู้อนุมัติโครงการ')})</p>
+                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer12Pos || 'ตำแหน่ง')}</p>
+                            <p class="font-bold text-blue-900 mt-1">12. ผู้อนุมัติโครงการ</p>
                         </div>
                     </div>
                 </div>

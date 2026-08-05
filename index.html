@@ -48,6 +48,11 @@
 
         /* Printable Pages Control */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
             body * {
                 visibility: hidden;
             }
@@ -3395,12 +3400,18 @@ function doPost(e) {
                 </svg>
             `;
 
+            let bgStyleInline = '';
+            if (proj.certBgUrl) {
+                const bgSize = proj.certBgStyle === 'watermark' ? '50%' : 'cover';
+                bgStyleInline = `style="background-image: url('${proj.certBgUrl}'); background-repeat: no-repeat; background-size: ${bgSize}; background-position: center center;"`;
+            }
+
             proj.participants.forEach((part, index) => {
                 const pageBreakClass = index < proj.participants.length - 1 ? 'page-break' : '';
                 allCertsHtml += `
                     <div class="cert-print-wrapper ${pageBreakClass}">
                         <div class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font">
-                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
+                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center text-shadow-white" ${bgStyleInline}>
                                 <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
                                     เลขที่เกียรติบัตร: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
                                 </div>

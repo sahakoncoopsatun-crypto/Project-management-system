@@ -2460,6 +2460,20 @@ function doPost(e) {
                 showToast('⚠️ Sync ล้มเหลว — ข้อมูลบันทึกในเครื่องเรียบร้อยแล้ว คลิกที่ badge เพื่อลอง sync อีกครั้ง', 'warning');
             }
         }
+        function deleteProjectFromCloud(id) {
+            fetch(`${supabaseUrl}/rest/v1/projects?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': 'Bearer ' + supabaseKey
+                }
+            })
+            .then(res => {
+                if (res.ok) console.log(`🗑️ Deleted project ${id} from Supabase`);
+                else console.error(`Failed to delete project ${id} from Supabase`);
+            })
+            .catch(err => console.error(err));
+        }
 
         function openDatabaseModal() {
             // ไม่ต้องแสดง Modal สำหรับให้ผู้ใช้กรอกแล้ว เพราะระบบใช้ Supabase คงที่
@@ -4051,8 +4065,10 @@ function doPost(e) {
                 return;
             }
             showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
-                projectsState = projectsState.filter(p => p.id !== proj.id);
+                const idToDelete = proj.id;
+                projectsState = projectsState.filter(p => p.id !== idToDelete);
                 activeProjectId = projectsState[0].id;
+                deleteProjectFromCloud(idToDelete);
                 saveStateToLocalStorage();
                 renderDashboard();
                 renderActiveProjectUI();
@@ -4069,6 +4085,7 @@ function doPost(e) {
             showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
                 projectsState = projectsState.filter(p => p.id !== id);
                 if (activeProjectId === id) activeProjectId = projectsState[0].id;
+                deleteProjectFromCloud(id);
                 saveStateToLocalStorage();
                 renderDashboard();
                 renderProjectsList();

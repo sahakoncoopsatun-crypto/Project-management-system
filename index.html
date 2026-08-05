@@ -2892,33 +2892,33 @@ function doPost(e) {
             let html = '';
             fontConfigFields.forEach(field => {
                 const config = proj.certFonts[field.id];
-                html += \`
+                html += `
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-2">
-                        <div class="text-[11px] font-bold text-blue-900">\${field.label}</div>
+                        <div class="text-[11px] font-bold text-blue-900">${field.label}</div>
                         <div class="flex flex-wrap gap-2 items-center">
-                            <select class="border p-1 rounded text-xs bg-white flex-1 min-w-[120px]" onchange="updateCertFont('\${field.id}', 'family', this.value)">
-                                \${thaiFonts.map(f => \`<option value="\${f.name}" \${config.family === f.name ? 'selected' : ''}>\${f.label}</option>\`).join('')}
+                            <select class="border p-1 rounded text-xs bg-white flex-1 min-w-[120px]" onchange="updateCertFont('${field.id}', 'family', this.value)">
+                                ${thaiFonts.map(f => `<option value="${f.name}" ${config.family === f.name ? 'selected' : ''}>${f.label}</option>`).join('')}
                             </select>
-                            \${config.family === 'Custom' ? \`
-                                <input type="text" class="border p-1 rounded text-xs w-full bg-white mt-1 placeholder-slate-400" placeholder="ชื่อ Google Font เช่น 'Mali'" value="\${config.customFont || ''}" onchange="updateCertFont('\${field.id}', 'customFont', this.value)">
-                            \` : ''}
-                            <select class="border p-1 rounded text-xs bg-white w-24" onchange="updateCertFont('\${field.id}', 'weight', this.value)">
-                                <option value="normal" \${config.weight === 'normal' ? 'selected' : ''}>ปกติ (400)</option>
-                                <option value="bold" \${config.weight === 'bold' ? 'selected' : ''}>หนา (700)</option>
-                                <option value="900" \${config.weight === '900' ? 'selected' : ''}>ดำ (900)</option>
+                            ${config.family === 'Custom' ? `
+                                <input type="text" class="border p-1 rounded text-xs w-full bg-white mt-1 placeholder-slate-400" placeholder="ชื่อ Google Font เช่น 'Mali'" value="${config.customFont || ''}" onchange="updateCertFont('${field.id}', 'customFont', this.value)">
+                            ` : ''}
+                            <select class="border p-1 rounded text-xs bg-white w-24" onchange="updateCertFont('${field.id}', 'weight', this.value)">
+                                <option value="normal" ${config.weight === 'normal' ? 'selected' : ''}>ปกติ (400)</option>
+                                <option value="bold" ${config.weight === 'bold' ? 'selected' : ''}>หนา (700)</option>
+                                <option value="900" ${config.weight === '900' ? 'selected' : ''}>ดำ (900)</option>
                             </select>
                             <label class="flex items-center gap-1 text-[11px] font-semibold cursor-pointer">
-                                <input type="checkbox" \${config.italic ? 'checked' : ''} onchange="updateCertFont('\${field.id}', 'italic', this.checked)">
+                                <input type="checkbox" ${config.italic ? 'checked' : ''} onchange="updateCertFont('${field.id}', 'italic', this.checked)">
                                 <i>เอียง</i>
                             </label>
                             <div class="flex items-center gap-2 w-full mt-1">
                                 <span class="text-[10px] text-slate-500 font-bold">ขนาด:</span>
-                                <input type="range" min="50" max="200" step="5" value="\${config.scale}" oninput="document.getElementById('scale-val-\${field.id}').innerText=this.value+'%'" onchange="updateCertFont('\${field.id}', 'scale', parseInt(this.value))" class="flex-1 h-1.5 bg-slate-300 rounded-lg appearance-none cursor-pointer">
-                                <span id="scale-val-\${field.id}" class="text-[10px] text-blue-700 font-mono font-bold w-8 text-right">\${config.scale}%</span>
+                                <input type="range" min="50" max="200" step="5" value="${config.scale}" oninput="document.getElementById('scale-val-${field.id}').innerText=this.value+'%'" onchange="updateCertFont('${field.id}', 'scale', parseInt(this.value))" class="flex-1 h-1.5 bg-slate-300 rounded-lg appearance-none cursor-pointer">
+                                <span id="scale-val-${field.id}" class="text-[10px] text-blue-700 font-mono font-bold w-8 text-right">${config.scale}%</span>
                             </div>
                         </div>
                     </div>
-                \`;
+                `;
             });
             container.innerHTML = html;
         }

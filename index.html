@@ -3432,7 +3432,7 @@ function doPost(e) {
                 styleEl.id = 'dynamicPrintStyle';
                 document.head.appendChild(styleEl);
             }
-            styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
+            styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 10mm !important; }';
 
             const printBox = document.getElementById('printAreaContainer');
             if (!printBox) return;
@@ -4008,7 +4008,7 @@ function doPost(e) {
             }
 
             if (isLandscape) {
-                styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
+                styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 10mm !important; }';
             } else {
                 styleEl.innerHTML = '@page { size: A4 portrait; margin: 15mm 15mm 15mm 20mm; }';
             }

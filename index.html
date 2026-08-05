@@ -85,8 +85,8 @@
             }
             /* Single landscape certificate page */
             .cert-print-wrapper {
-                width: 277mm !important;
-                height: 190mm !important;
+                width: 297mm !important;
+                height: 210mm !important;
                 margin: 0 auto !important;
                 padding: 0 !important;
                 display: flex !important;
@@ -97,17 +97,17 @@
                 break-inside: avoid !important;
             }
             .cert-print-wrapper .cert-canvas-frame {
-                width: 277mm !important;
-                height: 190mm !important;
+                width: 297mm !important;
+                height: 210mm !important;
                 box-shadow: none !important;
                 margin: 0 !important;
-                padding: 6mm !important;
+                padding: 0 !important;
                 box-sizing: border-box !important;
                 background: #ffffff !important;
                 aspect-ratio: unset !important;
             }
             .cert-print-wrapper .cert-inner-border {
-                border: 2px solid #d97706 !important;
+                border: none !important;
                 margin: 0 !important;
                 height: 100% !important;
                 padding: 8mm 12mm !important;
@@ -133,15 +133,15 @@
         .cert-canvas-frame {
             aspect-ratio: 1.414 / 1; /* A4 Landscape aspect ratio */
             background: #ffffff;
-            border: 12px double #1e3a8a;
+            border: none;
             box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.15);
             position: relative;
         }
 
         .cert-inner-border {
-            border: 2.5px solid #d97706;
-            margin: 8px;
-            height: calc(100% - 16px);
+            border: none;
+            margin: 0;
+            height: 100%;
             position: relative;
             background: radial-gradient(circle at center, #ffffff 60%, #fafaf9 100%);
         }
@@ -1021,6 +1021,16 @@
                         <div id="certSignersConfigList" class="space-y-4 pt-2 border-t border-slate-200">
                             <!-- Dynamic Render JS -->
                         </div>
+
+                        <!-- Dynamic Fonts Configuration List -->
+                        <div class="space-y-4 pt-4 border-t border-slate-200 mt-4">
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-font text-blue-600"></i> ตั้งค่าแบบอักษร (Font Settings)
+                            </h4>
+                            <div id="certFontsConfigBox" class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                                <!-- Dynamic Render JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1056,9 +1066,9 @@
                     <div class="bg-slate-200 rounded-2xl p-4 overflow-hidden" style="height: 420px;">
                         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                             <!-- The actual cert card, scaled to fit the preview box -->
-                            <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 277mm;">
-                                <div id="certPreviewCard" class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 277mm; height: 190mm;">
-                    <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
+                            <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 297mm;">
+                                <div id="certPreviewCard" class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 297mm; height: 210mm;">
+                    <div class="cert-inner-border p-10 flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
                             <!-- Top Left Cert Reference No -->
                             <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
                                 เลขที่เกียรติบัตร: <span id="previewCertNo" class="text-blue-900">สอ.สธสต. 0001/2569</span>
@@ -1075,8 +1085,8 @@
                                     </svg>
                                     <!-- Custom logos appended here by JS -->
                                 </div>
-                                <h3 class="font-black text-2xl text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p class="text-base font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <h3 id="previewCert_orgName" class="font-black text-2xl text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p id="previewCert_grantText" class="text-base font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
                             <!-- Name Placeholder -->
@@ -1086,10 +1096,10 @@
 
                             <!-- Official Wording & Line Breaking -->
                             <div class="space-y-2 text-base text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+                                <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                 <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                <p class="text-center mt-1">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
-                                <p class="font-bold text-amber-900 italic pt-3 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                <p id="previewCert_dateText" class="text-center mt-1">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-3 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
@@ -2812,6 +2822,114 @@ function doPost(e) {
                 }
             }
 
+            renderCertFontsConfigUI();
+            updateCertPreview();
+        }
+
+        const fontConfigFields = [
+            { id: 'certNo', label: 'เลขที่เกียรติบัตร' },
+            { id: 'orgName', label: 'ชื่อหน่วยงาน (หัวกระดาษ)' },
+            { id: 'grantText', label: 'ข้อความมอบเกียรติบัตร' },
+            { id: 'partName', label: 'ชื่อ-สกุล ผู้รับ' },
+            { id: 'actText', label: 'ข้อความเข้าร่วมกิจกรรม' },
+            { id: 'projTitle', label: 'ชื่อโครงการ' },
+            { id: 'dateText', label: 'วันที่จัดกิจกรรม' },
+            { id: 'quoteText', label: 'คำอวยพร (ถ้ามี)' },
+            { id: 'issueDate', label: 'วันที่ให้ไว้ ณ' },
+            { id: 'signerName', label: 'ชื่อผู้ลงนาม' },
+            { id: 'signerPos', label: 'ตำแหน่งผู้ลงนาม' }
+        ];
+
+        const thaiFonts = [
+            { name: 'Sarabun', label: 'สารบรรณ (Sarabun)' },
+            { name: 'Niramit', label: 'นิรมิต (Niramit)' },
+            { name: 'Kanit', label: 'คณิต (Kanit)' },
+            { name: 'Thasadith', label: 'ทศดิฐ (Thasadith)' },
+            { name: 'Charm', label: 'ชาร์ม (Charm)' },
+            { name: 'Srisakdi', label: 'ศรีศักดิ์ (Srisakdi)' },
+            { name: 'Prompt', label: 'พร้อม (Prompt)' },
+            { name: 'Custom', label: 'กำหนดเอง...' }
+        ];
+
+        function initCertFonts(proj) {
+            if (!proj.certFonts) proj.certFonts = {};
+            fontConfigFields.forEach(f => {
+                if (!proj.certFonts[f.id]) {
+                    proj.certFonts[f.id] = { family: 'Sarabun', customFont: '', weight: 'bold', italic: (f.id === 'quoteText'), scale: 100 };
+                }
+            });
+        }
+
+        function loadUsedGoogleFonts() {
+            const proj = getActiveProject();
+            if (!proj || !proj.certFonts) return;
+            let fontsToLoad = new Set();
+            Object.values(proj.certFonts).forEach(f => {
+                if (f.family === 'Custom' && f.customFont) fontsToLoad.add(f.customFont);
+                else if (f.family !== 'Custom') fontsToLoad.add(f.family);
+            });
+            
+            fontsToLoad.forEach(font => {
+                const linkId = 'font-' + font.replace(/\s+/g, '-');
+                if (!document.getElementById(linkId)) {
+                    const link = document.createElement('link');
+                    link.id = linkId;
+                    link.rel = 'stylesheet';
+                    link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/\s+/g, '+')}:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap`;
+                    document.head.appendChild(link);
+                }
+            });
+        }
+
+        function renderCertFontsConfigUI() {
+            const proj = getActiveProject();
+            const container = document.getElementById('certFontsConfigBox');
+            if (!container || !proj) return;
+
+            initCertFonts(proj);
+            loadUsedGoogleFonts();
+
+            let html = '';
+            fontConfigFields.forEach(field => {
+                const config = proj.certFonts[field.id];
+                html += \`
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-2">
+                        <div class="text-[11px] font-bold text-blue-900">\${field.label}</div>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <select class="border p-1 rounded text-xs bg-white flex-1 min-w-[120px]" onchange="updateCertFont('\${field.id}', 'family', this.value)">
+                                \${thaiFonts.map(f => \`<option value="\${f.name}" \${config.family === f.name ? 'selected' : ''}>\${f.label}</option>\`).join('')}
+                            </select>
+                            \${config.family === 'Custom' ? \`
+                                <input type="text" class="border p-1 rounded text-xs w-full bg-white mt-1 placeholder-slate-400" placeholder="ชื่อ Google Font เช่น 'Mali'" value="\${config.customFont || ''}" onchange="updateCertFont('\${field.id}', 'customFont', this.value)">
+                            \` : ''}
+                            <select class="border p-1 rounded text-xs bg-white w-24" onchange="updateCertFont('\${field.id}', 'weight', this.value)">
+                                <option value="normal" \${config.weight === 'normal' ? 'selected' : ''}>ปกติ (400)</option>
+                                <option value="bold" \${config.weight === 'bold' ? 'selected' : ''}>หนา (700)</option>
+                                <option value="900" \${config.weight === '900' ? 'selected' : ''}>ดำ (900)</option>
+                            </select>
+                            <label class="flex items-center gap-1 text-[11px] font-semibold cursor-pointer">
+                                <input type="checkbox" \${config.italic ? 'checked' : ''} onchange="updateCertFont('\${field.id}', 'italic', this.checked)">
+                                <i>เอียง</i>
+                            </label>
+                            <div class="flex items-center gap-2 w-full mt-1">
+                                <span class="text-[10px] text-slate-500 font-bold">ขนาด:</span>
+                                <input type="range" min="50" max="200" step="5" value="\${config.scale}" oninput="document.getElementById('scale-val-\${field.id}').innerText=this.value+'%'" onchange="updateCertFont('\${field.id}', 'scale', parseInt(this.value))" class="flex-1 h-1.5 bg-slate-300 rounded-lg appearance-none cursor-pointer">
+                                <span id="scale-val-\${field.id}" class="text-[10px] text-blue-700 font-mono font-bold w-8 text-right">\${config.scale}%</span>
+                            </div>
+                        </div>
+                    </div>
+                \`;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateCertFont(fieldId, prop, value) {
+            const proj = getActiveProject();
+            if (!proj || !proj.certFonts) return;
+            proj.certFonts[fieldId][prop] = value;
+            saveProjects();
+            saveStateToLocalStorage();
+            renderCertFontsConfigUI();
             updateCertPreview();
         }
 
@@ -2906,8 +3024,33 @@ function doPost(e) {
                 }
             });
         }
+        function getCertFontStyle(proj, fieldId) {
+            if (!proj || !proj.certFonts || !proj.certFonts[fieldId]) return '';
+            const f = proj.certFonts[fieldId];
+            const family = (f.family === 'Custom' && f.customFont) ? f.customFont : f.family;
+            return `font-family: '${family}', sans-serif !important; font-weight: ${f.weight} !important; font-style: ${f.italic ? 'italic' : 'normal'} !important; font-size: ${f.scale / 100}em !important;`;
+        }
 
-        function renderCertSignersPreviewHtml(signers) {
+        function applyCertFontsToPreview(proj) {
+            const idMap = {
+                'certNo': 'previewCertNo',
+                'orgName': 'previewCert_orgName',
+                'grantText': 'previewCert_grantText',
+                'partName': 'previewCertName',
+                'actText': 'previewCert_actText',
+                'projTitle': 'previewCertProjTitle',
+                'dateText': 'previewCert_dateText',
+                'quoteText': 'previewCert_quoteText',
+                'issueDate': 'previewCertDate'
+            };
+            Object.keys(idMap).forEach(key => {
+                const el = document.getElementById(idMap[key]);
+                if (el) el.setAttribute('style', getCertFontStyle(proj, key));
+            });
+        }
+
+        function renderCertSignersPreviewHtml(proj) {
+            let signers = proj.certSigners;
             if (!signers || !Array.isArray(signers) || signers.length === 0) {
                 signers = [
                     { name: 'นางสาวสุดารัตน์ ใจดี', pos: 'ผู้จัดการสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', sigImg: '' },
@@ -2921,13 +3064,16 @@ function doPost(e) {
             else if (cols === 3) gridColsClass = 'grid-cols-3 max-w-2xl';
             else if (cols >= 4) gridColsClass = 'grid-cols-4 max-w-3xl';
 
+            const nameStyle = getCertFontStyle(proj, 'signerName');
+            const posStyle = getCertFontStyle(proj, 'signerPos');
+
             let signersHtml = signers.map(s => `
                 <div class="text-center space-y-1 flex flex-col items-center justify-center">
                     <div class="h-16 flex items-center justify-center">
                         ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
-                    <p class="font-bold text-base text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
-                    <div class="text-sm text-slate-900 font-bold text-center whitespace-pre-line leading-snug">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
+                    <p class="font-bold text-base text-blue-950 text-center" style="${nameStyle}">(${escapeHtml(s.name || '...................................................')})</p>
+                    <div class="text-sm text-slate-900 font-bold text-center whitespace-pre-line leading-snug" style="${posStyle}">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');
 
@@ -2974,8 +3120,10 @@ function doPost(e) {
 
             const container = document.getElementById('previewCertSignersContainer');
             if (container) {
-                container.innerHTML = renderCertSignersPreviewHtml(proj.certSigners);
+                container.innerHTML = renderCertSignersPreviewHtml(proj);
             }
+
+            applyCertFontsToPreview(proj);
 
             // Apply Background Image to Preview Card
             const cardEl = document.getElementById('certPreviewCard');
@@ -3405,33 +3553,43 @@ function doPost(e) {
                 bgStyleInline = `style="background-image: url('${proj.certBgUrl}'); background-repeat: no-repeat; background-size: ${bgSize}; background-position: center center;"`;
             }
 
+            const style_certNo = getCertFontStyle(proj, 'certNo');
+            const style_orgName = getCertFontStyle(proj, 'orgName');
+            const style_grantText = getCertFontStyle(proj, 'grantText');
+            const style_partName = getCertFontStyle(proj, 'partName');
+            const style_actText = getCertFontStyle(proj, 'actText');
+            const style_projTitle = getCertFontStyle(proj, 'projTitle');
+            const style_dateText = getCertFontStyle(proj, 'dateText');
+            const style_quoteText = getCertFontStyle(proj, 'quoteText');
+            const style_issueDate = getCertFontStyle(proj, 'issueDate');
+
             proj.participants.forEach((part, index) => {
                 const pageBreakClass = index < proj.participants.length - 1 ? 'page-break' : '';
                 allCertsHtml += `
                     <div class="cert-print-wrapper ${pageBreakClass}">
                         <div class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font">
-                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center text-shadow-white" ${bgStyleInline}>
+                            <div class="cert-inner-border p-10 flex flex-col justify-between h-full relative items-center text-center text-shadow-white" ${bgStyleInline}>
                                 <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
-                                    เลขที่เกียรติบัตร: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
+                                    เลขที่เกียรติบัตร: <span class="text-blue-900" style="${style_certNo}">${escapeHtml(part.certNo)}</span>
                                 </div>
                                 <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
                                     <div class="flex items-center justify-center gap-3 mx-auto">
                                         ${certLogoSource}
                                     </div>
-                                    <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                    <p class="text-xs font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                    <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center" style="${style_orgName}">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                    <p class="text-xs font-bold text-amber-800 mt-1 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                                 </div>
                                 <div class="my-auto py-2 w-full text-center">
-                                    <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center">${escapeHtml(part.name)}</h2>
+                                    <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center" style="${style_partName}">${escapeHtml(part.name)}</h2>
                                 </div>
                                 <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                    <p class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                    <p class="text-sm font-extrabold text-blue-900 text-center">${escapeHtml(proj.title)}</p>
-                                    <p class="text-center">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
-                                    <p class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                    <p class="text-center" style="${style_actText}">ได้เข้าร่วมและผ่านการอบรม</p>
+                                    <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
+                                    <p class="text-center" style="${style_dateText}">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
                                 <div class="pt-4 space-y-3 w-full text-center">
-                                    <p class="text-xs font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ ${cleanDate}</p>
+                                    <p class="text-xs font-extrabold text-slate-800 text-center" style="${style_issueDate}">ให้ไว้ ณ วันที่ ${cleanDate}</p>
                                     ${signersHtml}
                                 </div>
                             </div>
@@ -3446,7 +3604,7 @@ function doPost(e) {
                 styleEl.id = 'dynamicPrintStyle';
                 document.head.appendChild(styleEl);
             }
-            styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 10mm !important; }';
+            styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
 
             const printBox = document.getElementById('printAreaContainer');
             if (!printBox) return;
@@ -4022,7 +4180,7 @@ function doPost(e) {
             }
 
             if (isLandscape) {
-                styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 10mm !important; }';
+                styleEl.innerHTML = '@page { size: A4 landscape !important; margin: 0 !important; }';
             } else {
                 styleEl.innerHTML = '@page { size: A4 portrait; margin: 15mm 15mm 15mm 20mm; }';
             }

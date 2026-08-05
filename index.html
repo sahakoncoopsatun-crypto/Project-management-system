@@ -2859,17 +2859,17 @@ function doPost(e) {
         function initCertFonts(proj) {
             if (!proj.certFonts) proj.certFonts = {};
             const defaults = {
-                'certNo': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
-                'orgName': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 115 },
-                'grantText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
-                'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 110 },
-                'actText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
-                'projTitle': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
-                'dateText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
-                'quoteText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: true, scale: 100 },
-                'issueDate': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
+                'certNo': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
+                'orgName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'grantText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
+                'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'actText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
+                'projTitle': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 100 },
+                'dateText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
+                'quoteText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: true, scale: 100 },
+                'issueDate': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
                 'signerName': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
-                'signerPos': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 }
+                'signerPos': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 }
             };
             fontConfigFields.forEach(f => {
                 if (!proj.certFonts[f.id]) {

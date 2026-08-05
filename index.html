@@ -123,6 +123,9 @@
         }
 
         /* Certificate Executive Frame Styling */
+        .text-shadow-white {
+            text-shadow: -1px -1px 0 rgba(255,255,255,0.8), 1px -1px 0 rgba(255,255,255,0.8), -1px 1px 0 rgba(255,255,255,0.8), 1px 1px 0 rgba(255,255,255,0.8), 0 0 6px #fff !important;
+        }
         .cert-canvas-frame {
             aspect-ratio: 1.414 / 1; /* A4 Landscape aspect ratio */
             background: #ffffff;
@@ -1051,7 +1054,7 @@
                             <!-- The actual cert card, scaled to fit the preview box -->
                             <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 277mm;">
                                 <div id="certPreviewCard" class="cert-canvas-frame p-6 relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 277mm; height: 190mm;">
-                        <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center">
+                    <div class="cert-inner-border p-6 flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
                             <!-- Top Left Cert Reference No -->
                             <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
                                 เลขที่เกียรติบัตร: <span id="previewCertNo" class="text-blue-900">สอ.สธสต. 0001/2569</span>
@@ -1803,7 +1806,8 @@ function doPost(e) {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', quality));
+                    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                    callback(canvas.toDataURL(outputType, quality));
                 };
                 img.src = e.target.result;
             };
@@ -2760,7 +2764,7 @@ function doPost(e) {
                     </div>
                     <div class="space-y-1.5">
                         <input type="text" value="${escapeHtml(signer.name)}" oninput="updateCertSignerData(${idx}, 'name', this.value)" class="w-full border rounded-xl p-2 font-semibold text-xs bg-white" placeholder="ชื่อ-นามสกุล ผู้ลงนาม">
-                        <input type="text" value="${escapeHtml(signer.pos)}" oninput="updateCertSignerData(${idx}, 'pos', this.value)" class="w-full border rounded-xl p-2 text-slate-600 text-xs bg-white" placeholder="ตำแหน่ง">
+                        <textarea rows="2" oninput="updateCertSignerData(${idx}, 'pos', this.value)" class="w-full border rounded-xl p-2 text-slate-800 font-semibold text-xs bg-white" placeholder="ตำแหน่ง">${escapeHtml(signer.pos)}</textarea>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-500 mb-1">ภาพลายเซ็นผู้ลงนามที่ ${idx + 1}</label>
                             <input type="file" accept="image/*" onchange="uploadDynamicSignerSig(this, ${idx})" class="w-full text-xs border rounded-xl p-1 bg-white">
@@ -2919,7 +2923,7 @@ function doPost(e) {
                         ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
                     <p class="font-bold text-base text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
-                    <p class="text-sm text-slate-600 font-medium text-center">${escapeHtml(s.pos || 'ตำแหน่ง')}</p>
+                    <div class="text-sm text-slate-900 font-bold text-center whitespace-pre-line leading-snug">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');
 
@@ -3396,7 +3400,7 @@ function doPost(e) {
                 allCertsHtml += `
                     <div class="cert-print-wrapper ${pageBreakClass}">
                         <div class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font">
-                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center">
+                            <div class="cert-inner-border flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
                                 <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
                                     เลขที่เกียรติบัตร: <span class="text-blue-900">${escapeHtml(part.certNo)}</span>
                                 </div>

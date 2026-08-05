@@ -903,9 +903,14 @@
                 <h2 class="font-extrabold text-sm text-blue-950 flex items-center gap-2">
                     <i class="fa-solid fa-file-lines text-blue-700"></i> รายงานผลการดำเนินโครงการ 6 ส่วน (สารบรรณ A4 Portrait)
                 </h2>
-                <button onclick="triggerPrint('officialReportPrintBox', false)" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
-                    <i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป 6 ส่วน (A4)
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="exportToWord('officialReportPrintBox', 'รายงานผลการดำเนินโครงการ')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-file-word"></i> ส่งออกเป็น Word
+                    </button>
+                    <button onclick="triggerPrint('officialReportPrintBox', false)" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป 6 ส่วน (A4)
+                    </button>
+                </div>>
             </div>
 
             <!-- Printable Booklet Container -->
@@ -1341,10 +1346,15 @@
             <div class="flex justify-between border-t px-6 py-3.5 bg-slate-50 shrink-0">
                 <button onclick="closeModal('proposalPrintModal')"
                     class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">ปิด</button>
-                <button onclick="triggerPrint('proposalPrintArea', false)"
-                    class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
-                    <i class="fa-solid fa-print"></i> พิมพ์แบบเสนออนุมัติโครงการ (A4)
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="exportToWord('proposalPrintArea', 'แบบเสนอขออนุมัติโครงการ')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-file-word"></i> ส่งออกเป็น Word
+                    </button>
+                    <button onclick="triggerPrint('proposalPrintArea', false)"
+                        class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> พิมพ์แบบเสนออนุมัติโครงการ (A4)
+                    </button>
+                </div>>
             </div>
         </div>
     </div>
@@ -4270,6 +4280,79 @@ function doPost(e) {
             }, 1000);
         }
 
+        function exportToWord(targetId, filename) {
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+            
+            const htmlContent = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>${filename}</title>
+                    <style>
+                        @page WordSection1 {
+                            size: 8.27in 11.69in;
+                            margin: 1.18in 0.79in 0.79in 1.18in;
+                            mso-header-margin: 36.0pt;
+                            mso-footer-margin: 36.0pt;
+                            mso-paper-source: 0;
+                        }
+                        div.WordSection1 { page: WordSection1; }
+                        body { 
+                            font-family: 'TH Sarabun PSK', 'Sarabun', 'TH Sarabun New', sans-serif; 
+                            font-size: 16pt; 
+                            color: black;
+                            line-height: 1.5;
+                        }
+                        h1, h2, h3, h4, h5, h6 { font-size: 18pt; font-weight: bold; color: black; margin-top: 10px; margin-bottom: 5px; }
+                        table { width: 100%; border-collapse: collapse; border: 1px solid black; margin-top: 10px; margin-bottom: 10px; }
+                        th, td { border: 1px solid black; padding: 5px; }
+                        .text-center { text-align: center; }
+                        .text-right { text-align: right; }
+                        .text-left { text-align: left; }
+                        .font-bold { font-weight: bold; }
+                        .font-black { font-weight: 900; }
+                        .text-lg { font-size: 20pt; }
+                        .text-xl { font-size: 22pt; }
+                        .text-2xl { font-size: 24pt; }
+                        .text-xs { font-size: 14pt; }
+                        .text-sm { font-size: 15pt; }
+                        .text-base { font-size: 16pt; }
+                        .mt-1 { margin-top: 5px; }
+                        .mt-2 { margin-top: 10px; }
+                        .mt-4 { margin-top: 20px; }
+                        .pt-8 { padding-top: 40px; }
+                        .pl-4 { padding-left: 20px; }
+                        .mb-2 { margin-bottom: 10px; }
+                        .mb-4 { margin-bottom: 20px; }
+                        .pb-2 { padding-bottom: 10px; }
+                        .border-b { border-bottom: 1px solid black; }
+                        .space-y-6 > * + * { margin-top: 24px; }
+                        .space-y-3 > * + * { margin-top: 12px; }
+                        .flex { display: table; width: 100%; }
+                        .grid { display: table; width: 100%; }
+                        .grid-cols-2 > div { display: inline-block; width: 48%; vertical-align: top; }
+                    </style>
+                </head>
+                <body>
+                    <div class="WordSection1">
+                        ${targetEl.innerHTML}
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename + '.doc';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         function createNewProject(e) {
             e.preventDefault();
             const title = document.getElementById('newProjTitle').value;
@@ -4445,12 +4528,12 @@ function doPost(e) {
                 <div class="space-y-6 pt-4">
                     <h2 class="text-base font-bold text-blue-950 border-b pb-2">ส่วนที่ 1 บทนำและข้อมูลทั่วไป</h2>
                     <div class="space-y-3 leading-relaxed">
-                        <p><strong>1.1 ชื่อโครงการ:</strong> ${escapeHtml(proj.title)}</p>
-                        <p><strong>1.2 หลักการและเหตุผล:</strong> ${escapeHtml(proj.reason)}</p>
-                        <p><strong>1.3 วัตถุประสงค์:</strong></p>
-                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.objective)}</p>
-                        <p><strong>1.4 เป้าหมาย:</strong></p>
-                        <p class="pl-4 whitespace-pre-line">${escapeHtml(proj.target)}</p>
+                        <div><strong>1.1 ชื่อโครงการ:</strong> ${escapeHtml(proj.title)}</div>
+                        <div><strong>1.2 หลักการและเหตุผล:</strong> ${proj.reason || ''}</div>
+                        <div><strong>1.3 วัตถุประสงค์:</strong></div>
+                        <div class="pl-4 whitespace-pre-line">${proj.objective || ''}</div>
+                        <div><strong>1.4 เป้าหมาย:</strong></div>
+                        <div class="pl-4 whitespace-pre-line">${proj.target || ''}</div>
                     </div>
 
                     <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 2 การดำเนินงาน</h2>

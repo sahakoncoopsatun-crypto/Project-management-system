@@ -1088,16 +1088,16 @@
                             <!-- The actual cert card, scaled to fit the preview box -->
                             <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 297mm;">
                                 <div id="certPreviewCard" class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 297mm; height: 210mm;">
-                    <div class="cert-inner-border p-12 flex flex-col justify-start h-full relative items-center text-center text-shadow-white">
+                    <div class="cert-inner-border p-10 flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
                             <!-- Top Left Cert Reference No -->
                             <div class="absolute top-4 left-6 text-left font-mono font-bold text-[11px] text-slate-700">
                                 เลขที่เกียรติบัตร: <span id="previewCertNo" class="text-blue-900">สอ.สธสต. 0001/2569</span>
                             </div>
 
                             <!-- Top Org Logo & Header -->
-                            <div class="pt-4 w-full flex flex-col items-center justify-center text-center">
+                            <div class="w-full flex flex-col items-center justify-center text-center">
                                 <div id="previewCertLogoBox" class="flex items-center justify-center gap-3 mx-auto">
-                                    <svg id="previewCertLogoSvg" class="w-24 h-24 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                                         <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                                         <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
@@ -1105,26 +1105,35 @@
                                     </svg>
                                     <!-- Custom logos appended here by JS -->
                                 </div>
-                                <h3 id="previewCert_orgName" class="font-black text-[30pt] text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p id="previewCert_grantText" class="text-[22pt] font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <h3 id="previewCert_orgName" class="font-black text-2xl text-blue-950 mt-3 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p id="previewCert_grantText" class="text-lg font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
-                            <!-- Name Placeholder -->
-                            <div class="mt-14 w-full text-center">
-                                <h2 id="previewCertName" class="text-[44pt] font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-16 pb-3 text-center">นายสมชาย รักดี</h2>
-                            </div>
+                            <!-- Name & Event Middle Wrapper -->
+                            <div class="my-auto w-full flex flex-col items-center justify-center space-y-6">
+                                <!-- Name Placeholder -->
+                                <div class="w-full text-center">
+                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-12 pb-2 text-center">นายสมชาย รักดี</h2>
+                                </div>
 
-                            <!-- Official Wording & Line Breaking -->
-                            <div class="mt-8 space-y-3 text-[22pt] text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                <p class="text-[28pt] font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                <p id="previewCert_dateText" class="text-center mt-2">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
-                                <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-4 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                <!-- Official Wording & Line Breaking -->
+                                <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                    <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+                                    <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
+                                    <p id="previewCert_dateText" class="text-center">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                    <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                </div>
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
-                            <div class="mt-auto pb-4 space-y-6 w-full text-center">
-                                <p id="previewCertDate" class="text-[22pt] font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+                            <div class="w-full text-center space-y-3">
+                                <p id="previewCertDate" class="text-base font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+
+                                <div id="previewCertSignersContainer" class="w-full">
+                                    <!-- Dynamic Rendered Signatures Grid -->
+                                </div>
+                            </div>
+                        </div>
 
                                 <div id="previewCertSignersContainer" class="w-full">
                                     <!-- Dynamic Rendered Signatures Grid -->
@@ -3132,10 +3141,10 @@ function doPost(e) {
             let signersHtml = signers.map(s => `
                 <div class="text-center space-y-1 flex flex-col items-center justify-center">
                     <div class="h-16 flex items-center justify-center">
-                        \${s.sigImg ? \`<img src="\${s.sigImg}" class="max-h-16 object-contain" alt="Signature">\` : ''}
+                        ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
-                    <p class="font-bold text-[20pt] text-blue-950 text-center">(\${escapeHtml(s.name || '...................................................')})</p>
-                    <div class="text-[18pt] text-slate-900 font-bold text-center whitespace-pre-line leading-snug">\${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
+                    <p class="font-bold text-lg text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
+                    <div class="text-base text-slate-900 font-bold text-center whitespace-pre-line leading-snug">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');
 

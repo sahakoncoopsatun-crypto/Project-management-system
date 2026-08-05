@@ -3143,7 +3143,7 @@ function doPost(e) {
                     <div class="h-16 flex items-center justify-center">
                         ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
-                    <p class="font-bold text-lg text-blue-950 text-center">(${escapeHtml(s.name || '...................................................')})</p>
+                    <p class="font-bold text-lg text-blue-950 text-center">${`(${escapeHtml(s.name || '...................................................')})`}</p>
                     <div class="text-base text-slate-900 font-bold text-center whitespace-pre-line leading-snug">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');

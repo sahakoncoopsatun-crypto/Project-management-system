@@ -1097,7 +1097,7 @@
                             <!-- Top Org Logo & Header -->
                             <div class="w-full flex flex-col items-center justify-center text-center">
                                 <div id="previewCertLogoBox" class="flex items-center justify-center gap-3 mx-auto">
-                                    <svg id="previewCertLogoSvg" class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg id="previewCertLogoSvg" class="h-24 w-auto mx-auto drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                                         <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                                         <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
@@ -1121,6 +1121,7 @@
                                     <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
                                     <p id="previewCert_dateText" class="text-center">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                    <p id="previewCert_locationText" class="text-center" style="display:none;">ณ <span id="previewCertProjLocationInline" class="font-bold"></span></p>
                                     <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
                             </div>
@@ -3157,6 +3158,14 @@ function doPost(e) {
 
             document.getElementById('previewCertProjTitle').innerText = proj.title;
             document.getElementById('previewCertProjDateInline').innerText = proj.date;
+            
+            const locTextEl = document.getElementById('previewCert_locationText');
+            if (proj.location) {
+                locTextEl.style.display = '';
+                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+            } else {
+                locTextEl.style.display = 'none';
+            }
 
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
@@ -3177,7 +3186,7 @@ function doPost(e) {
                     proj.certLogos.forEach(url => {
                         const img = document.createElement('img');
                         img.src = url;
-                        img.className = 'cert-custom-logo w-20 h-20 object-contain';
+                        img.className = 'cert-custom-logo h-24 w-auto object-contain drop-shadow-sm';
                         img.style.cssText = 'background:transparent;border:none;box-shadow:none;';
                         img.alt = 'ตราหน่วยงาน';
                         logoBox.appendChild(img);
@@ -3575,6 +3584,14 @@ function doPost(e) {
             document.getElementById('previewCertName').innerText = part.name;
             document.getElementById('previewCertProjTitle').innerText = proj.title;
             document.getElementById('previewCertProjDateInline').innerText = proj.date;
+            
+            const locTextEl = document.getElementById('previewCert_locationText');
+            if (proj.location) {
+                locTextEl.style.display = '';
+                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+            } else {
+                locTextEl.style.display = 'none';
+            }
 
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
@@ -3607,10 +3624,10 @@ function doPost(e) {
             // Build logo HTML — transparent, no border, multiple logos side by side
             const certLogoSource = proj.certLogos.length > 0
                 ? proj.certLogos.map(url =>
-                    `<img src="${url}" class="w-20 h-20 object-contain" style="background:transparent;border:none;box-shadow:none;" alt="ตราหน่วยงาน">`
+                    `<img src="${url}" class="h-24 w-auto max-w-[160px] object-contain drop-shadow-sm" style="background:transparent;border:none;box-shadow:none;" alt="ตราหน่วยงาน">`
                   ).join('')
                 : `
-                <svg class="w-20 h-20 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="h-24 w-auto mx-auto drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
                     <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
                     <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
@@ -3657,6 +3674,7 @@ function doPost(e) {
                                     <p class="text-center" style="${style_actText}">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
                                     <p class="text-center" style="${style_dateText}">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                     <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
                                 <div class="pt-4 space-y-3 w-full text-center">
@@ -4228,6 +4246,14 @@ function doPost(e) {
             document.getElementById('previewCertName').innerText = part.name;
             document.getElementById('previewCertProjTitle').innerText = proj.title;
             document.getElementById('previewCertProjDateInline').innerText = proj.date;
+            
+            const locTextEl = document.getElementById('previewCert_locationText');
+            if (proj.location) {
+                locTextEl.style.display = '';
+                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+            } else {
+                locTextEl.style.display = 'none';
+            }
 
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;

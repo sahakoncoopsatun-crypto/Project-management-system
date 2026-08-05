@@ -3179,6 +3179,7 @@ function doPost(e) {
             showConfirm(`คุณต้องการลบรายชื่อที่เลือกจำนวน ${selectedList.length} รายการ ใช่หรือไม่?`, function() {
                 proj.participants = (proj.participants || []).filter(p => !p.selected);
                 reindexParticipantCertNos();
+                saveStateToLocalStorage();
                 renderUnStep2Participants();
                 renderParticipantsList();
                 renderDashboard();
@@ -3567,6 +3568,7 @@ function doPost(e) {
             const proj = getActiveProject();
             proj.participants = (proj.participants || []).filter(p => p.id !== partId);
             reindexParticipantCertNos();
+            saveStateToLocalStorage();
             renderUnStep2Participants();
             renderParticipantsList();
             renderDashboard();
@@ -3611,6 +3613,7 @@ function doPost(e) {
             });
 
             reindexParticipantCertNos();
+            saveStateToLocalStorage();
             closeModal('addParticipantModal');
             renderUnStep2Participants();
             renderParticipantsList();

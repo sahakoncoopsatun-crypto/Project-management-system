@@ -1024,9 +1024,14 @@
 
                         <!-- Dynamic Fonts Configuration List -->
                         <div class="space-y-4 pt-4 border-t border-slate-200 mt-4">
-                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-font text-blue-600"></i> ตั้งค่าแบบอักษร (Font Settings)
-                            </h4>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-font text-blue-600"></i> ตั้งค่าแบบอักษร (Font Settings)
+                                </h4>
+                                <button onclick="resetCertFonts()" type="button" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-bold transition active:scale-95">
+                                    <i class="fa-solid fa-rotate-left"></i> รีเซ็ตค่าเริ่มต้น
+                                </button>
+                            </div>
                             <div id="certFontsConfigBox" class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                                 <!-- Dynamic Render JS -->
                             </div>
@@ -2853,11 +2858,36 @@ function doPost(e) {
 
         function initCertFonts(proj) {
             if (!proj.certFonts) proj.certFonts = {};
+            const defaults = {
+                'certNo': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
+                'orgName': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 115 },
+                'grantText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
+                'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 110 },
+                'actText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
+                'projTitle': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
+                'dateText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
+                'quoteText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: true, scale: 100 },
+                'issueDate': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 110 },
+                'signerName': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
+                'signerPos': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 }
+            };
             fontConfigFields.forEach(f => {
                 if (!proj.certFonts[f.id]) {
-                    proj.certFonts[f.id] = { family: 'Sarabun', customFont: '', weight: 'bold', italic: (f.id === 'quoteText'), scale: 100 };
+                    proj.certFonts[f.id] = Object.assign({}, defaults[f.id]);
                 }
             });
+        }
+
+        function resetCertFonts() {
+            if(!confirm('ต้องการรีเซ็ตการตั้งค่าแบบอักษรทั้งหมดกลับเป็นค่าเริ่มต้น (ตามระเบียบสารบรรณ) หรือไม่?')) return;
+            const proj = getActiveProject();
+            if (!proj) return;
+            proj.certFonts = null; // clear it
+            initCertFonts(proj);
+            saveProjects();
+            saveStateToLocalStorage();
+            renderCertFontsConfigUI();
+            updateCertPreview();
         }
 
         function loadUsedGoogleFonts() {

@@ -37,7 +37,7 @@
         }
         
         .official-font {
-            font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif;
+            font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;
         }
 
         button, select, input, textarea {
@@ -1050,20 +1050,7 @@
                             <!-- Dynamic Render JS -->
                         </div>
 
-                        <!-- Dynamic Fonts Configuration List -->
-                        <div class="space-y-4 pt-4 border-t border-slate-200 mt-4">
-                            <div class="flex items-center justify-between">
-                                <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                                    <i class="fa-solid fa-font text-blue-600"></i> ตั้งค่าแบบอักษร (Font Settings)
-                                </h4>
-                                <button onclick="resetCertFonts()" type="button" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-bold transition active:scale-95">
-                                    <i class="fa-solid fa-rotate-left"></i> รีเซ็ตค่าเริ่มต้น
-                                </button>
-                            </div>
-                            <div id="certFontsConfigBox" class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                                <!-- Dynamic Render JS -->
-                            </div>
-                        </div>
+                        <!-- Font Settings UI Removed -->
                     </div>
                 </div>
 
@@ -1118,26 +1105,26 @@
                                     </svg>
                                     <!-- Custom logos appended here by JS -->
                                 </div>
-                                <h3 id="previewCert_orgName" class="font-black text-[26px] text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p id="previewCert_grantText" class="text-[18px] font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <h3 id="previewCert_orgName" class="font-black text-[30pt] text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p id="previewCert_grantText" class="text-[22pt] font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
                             <!-- Name Placeholder -->
                             <div class="mt-14 w-full text-center">
-                                <h2 id="previewCertName" class="text-[44px] font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-16 pb-3 text-center">นายสมชาย รักดี</h2>
+                                <h2 id="previewCertName" class="text-[44pt] font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-16 pb-3 text-center">นายสมชาย รักดี</h2>
                             </div>
 
                             <!-- Official Wording & Line Breaking -->
-                            <div class="mt-8 space-y-3 text-[18px] text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                            <div class="mt-8 space-y-3 text-[22pt] text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                 <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                <p class="text-[28px] font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
+                                <p class="text-[28pt] font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
                                 <p id="previewCert_dateText" class="text-center mt-2">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
                                 <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-4 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
                             <div class="mt-auto pb-4 space-y-6 w-full text-center">
-                                <p id="previewCertDate" class="text-[16px] font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+                                <p id="previewCertDate" class="text-[22pt] font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
 
                                 <div id="previewCertSignersContainer" class="w-full">
                                     <!-- Dynamic Rendered Signatures Grid -->
@@ -3145,10 +3132,10 @@ function doPost(e) {
             let signersHtml = signers.map(s => `
                 <div class="text-center space-y-1 flex flex-col items-center justify-center">
                     <div class="h-16 flex items-center justify-center">
-                        ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
+                        \${s.sigImg ? \`<img src="\${s.sigImg}" class="max-h-16 object-contain" alt="Signature">\` : ''}
                     </div>
-                    <p class="font-bold text-base text-blue-950 text-center" style="${nameStyle}">(${escapeHtml(s.name || '...................................................')})</p>
-                    <div class="text-sm text-slate-900 font-bold text-center whitespace-pre-line leading-snug" style="${posStyle}">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
+                    <p class="font-bold text-[20pt] text-blue-950 text-center">(\${escapeHtml(s.name || '...................................................')})</p>
+                    <div class="text-[18pt] text-slate-900 font-bold text-center whitespace-pre-line leading-snug">\${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');
 
@@ -3198,7 +3185,7 @@ function doPost(e) {
                 container.innerHTML = renderCertSignersPreviewHtml(proj);
             }
 
-            applyCertFontsToPreview(proj);
+            // applyCertFontsToPreview(proj);
 
             // Apply Background Image to Preview Card
             const cardEl = document.getElementById('certPreviewCard');

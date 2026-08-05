@@ -172,12 +172,11 @@
 
                 <!-- Header Actions -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Upload System Logo Trigger -->
-                    <label class="admin-only-ctrl bg-blue-900/80 hover:bg-blue-800 text-blue-100 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm flex items-center gap-1.5 cursor-pointer transition active:scale-95" title="อัปโหลดตราหน่วยงานระบบ (ใช้ทุกหน้า)">
-                        <i class="fa-solid fa-image text-amber-400"></i>
-                        <span class="hidden xl:inline">ตราหน่วยงานระบบ</span>
-                        <input type="file" accept="image/*" onchange="uploadSystemOrgLogo(this)" class="hidden">
-                    </label>
+                    <!-- System Settings Trigger -->
+                    <button onclick="openSystemSettingsModal()" class="admin-only-ctrl bg-blue-900/80 hover:bg-blue-800 text-blue-100 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm flex items-center gap-1.5 cursor-pointer transition active:scale-95" title="ตั้งค่าหน่วยงานระบบ">
+                        <i class="fa-solid fa-gear text-amber-400"></i>
+                        <span class="hidden xl:inline">ตั้งค่าระบบ</span>
+                    </button>
 
                     <!-- Cloud Sync Indicator -->
                     <div id="dbSyncBadge" class="admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300">
@@ -1131,6 +1130,50 @@
     </main>
 
     <!-- STREAMING_CHUNK:Building Dialog Modals and Overlays... -->
+    <!-- MODAL: SYSTEM SETTINGS -->
+    <div id="systemSettingsModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-amber-500"></i> ตั้งค่าหน่วยงานระบบ
+                </h3>
+                <button onclick="closeModal('systemSettingsModal')" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ชื่อหน่วยงาน (แสดงบน Header)</label>
+                    <input type="text" id="sysOrgNameInput" class="w-full border rounded-xl p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-blue-800" placeholder="สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="font-bold text-slate-700 flex items-center justify-between">
+                        <span>ตราหน่วยงานระบบ (มุมซ้ายบน)</span>
+                        <span class="text-[10px] text-slate-500 font-normal">ไม่มีผลกับตราบนเกียรติบัตร</span>
+                    </label>
+                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border">
+                        <div id="sysOrgLogoPreviewBox" class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border border-slate-300 shadow-sm shrink-0">
+                            <img id="sysOrgLogoPreviewImg" src="" class="w-full h-full object-contain hidden" alt="Preview">
+                            <i id="sysOrgLogoPreviewIcon" class="fa-solid fa-image text-slate-400 text-lg"></i>
+                        </div>
+                        <div class="flex-1 space-y-1">
+                            <label class="inline-block bg-blue-900 hover:bg-blue-950 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold shadow-sm cursor-pointer active:scale-95 transition">
+                                <i class="fa-solid fa-upload"></i> อัปโหลดรูปภาพใหม่
+                                <input type="file" accept="image/*" onchange="handleSysOrgLogoPreview(this)" class="hidden">
+                            </label>
+                            <p class="text-[10px] text-slate-500">แนะนำ: ไฟล์ PNG/SVG พื้นหลังโปร่งใส อัตราส่วน 1:1</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-2 border-t pt-3">
+                <button type="button" onclick="closeModal('systemSettingsModal')" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
+                <button type="button" onclick="saveSystemSettings()" class="bg-blue-900 hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer active:scale-95">บันทึกการตั้งค่า</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: CERTIFICATE FULLSCREEN PREVIEW -->
     <div id="certPreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4 no-print overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-5xl w-full p-6 space-y-4 shadow-2xl my-auto">
@@ -1991,11 +2034,49 @@ function doPost(e) {
             }
         }
 
-        function uploadSystemOrgLogo(input) {
+        let tempSysOrgLogoUrl = '';
+
+        function openSystemSettingsModal() {
+            const name = localStorage.getItem('coop_system_name') || 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด';
+            document.getElementById('sysOrgNameInput').value = name;
+            tempSysOrgLogoUrl = systemOrgLogoUrl;
+            updateSysOrgLogoPreviewUI();
+            document.getElementById('systemSettingsModal').classList.remove('hidden');
+        }
+
+        function handleSysOrgLogoPreview(input) {
             const file = input.files[0];
             if (!file) return;
             compressImage(file, 300, 300, 0.8, function(base64) {
-                systemOrgLogoUrl = base64;
+                tempSysOrgLogoUrl = base64;
+                updateSysOrgLogoPreviewUI();
+            });
+        }
+
+        function updateSysOrgLogoPreviewUI() {
+            const img = document.getElementById('sysOrgLogoPreviewImg');
+            const icon = document.getElementById('sysOrgLogoPreviewIcon');
+            if (tempSysOrgLogoUrl) {
+                img.src = tempSysOrgLogoUrl;
+                img.classList.remove('hidden');
+                icon.classList.add('hidden');
+            } else {
+                img.classList.add('hidden');
+                icon.classList.remove('hidden');
+            }
+        }
+
+        function saveSystemSettings() {
+            const name = document.getElementById('sysOrgNameInput').value.trim() || 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด';
+            
+            localStorage.setItem('coop_system_name', name);
+            const el = document.getElementById('headerOrgName');
+            if (el) el.innerText = name;
+            
+            if (tempSysOrgLogoUrl) {
+                systemOrgLogoUrl = tempSysOrgLogoUrl;
+                localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
+                
                 const img = document.getElementById('headerOrgLogoImg');
                 const svg = document.getElementById('headerOrgLogoSvg');
                 if (img && svg) {
@@ -2003,9 +2084,14 @@ function doPost(e) {
                     img.classList.remove('hidden');
                     svg.classList.add('hidden');
                 }
-                saveStateToLocalStorage(false);
-                showToast('อัปโหลดตราหน่วยงานระบบเรียบร้อยแล้ว', 'success');
-            });
+            }
+            
+            closeModal('systemSettingsModal');
+            showToast('บันทึกการตั้งค่าระบบเรียบร้อยแล้ว', 'success');
+        }
+
+        function uploadSystemOrgLogo(input) {
+            // Deprecated, using System Settings Modal instead
         }
 
         function uploadCertSpecificLogo(input) {
@@ -2109,6 +2195,11 @@ function doPost(e) {
                         img.classList.remove('hidden');
                         svg.classList.add('hidden');
                     }
+                }
+                const savedName = localStorage.getItem('coop_system_name');
+                if (savedName) {
+                    const el = document.getElementById('headerOrgName');
+                    if (el) el.innerText = savedName;
                 }
             } catch(e) { console.error(e); }
         }
@@ -3575,14 +3666,16 @@ function doPost(e) {
         function extractExcelRowData(row) {
             if (!row || typeof row !== 'object') return { name: '', code: '', pos: '', org: '', type: 'สมาชิกสามัญ', remark: '' };
 
-            let name = '', code = '', pos = '', org = '', type = '', remark = '';
+            let name = '', surname = '', code = '', pos = '', org = '', type = '', remark = '';
             const keys = Object.keys(row);
 
             keys.forEach(key => {
                 const kLower = key.trim().toLowerCase();
                 const val = String(row[key] || '').trim();
 
-                if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
+                if (!surname && (kLower === 'นามสกุล' || kLower.includes('surname') || kLower.includes('lastname') || kLower.includes('last name') || kLower === 'สกุล')) {
+                    surname = val;
+                } else if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
                     name = val;
                 } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก'))) {
                     code = val;
@@ -3596,6 +3689,10 @@ function doPost(e) {
                     remark = val;
                 }
             });
+
+            if (surname) {
+                name = name ? (name + ' ' + surname) : surname;
+            }
 
             if (!type) type = 'สมาชิกสามัญ';
 

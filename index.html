@@ -51,6 +51,9 @@
             body * {
                 visibility: hidden;
             }
+            body > *:not(#printAreaContainer) {
+                display: none !important;
+            }
             .no-print, header, nav, sidebar, button, .modal-backdrop {
                 display: none !important;
             }
@@ -58,15 +61,15 @@
                 visibility: visible !important;
             }
             #printAreaContainer {
-                position: fixed !important;
+                position: relative !important;
                 left: 0 !important;
                 top: 0 !important;
                 width: 100% !important;
-                height: 100% !important;
+                height: auto !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background: #ffffff !important;
-                overflow: hidden !important;
+                overflow: visible !important;
             }
             .page-break {
                 page-break-before: always !important;
@@ -3518,12 +3521,14 @@ function doPost(e) {
             box.innerHTML = `
                 <div class="text-center space-y-2 border-b pb-4 flex flex-col items-center">
                     <div class="w-16 h-16 mx-auto flex items-center justify-center">
-                        <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
-                            <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
-                        </svg>
+                        ${systemOrgLogoUrl 
+                            ? `<img src="${systemOrgLogoUrl}" class="w-16 h-16 object-contain mx-auto" alt="Logo">` 
+                            : `<svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="38" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 3"/>
+                                <path d="M50 18 L58 35 L77 38 L63 51 L67 70 L50 61 L33 70 L37 51 L23 38 L42 35 Z" fill="#fbbf24"/>
+                                <text x="50" y="82" font-family="'Sarabun', sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">สอ.สธสต.</text>
+                            </svg>`}
                     </div>
                     <h1 class="text-lg font-black text-blue-950">ทะเบียนรายชื่อผู้เข้าร่วมโครงการ (จำแนกตามประเภทสมาชิก)</h1>
                     <h2 class="text-sm font-bold text-amber-800">"${escapeHtml(proj.title)}"</h2>

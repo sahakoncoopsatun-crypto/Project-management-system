@@ -1534,7 +1534,7 @@
                             <thead>
                                 <tr class="border-b font-bold text-slate-700">
                                     <th class="p-1">ชื่อ - สกุล</th>
-                                    <th class="p-1">เลขสมาชิก</th>
+                                    <th class="p-1">เลขสมาชิก / บัตร ปชช.</th>
                                     <th class="p-1">ตำแหน่ง</th>
                                     <th class="p-1">สังกัด</th>
                                 </tr>
@@ -3577,16 +3577,20 @@ function doPost(e) {
 
         function formatAndValidateParticipantCode(code) {
             if (!code) return { valid: true, code: '' };
-            let c = code.trim();
+            let rawCode = code.trim();
+            // Remove dashes and spaces to validate pure numbers
+            let c = rawCode.replace(/[- ]/g, '');
             if (/^\d+$/.test(c)) {
                 if (c.length > 0 && c.length <= 5) {
                     c = c.padStart(5, '0');
                     return { valid: true, code: c };
                 } else if (c.length === 13) {
+                    // ID Card 13 digits
                     return { valid: true, code: c };
                 }
             }
-            return { valid: false, code: c };
+            // Return original input if invalid so it can be seen
+            return { valid: false, code: rawCode };
         }
 
         function saveSingleParticipant(e) {

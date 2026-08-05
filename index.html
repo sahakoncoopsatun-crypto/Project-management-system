@@ -8,6 +8,7 @@
     <!-- STREAMING_CHUNK:Loading styles and libraries... -->
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -157,10 +158,13 @@
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce-i18n@24.3.11/langs6/th_TH.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         tinymce.init({
-            selector: '#propReason, #propObjective, #propTarget, #propMethod, #propExpected',
+            selector: '#propReason, #propObjective, #propTarget, #propMethod, #propExpected, #execProblems, #execSuggestions',
+            language: 'th_TH',
+            content_style: "body { font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif; font-size: 14pt; } h1, h2, h3, h4, h5, h6 { font-size: 18pt; font-weight: bold; }",
             menubar: true,
             plugins: 'lists link table code formatpainter',
             toolbar: 'undo redo | fontfamily fontsize | blocks | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lineheight | table | code',
@@ -1853,65 +1857,64 @@ function doPost(e) {
         }
 
         function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            let bgClass = 'bg-slate-900 text-white';
-            let iconClass = 'fa-info-circle text-blue-400';
-
-            if (type === 'success') {
-                bgClass = 'bg-emerald-900 text-white border border-emerald-700';
-                iconClass = 'fa-circle-check text-emerald-400';
-            } else if (type === 'error') {
-                bgClass = 'bg-red-900 text-white border border-red-700';
-                iconClass = 'fa-circle-exclamation text-red-400';
+            if (window.Swal) {
+                if (type === 'info' || type === 'warning') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: type,
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'text-sm font-medium rounded-xl',
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: type,
+                        title: type === 'success' ? 'สำเร็จ' : 'แจ้งเตือน',
+                        text: message,
+                        confirmButtonText: 'ตกลง',
+                        confirmButtonColor: '#1e40af',
+                        customClass: {
+                            popup: 'rounded-2xl',
+                            confirmButton: 'rounded-xl px-6 py-2'
+                        }
+                    });
+                }
+            } else {
+                console.log(`[${type}] ${message}`);
             }
-
-            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm z-50`;
-            toast.innerHTML = `<i class="fa-solid ${iconClass} text-sm"></i> <span>${escapeHtml(message)}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
         }
 
         function showConfirm(message, onConfirm) {
-            const modal = document.getElementById('customConfirmModal');
-            const msgEl = document.getElementById('customConfirmMessage');
-            const okBtn = document.getElementById('customConfirmOkBtn');
-            const cancelBtn = document.getElementById('customConfirmCancelBtn');
-
-            if (!modal || !msgEl || !okBtn || !cancelBtn) return;
-
-            msgEl.innerText = message;
-            modal.classList.remove('hidden');
-
-            const handleOk = () => {
-                modal.classList.add('hidden');
-                cleanup();
-                if (typeof onConfirm === 'function') onConfirm();
-            };
-
-            const handleCancel = () => {
-                modal.classList.add('hidden');
-                cleanup();
-            };
-
-            const cleanup = () => {
-                okBtn.removeEventListener('click', handleOk);
-                cancelBtn.removeEventListener('click', handleCancel);
-            };
-
-            okBtn.addEventListener('click', handleOk);
-            cancelBtn.addEventListener('click', handleCancel);
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'ยืนยันการทำรายการ',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#1e40af',
+                    cancelButtonColor: '#94a3b8',
+                    confirmButtonText: 'ตกลง',
+                    cancelButtonText: 'ยกเลิก',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl px-6 py-2 font-medium',
+                        cancelButton: 'rounded-xl px-6 py-2 font-medium'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (typeof onConfirm === 'function') onConfirm();
+                    }
+                });
+            } else {
+                if (confirm(message)) {
+                    if (typeof onConfirm === 'function') onConfirm();
+                }
+            }
         }
 
         function escapeHtml(str) {
@@ -2721,7 +2724,7 @@ function doPost(e) {
             document.getElementById('propExpected').value = proj.expected || '';
 
             if (window.tinymce) {
-                ['propReason', 'propObjective', 'propTarget', 'propMethod', 'propExpected'].forEach(id => {
+                ['propReason', 'propObjective', 'propTarget', 'propMethod', 'propExpected', 'execProblems', 'execSuggestions'].forEach(id => {
                     const editor = tinymce.get(id);
                     if (editor) editor.setContent(document.getElementById(id).value);
                 });
@@ -4475,10 +4478,10 @@ function doPost(e) {
                     </table>
 
                     <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 5 ปัญหาและอุปสรรค</h2>
-                    <p class="leading-relaxed">${escapeHtml(proj.problems || 'ไม่มีปัญหาอุปสรรคสำคัญในการดำเนินงาน')}</p>
+                    <div class="leading-relaxed">${proj.problems || 'ไม่มีปัญหาอุปสรรคสำคัญในการดำเนินงาน'}</div>
 
                     <h2 class="text-base font-bold text-blue-950 border-b pb-2 pt-4">ส่วนที่ 6 ข้อเสนอแนะ</h2>
-                    <p class="leading-relaxed">${escapeHtml(proj.suggestions || 'ควรจัดกิจกรรมพัฒนาศักยภาพอย่างต่อเนื่องในปีกิจการถัดไป')}</p>
+                    <div class="leading-relaxed">${proj.suggestions || 'ควรจัดกิจกรรมพัฒนาศักยภาพอย่างต่อเนื่องในปีกิจการถัดไป'}</div>
                 </div>
             `;
         }
@@ -4618,24 +4621,46 @@ function doPost(e) {
 
                     <div class="mt-1"><strong>9. ผลที่คาดว่าจะได้รับ:</strong> ${proj.expected || ''}</div>
 
-                    <div class="grid grid-cols-3 gap-6 text-center pt-8">
-                        <div>
-                            <p>(ลงชื่อ).....................................................</p>
-                            <p class="font-bold">(${escapeHtml(proj.signer10Name || 'ผู้เขียนโครงการ')})</p>
-                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer10Pos || 'ตำแหน่ง')}</p>
-                            <p class="font-bold text-blue-900 mt-1">10. ผู้เขียนโครงการ</p>
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-12 pt-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-full max-w-[220px]">
+                                <p class="font-bold text-blue-900 mb-4 text-left">10. ผู้เขียนโครงการ</p>
+                                <div class="text-center">
+                                    <p>(ลงชื่อ).....................................................</p>
+                                    <p class="font-bold mt-1">(${escapeHtml(proj.signer10Name || 'ผู้เขียนโครงการ')})</p>
+                                    <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer10Pos || 'ตำแหน่ง')}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p>(ลงชื่อ).....................................................</p>
-                            <p class="font-bold">(${escapeHtml(proj.signer11Name || 'ผู้เสนอโครงการ')})</p>
-                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer11Pos || 'ตำแหน่ง')}</p>
-                            <p class="font-bold text-blue-900 mt-1">11. ผู้เสนอโครงการ</p>
+                        <div class="flex flex-col items-center">
+                            <div class="w-full max-w-[220px]">
+                                <p class="font-bold text-blue-900 mb-4 text-left">11. ผู้เสนอโครงการ</p>
+                                <div class="text-center">
+                                    <p>(ลงชื่อ).....................................................</p>
+                                    <p class="font-bold mt-1">(${escapeHtml(proj.signer11Name || 'ผู้เสนอโครงการ')})</p>
+                                    <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer11Pos || 'ตำแหน่ง')}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p>(ลงชื่อ).....................................................</p>
-                            <p class="font-bold">(${escapeHtml(proj.signer12Name || 'ผู้อนุมัติโครงการ')})</p>
-                            <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer12Pos || 'ตำแหน่ง')}</p>
-                            <p class="font-bold text-blue-900 mt-1">12. ผู้อนุมัติโครงการ</p>
+                        <div class="flex flex-col items-center">
+                            <div class="w-full max-w-[220px]">
+                                <p class="font-bold text-blue-900 mb-4 text-left">12. ผู้เห็นชอบโครงการ</p>
+                                <div class="text-center">
+                                    <p>(ลงชื่อ).....................................................</p>
+                                    <p class="font-bold mt-1">(${escapeHtml(proj.signer12Name || 'ผู้เห็นชอบโครงการ')})</p>
+                                    <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer12Pos || 'ตำแหน่ง')}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-full max-w-[220px]">
+                                <p class="font-bold text-blue-900 mb-4 text-left">13. ผู้อนุมัติโครงการ</p>
+                                <div class="text-center">
+                                    <p>(ลงชื่อ).....................................................</p>
+                                    <p class="font-bold mt-1">(${escapeHtml(proj.signer13Name || 'ผู้อนุมัติโครงการ')})</p>
+                                    <p class="text-[11px] text-slate-600">${escapeHtml(proj.signer13Pos || 'ตำแหน่ง')}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

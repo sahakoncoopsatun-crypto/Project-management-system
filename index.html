@@ -1101,14 +1101,14 @@
                             <!-- The actual cert card, scaled to fit the preview box -->
                             <div id="certPreviewScaleOuter" style="transform-origin: top center; width: 297mm;">
                                 <div id="certPreviewCard" class="cert-canvas-frame relative flex flex-col justify-between text-center bg-white print-area official-font" style="width: 297mm; height: 210mm;">
-                    <div class="cert-inner-border p-10 flex flex-col justify-between h-full relative items-center text-center text-shadow-white">
+                    <div class="cert-inner-border p-12 flex flex-col justify-start h-full relative items-center text-center text-shadow-white">
                             <!-- Top Left Cert Reference No -->
-                            <div class="absolute top-3 left-4 text-left font-mono font-bold text-[11px] text-slate-700">
+                            <div class="absolute top-4 left-6 text-left font-mono font-bold text-[11px] text-slate-700">
                                 เลขที่เกียรติบัตร: <span id="previewCertNo" class="text-blue-900">สอ.สธสต. 0001/2569</span>
                             </div>
 
                             <!-- Top Org Logo & Header -->
-                            <div class="pt-2 w-full flex flex-col items-center justify-center text-center">
+                            <div class="pt-4 w-full flex flex-col items-center justify-center text-center">
                                 <div id="previewCertLogoBox" class="flex items-center justify-center gap-3 mx-auto">
                                     <svg id="previewCertLogoSvg" class="w-24 h-24 mx-auto" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" stroke-width="3"/>
@@ -1118,29 +1118,26 @@
                                     </svg>
                                     <!-- Custom logos appended here by JS -->
                                 </div>
-                                <h3 id="previewCert_orgName" class="font-black text-2xl text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p id="previewCert_grantText" class="text-base font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <h3 id="previewCert_orgName" class="font-black text-[26px] text-blue-950 mt-4 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                <p id="previewCert_grantText" class="text-[18px] font-bold text-amber-800 mt-2 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
-                            <!-- Name & Event Middle Wrapper -->
-                            <div class="my-auto w-full flex flex-col items-center justify-center space-y-8">
-                                <!-- Name Placeholder -->
-                                <div class="w-full text-center">
-                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-12 pb-2 text-center">นายสมชาย รักดี</h2>
-                                </div>
+                            <!-- Name Placeholder -->
+                            <div class="mt-14 w-full text-center">
+                                <h2 id="previewCertName" class="text-[44px] font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-16 pb-3 text-center">นายสมชาย รักดี</h2>
+                            </div>
 
-                                <!-- Official Wording & Line Breaking -->
-                                <div class="space-y-2 text-base text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                    <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
-                                    <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                    <p id="previewCert_dateText" class="text-center mt-1">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
-                                    <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-3 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
-                                </div>
+                            <!-- Official Wording & Line Breaking -->
+                            <div class="mt-8 space-y-3 text-[18px] text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+                                <p class="text-[28px] font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
+                                <p id="previewCert_dateText" class="text-center mt-2">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-4 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
-                            <div class="pt-6 space-y-4 w-full text-center">
-                                <p id="previewCertDate" class="text-sm font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+                            <div class="mt-auto pb-4 space-y-6 w-full text-center">
+                                <p id="previewCertDate" class="text-[16px] font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
 
                                 <div id="previewCertSignersContainer" class="w-full">
                                     <!-- Dynamic Rendered Signatures Grid -->

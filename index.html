@@ -1704,7 +1704,8 @@ function doPost(e) {
         let isAdminLoggedIn = false; // Public Member Portal default
         let isPublicMemberMode = false;
         let systemOrgLogoUrl = '';
-        let gasEndpointUrl = 'https://script.google.com/macros/s/AKfycbx1epyEu9_ZqpLYkmDcrie1EmJHcAuhR8iaH22zdOrpuD0uJX7zXJ1ULM2jFutONtHpVQ/exec';
+        let supabaseUrl = 'https://xsvteyjvfdlkfkivalje.supabase.co';
+        let supabaseKey = 'sb_publishable_jDGtQomzBz4LjMUn6ndCyA_9Es-rkPu';
         let excelParsedData = [];
         let _syncDebounceTimer = null;
         let _pendingSyncCount = 0;
@@ -1972,9 +1973,7 @@ function doPost(e) {
             renderActiveProjectUI();
             updateDbSyncBadgeStatus();
 
-            if (gasEndpointUrl) {
-                fetchDataFromDatabase(false);
-            }
+            fetchDataFromDatabase(false);
 
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.nav-dropdown-container')) {
@@ -2184,18 +2183,7 @@ function doPost(e) {
             try {
                 const savedProjects = localStorage.getItem('coop_projects_state');
                 if (savedProjects) projectsState = JSON.parse(savedProjects);
-                const savedGas = localStorage.getItem('coop_gas_url');
-                // คง default URL ที่ฝังไว้ ถ้า localStorage ว่าง (เครื่องใหม่ยังไม่เคยตั้งค่า)
-                if (savedGas) {
-                    gasEndpointUrl = savedGas;
-                    const el = document.getElementById('gasEndpointUrlInput');
-                    if (el) el.value = savedGas;
-                } else if (gasEndpointUrl) {
-                    // ใช้ default URL ที่ hardcode ไว้ — บันทึกลง localStorage ให้เลย
-                    localStorage.setItem('coop_gas_url', gasEndpointUrl);
-                    const el = document.getElementById('gasEndpointUrlInput');
-                    if (el) el.value = gasEndpointUrl;
-                }
+                
                 const savedLogo = localStorage.getItem('coop_system_logo');
                 if (savedLogo) {
                     systemOrgLogoUrl = savedLogo;
@@ -2231,43 +2219,29 @@ function doPost(e) {
         }
 
         function fetchDataFromDatabase(showToastMsg = true) {
-            const inputEl = document.getElementById('gasEndpointUrlInput');
-            let urlToUse = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : gasEndpointUrl;
-
-            const check = validateGasUrl(urlToUse);
-            if (!check.valid) {
-                if (showToastMsg) showToast(check.error, 'error');
-                updateDbSyncBadgeStatus(false);
-                return;
-            }
-
-            gasEndpointUrl = check.url;
-            saveStateToLocalStorage(false);
-
             const badge = document.getElementById('dbSyncBadge');
             if (badge) {
                 badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
                 badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> 🟡 กำลังดึงข้อมูล...';
             }
 
-            fetch(gasEndpointUrl)
-                .then(res => res.text())
-                .then(textData => {
-                    let resData;
-                    try {
-                        resData = JSON.parse(textData);
-                    } catch(err) {
-                        if (textData.includes('<!DOCTYPE html') || textData.includes('Google Accounts')) {
-                            throw new Error('ติดหน้าล็อกอิน Google: กรุณาไปที่ Apps Script > Deploy > ตั้งค่า Who has access เป็น "Anyone" (ทุกคน)');
-                        }
-                        throw new Error('รูปแบบตอบกลับไม่ใช่ JSON');
-                    }
-
-                    if (resData && resData.status === 'success' && Array.isArray(resData.data)) {
-                        if (resData.data.length > 0) {
+            fetch(`${supabaseUrl}/rest/v1/projects?select=*`, {
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': 'Bearer ' + supabaseKey
+                }
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(rows => {
+                    const cloudData = rows.map(r => r.data);
+                    
+                    if (cloudData && Array.isArray(cloudData)) {
+                        if (cloudData.length > 0) {
                             // Timestamp-based merge strategy
                             const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');
-                            const cloudData = resData.data;
                             const cloudHasTimestamps = cloudData.some(p => p._lastModified);
                             
                             if (cloudHasTimestamps) {
@@ -2321,11 +2295,11 @@ function doPost(e) {
                             if (showToastMsg) showToast(`ดึงข้อมูลสำเร็จ (${projectsState.length} โครงการ)`, 'success');
                         } else {
                             updateDbSyncBadgeStatus(true);
-                            if (showToastMsg) showToast('เชื่อมต่อคลาวด์สำเร็จ แต่ยังไม่มีข้อมูลใน Google Sheets', 'info');
+                            if (showToastMsg) showToast('เชื่อมต่อคลาวด์สำเร็จ แต่ยังไม่มีข้อมูลใน Database', 'info');
                             syncToRemoteDatabaseDirect();
                         }
                     } else {
-                        throw new Error(resData.message || 'ไม่สามารถดึงข้อมูลได้');
+                        throw new Error('ไม่สามารถดึงข้อมูลได้');
                     }
                 })
                 .catch(err => {
@@ -2336,38 +2310,17 @@ function doPost(e) {
         }
 
         function saveGasEndpointUrl() {
-            const inputEl = document.getElementById('gasEndpointUrlInput');
-            const url = inputEl ? inputEl.value.trim() : '';
-            const check = validateGasUrl(url);
-            if (!check.valid) {
-                showToast(check.error, 'error');
-                return;
-            }
-            gasEndpointUrl = check.url;
-            saveStateToLocalStorage(false);
-            showToast('บันทึก URL เรียบร้อยแล้ว กำลังดึงข้อมูล...', 'success');
-            fetchDataFromDatabase(true);
+            // เลิกใช้แล้ว - Hardcoded Supabase URL
             closeModal('databaseModal');
         }
 
         function testDatabaseConnection() {
-            const inputEl = document.getElementById('gasEndpointUrlInput');
-            const url = inputEl ? inputEl.value.trim() : gasEndpointUrl;
-            const check = validateGasUrl(url);
-            if (!check.valid) {
-                showToast(check.error, 'error');
-                return;
-            }
-            gasEndpointUrl = check.url;
-            saveStateToLocalStorage(false);
-
-            showToast('กำลังทดสอบการเชื่อมต่อ...', 'info');
+            showToast('กำลังทดสอบการเชื่อมต่อ Supabase...', 'info');
             fetchDataFromDatabase(true);
         }
 
         // Debounced sync: waits 2 seconds after last change before syncing
         function debouncedSyncToRemote() {
-            if (!gasEndpointUrl) return;
             _pendingSyncCount++;
             updatePendingSyncBadge();
             
@@ -2377,42 +2330,79 @@ function doPost(e) {
             }, 2000);
         }
 
-        // Direct sync with retry mechanism (no no-cors!)
-        function syncToRemoteDatabaseDirect(retryCount = 0) {
-            if (!gasEndpointUrl) return;
+        // ล้างฟิลด์ภาพ base64 ออกก่อนส่งขึ้น Cloud — ภาพเก็บไว้ในเครื่องเท่านั้น
+        function stripImagesForSync(projects) {
+            return projects.map(proj => {
+                const p = Object.assign({}, proj);
+                // ล้างภาพพื้นหลัง + logo ใหญ่ (base64 เป็นส่วนใหญ่ที่สุด)
+                if (p.certBgUrl) p.certBgUrl = '__IMG_STRIPPED__';
+                if (p.certLogoUrl) p.certLogoUrl = '__IMG_STRIPPED__';
+                if (p.certLogos && p.certLogos.length > 0) {
+                    p.certLogos = p.certLogos.map(() => '__IMG_STRIPPED__');
+                }
+                // ล้างลายเซ็นผู้ลงนาม
+                if (p.certSigners && Array.isArray(p.certSigners)) {
+                    p.certSigners = p.certSigners.map(s => {
+                        const sc = Object.assign({}, s);
+                        if (sc.sigImg) sc.sigImg = '__IMG_STRIPPED__';
+                        return sc;
+                    });
+                }
+                // ล้างภาพ media gallery (ใหญ่มาก)
+                if (p.media && p.media.length > 0) {
+                    p.media = p.media.map(m => ({ id: m.id, type: m.type, caption: m.caption, url: '__IMG_STRIPPED__' }));
+                }
+                return p;
+            });
+        }
 
+        function syncToRemoteDatabaseDirect(retryCount = 0) {
             const badge = document.getElementById('dbSyncBadge');
             if (badge) {
                 badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
                 badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> 🟡 กำลังซิงค์...';
             }
 
-            const payload = JSON.stringify(projectsState);
+            // ล้างภาพออกก่อนส่ง — แค่ข้อมูลข้อความเท่านั้นที่ซิงค์ขึ้น Cloud
+            const stripped = stripImagesForSync(projectsState);
+            const payload = stripped.map(p => ({
+                id: p.id,
+                data: p,
+                updated_at: new Date().toISOString()
+            }));
 
-            fetch(gasEndpointUrl, {
+            const payloadStr = JSON.stringify(payload);
+            const sizeKb = Math.round(payloadStr.length / 1024);
+            console.log(`📤 Syncing ${stripped.length} projects to Supabase (ขนาด ${sizeKb} KB)`);
+
+            if (stripped.length === 0) {
+                _pendingSyncCount = 0;
+                updatePendingSyncBadge();
+                updateDbSyncBadgeStatus(true);
+                return;
+            }
+
+            fetch(`${supabaseUrl}/rest/v1/projects`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: payload
+                headers: {
+                    'apikey': supabaseKey,
+                    'Authorization': 'Bearer ' + supabaseKey,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates'
+                },
+                body: payloadStr
             })
             .then(res => {
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.text();
-            })
-            .then(text => {
-                let resData;
-                try { resData = JSON.parse(text); } catch(e) { resData = {}; }
-                if (resData.status === 'success' || resData.status === 'ok') {
-                    _lastSyncTimestamp = Date.now();
-                    _pendingSyncCount = 0;
-                    updatePendingSyncBadge();
-                    updateDbSyncBadgeStatus(true);
-                    console.log('✅ Cloud sync successful at', new Date().toLocaleTimeString());
-                } else {
-                    throw new Error(resData.message || 'Sync response not ok');
-                }
+                
+                _lastSyncTimestamp = Date.now();
+                _pendingSyncCount = 0;
+                updatePendingSyncBadge();
+                updateDbSyncBadgeStatus(true);
+                console.log('✅ Supabase sync successful at', new Date().toLocaleTimeString());
             })
             .catch(err => {
-                console.error('Cloud sync error (attempt ' + (retryCount + 1) + '):', err);
+                console.error('Supabase sync error (attempt ' + (retryCount + 1) + '):', err);
                 if (retryCount < 2) {
                     // Retry after exponential backoff
                     const delay = Math.pow(2, retryCount + 1) * 1000;
@@ -2420,8 +2410,7 @@ function doPost(e) {
                     setTimeout(() => syncToRemoteDatabaseDirect(retryCount + 1), delay);
                 } else {
                     // All retries failed
-                    updateDbSyncBadgeStatus(false);
-                    showToast('⚠️ ไม่สามารถซิงค์ข้อมูลขึ้น Cloud ได้ ข้อมูลถูกบันทึกในเครื่องเรียบร้อยแล้ว ระบบจะลองซิงค์อีกครั้งเมื่อมีการเปลี่ยนแปลงถัดไป', 'error');
+                    updateDbSyncBadgeStatus(false, err.message);
                 }
             });
         }
@@ -2439,47 +2428,42 @@ function doPost(e) {
             }
         }
 
-        function updateDbSyncBadgeStatus(isOnline) {
+        function updateDbSyncBadgeStatus(isOnline, errMsg) {
             const badge = document.getElementById('dbSyncBadge');
             const dashBadge = document.getElementById('dashDbStatusBadge');
 
-            if (!gasEndpointUrl) {
-                // No URL configured - Offline mode
-                if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300';
-                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> ⚪ Offline';
-                }
-                if (dashBadge) {
-                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700';
-                    dashBadge.innerHTML = '⚪ Offline / Local Mode';
-                }
-            } else if (isOnline === true) {
+            if (isOnline === true) {
                 // Successfully connected and synced
                 if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300';
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300 cursor-pointer';
+                    badge.title = 'ซิงค์ข้อมูลกับ Supabase แล้ว';
+                    badge.onclick = () => { testDatabaseConnection(); };
                     badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
                 }
                 if (dashBadge) {
                     dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
-                    dashBadge.innerHTML = '🟢 เชื่อมต่อ Google Sheets แล้ว';
+                    dashBadge.innerHTML = '🟢 เชื่อมต่อ Database แล้ว';
                 }
             } else if (isOnline === false) {
-                // Sync failed - show error state
+                // Sync failed - show error state with retry button
+                const errTip = errMsg ? ` (${errMsg.substring(0,40)})` : '';
                 if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300';
-                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span> 🔴 Sync ล้มเหลว';
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300 cursor-pointer';
+                    badge.title = errMsg || 'คลิกเพื่อลองซิงค์อีกครั้ง';
+                    badge.onclick = () => { syncToRemoteDatabaseDirect(); badge.onclick = null; };
+                    badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span> 🔴 Sync ล้มเหลว <span class="underline text-red-200 ml-1">ลองใหม่</span>';
                 }
                 if (dashBadge) {
                     dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-400/40';
-                    dashBadge.innerHTML = '🔴 ซิงค์ข้อมูลล้มเหลว - ข้อมูลบันทึกในเครื่องแล้ว';
+                    dashBadge.innerHTML = `🔴 ซิงค์ข้อมูลล้มเหลว - ข้อมูลบันทึกในเครื่องแล้ว${errTip}`;
                 }
+                showToast('⚠️ Sync ล้มเหลว — ข้อมูลบันทึกในเครื่องเรียบร้อยแล้ว คลิกที่ badge เพื่อลอง sync อีกครั้ง', 'warning');
             }
         }
 
         function openDatabaseModal() {
-            const el = document.getElementById('gasEndpointUrlInput');
-            if (el) el.value = gasEndpointUrl || '';
-            openModal('databaseModal');
+            // ไม่ต้องแสดง Modal สำหรับให้ผู้ใช้กรอกแล้ว เพราะระบบใช้ Supabase คงที่
+            testDatabaseConnection();
         }
 
         function closeModal(id) { 

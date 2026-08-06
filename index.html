@@ -178,6 +178,7 @@
         });
     });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="h-full flex flex-col bg-slate-100 min-h-screen text-slate-800">
 
@@ -448,6 +449,14 @@
                         <div class="md:col-span-2 space-y-1">
                             <label class="font-bold text-slate-700">ชื่อโครงการ / กิจกรรม <span class="text-red-500">*</span></label>
                             <input type="text" id="propTitle" required class="w-full border rounded-xl p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-blue-800">
+                        </div>
+
+                        <div class="md:col-span-2 space-y-1">
+                            <label class="font-bold text-slate-700">ประเภทโครงการ (แสดงในเกียรติบัตร) <span class="text-red-500">*</span></label>
+                            <select id="propProjectType" required class="w-full border rounded-xl p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-blue-800 bg-white cursor-pointer">
+                                <option value="training">โครงการอบรม ("ได้ผ่านการอบรม")</option>
+                                <option value="activity">กิจกรรม/โครงการทั่วไป ("ได้เข้าร่วมโครงการ")</option>
+                            </select>
                         </div>
 
                         <div class="md:col-span-2 space-y-1">
@@ -1120,7 +1129,7 @@
                                 <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                     <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                    <p id="previewCert_dateText" class="text-center">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                    <p id="previewCert_dateText" class="text-center"><span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
                                     <p id="previewCert_locationText" class="text-center" style="display:none;">ณ <span id="previewCertProjLocationInline" class="font-bold"></span></p>
                                     <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -1308,6 +1317,13 @@
                         <option value="2569">2569 (1 ต.ค. 68 - 30 ก.ย. 69)</option>
                         <option value="2568">2568 (1 ต.ค. 67 - 30 ก.ย. 68)</option>
                         <option value="2570">2570 (1 ต.ค. 69 - 30 ก.ย. 70)</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="font-bold text-slate-700">ประเภทโครงการ (ข้อความในเกียรติบัตร) <span class="text-red-500">*</span></label>
+                    <select id="newProjType" required class="w-full border rounded-xl p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-blue-800 focus:outline-none bg-white cursor-pointer">
+                        <option value="training" selected>โครงการอบรม ("ได้ผ่านการอบรม")</option>
+                        <option value="activity">กิจกรรม/โครงการทั่วไป ("ได้เข้าร่วมโครงการ")</option>
                     </select>
                 </div>
                 <div class="bg-blue-50 p-3 rounded-2xl border border-blue-100 text-[11px] text-blue-800 font-medium flex items-start gap-2">
@@ -2298,8 +2314,15 @@ function doPost(e) {
                 .then(rows => {
                     let cloudData = rows.map(r => r.data);
                     
+                    // Extract system settings if any
+                    const sysSettings = cloudData.find(p => p && p.id === '__SYSTEM_SETTINGS__');
+                    if (sysSettings && sysSettings.systemSettings && sysSettings.systemSettings.coop_system_logo) {
+                        localStorage.setItem('coop_system_logo', sysSettings.systemSettings.coop_system_logo);
+                        loadStateFromLocalStorage(); // Update UI immediately
+                    }
+                    
                     if (cloudData && Array.isArray(cloudData)) {
-                        cloudData = cloudData.filter(p => p && p.id && p.id !== 'undefined');
+                        cloudData = cloudData.filter(p => p && p.id && p.id !== 'undefined' && p.id !== '__SYSTEM_SETTINGS__');
                         if (cloudData.length > 0) {
                             // Timestamp-based merge strategy
                             const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');
@@ -2425,6 +2448,16 @@ function doPost(e) {
 
             // ล้างภาพออกก่อนส่ง — แค่ข้อมูลข้อความเท่านั้นที่ซิงค์ขึ้น Cloud
             const stripped = stripImagesForSync(projectsState);
+            
+            // Inject system settings (logo) to cloud
+            const sysLogo = localStorage.getItem('coop_system_logo');
+            if (sysLogo) {
+                stripped.push({
+                    id: '__SYSTEM_SETTINGS__',
+                    systemSettings: { coop_system_logo: sysLogo }
+                });
+            }
+
             const payload = stripped.map(p => ({
                 id: p.id,
                 data: p,
@@ -2491,30 +2524,31 @@ function doPost(e) {
         function updateDbSyncBadgeStatus(isOnline, errMsg) {
             const badge = document.getElementById('dbSyncBadge');
             const dashBadge = document.getElementById('dashDbStatusBadge');
+            const hiddenClass = isAdminLoggedIn ? '' : ' hidden';
 
             if (isOnline === true) {
                 // Successfully connected and synced
                 if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300 cursor-pointer';
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300 cursor-pointer' + hiddenClass;
                     badge.title = 'ซิงค์ข้อมูลกับ Supabase แล้ว';
                     badge.onclick = () => { testDatabaseConnection(); };
                     badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 🟢 เชื่อมต่อ Cloud';
                 }
                 if (dashBadge) {
-                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' + hiddenClass;
                     dashBadge.innerHTML = '🟢 เชื่อมต่อ Database แล้ว';
                 }
             } else if (isOnline === false) {
                 // Sync failed - show error state with retry button
                 const errTip = errMsg ? ` (${errMsg.substring(0,40)})` : '';
                 if (badge) {
-                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300 cursor-pointer';
+                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300 cursor-pointer' + hiddenClass;
                     badge.title = errMsg || 'คลิกเพื่อลองซิงค์อีกครั้ง';
                     badge.onclick = () => { syncToRemoteDatabaseDirect(); badge.onclick = null; };
                     badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span> 🔴 Sync ล้มเหลว <span class="underline text-red-200 ml-1">ลองใหม่</span>';
                 }
                 if (dashBadge) {
-                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-400/40';
+                    dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-400/40' + hiddenClass;
                     dashBadge.innerHTML = `🔴 ซิงค์ข้อมูลล้มเหลว - ข้อมูลบันทึกในเครื่องแล้ว${errTip}`;
                 }
                 showToast('⚠️ Sync ล้มเหลว — ข้อมูลบันทึกในเครื่องเรียบร้อยแล้ว คลิกที่ badge เพื่อลอง sync อีกครั้ง', 'warning');
@@ -2725,6 +2759,8 @@ function doPost(e) {
             document.getElementById('partViewProjectTitle').innerText = `โครงการ: ${proj.title}`;
             
             document.getElementById('propTitle').value = proj.title || '';
+            const typeSelect = document.getElementById('propProjectType');
+            if (typeSelect) typeSelect.value = proj.projectType || 'training';
             document.getElementById('propReason').value = proj.reason || '';
             document.getElementById('propObjective').value = proj.objective || '';
             document.getElementById('propTarget').value = proj.target || '';
@@ -3177,6 +3213,15 @@ function doPost(e) {
                 locTextEl.style.display = 'none';
             }
 
+            const actTextEl = document.getElementById('previewCert_actText');
+            if (actTextEl) {
+                if (proj.projectType === 'activity') {
+                    actTextEl.innerText = 'ได้เข้าร่วมโครงการ';
+                } else {
+                    actTextEl.innerText = 'ได้ผ่านการอบรม';
+                }
+            }
+
             const cleanDate = formatCertDate(proj.date);
             document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
@@ -3345,6 +3390,8 @@ function doPost(e) {
             e.preventDefault();
             const proj = getActiveProject();
             proj.title = document.getElementById('propTitle').value;
+            const typeSelect = document.getElementById('propProjectType');
+            if (typeSelect) proj.projectType = typeSelect.value;
             proj.reason = document.getElementById('propReason').value;
             proj.objective = document.getElementById('propObjective').value;
             proj.target = document.getElementById('propTarget').value;
@@ -3681,9 +3728,9 @@ function doPost(e) {
                                     <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center" style="${style_partName}">${escapeHtml(part.name)}</h2>
                                 </div>
                                 <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                    <p class="text-center" style="${style_actText}">ได้เข้าร่วมและผ่านการอบรม</p>
+                                    <p class="text-center" style="${style_actText}">${proj.projectType === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
                                     <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
-                                    <p class="text-center" style="${style_dateText}">จัดขึ้นเมื่อวันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    <p class="text-center" style="${style_dateText}"><span class="font-bold">${escapeHtml(proj.date)}</span></p>
                                     ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                     <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -4228,8 +4275,11 @@ function doPost(e) {
                             <button onclick="openCertPreviewModal('${res.part.id}', '${res.proj.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-eye"></i> พรีวิว
                             </button>
+                            <button onclick="downloadCertAsImage('${res.part.id}', '${res.proj.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-download"></i> บันทึกรูปภาพ (มือถือ)
+                            </button>
                             <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
+                                <i class="fa-solid fa-print"></i> พิมพ์ PDF (PC)
                             </button>
                         ` : `
                             <button disabled class="bg-slate-300 text-slate-500 cursor-not-allowed font-bold px-3 py-2 rounded-xl shrink-0 shadow" onclick="return false;">
@@ -4257,6 +4307,64 @@ function doPost(e) {
             document.getElementById('previewCertName').innerText = part.name;
 
             triggerPrint('certPreviewCard', true);
+        }
+
+        function downloadCertAsImage(partId, projId) {
+            if (typeof html2canvas === 'undefined') {
+                showToast('ระบบกำลังโหลดเครื่องมือสร้างรูปภาพ กรุณารอสักครู่', 'warning');
+                return;
+            }
+            const proj = projectsState.find(p => p.id === projId) || getActiveProject();
+            if (proj.status !== 'completed') {
+                showToast('โครงการนี้ยังไม่เสร็จสิ้น!', 'error');
+                return;
+            }
+            const part = (proj.participants || []).find(p => p.id === partId);
+            if (!part) return;
+
+            updateCertPreview(proj);
+            document.getElementById('previewCertNo').innerText = part.certNo;
+            document.getElementById('previewCertName').innerText = part.name;
+            
+            // Temporary reveal for html2canvas to work correctly
+            const cardEl = document.getElementById('certPreviewCard');
+            const adminPanel = document.getElementById('adminPanel');
+            const wasHidden = adminPanel.classList.contains('hidden');
+            if (wasHidden) {
+                adminPanel.classList.remove('hidden');
+                adminPanel.style.position = 'absolute';
+                adminPanel.style.opacity = '0';
+                adminPanel.style.pointerEvents = 'none';
+                cardEl.style.transform = 'scale(1)'; // reset scale for clear image
+            }
+
+            showToast('กำลังประมวลผลรูปภาพเกียรติบัตร...', 'info');
+
+            setTimeout(() => {
+                html2canvas(cardEl, {
+                    scale: 2, // High resolution
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `เกียรติบัตร_${part.name.replace(/\\s+/g, '_')}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                    showToast('ดาวน์โหลดรูปภาพสำเร็จ!', 'success');
+                }).catch(err => {
+                    console.error(err);
+                    showToast('เกิดข้อผิดพลาดในการสร้างรูปภาพ', 'error');
+                }).finally(() => {
+                    // Restore
+                    if (wasHidden) {
+                        adminPanel.classList.add('hidden');
+                        adminPanel.style.position = '';
+                        adminPanel.style.opacity = '';
+                        adminPanel.style.pointerEvents = '';
+                        cardEl.style.transform = '';
+                    }
+                });
+            }, 300);
         }
 
         function openAddQuestionModal() { openModal('addQuestionModal'); }
@@ -4377,12 +4485,13 @@ function doPost(e) {
             e.preventDefault();
             const title = document.getElementById('newProjTitle').value;
             const fiscalYear = document.getElementById('newProjFiscal').value;
+            const projectType = document.getElementById('newProjType') ? document.getElementById('newProjType').value : 'training';
             const id = 'proj-' + fiscalYear + '-' + Date.now();
             // เลขที่โครงการ: N/YYYY — นับจากโครงการในปีงบประมาณเดียวกัน
             const projNo = generateProjNo(fiscalYear);
 
             const newProj = {
-                id, fiscalYear, projNo, title, status: 'in-progress',
+                id, fiscalYear, projectType, projNo, title, status: 'in-progress',
                 reason: '', objective: '', target: '', date: '11 กรกฎาคม 2569', location: '', method: '',
                 responsible: 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด', budgetSource: '', budgetItems: [],
                 expected: '', signer10Name: '', signer10Pos: '', signer11Name: '', signer11Pos: '',

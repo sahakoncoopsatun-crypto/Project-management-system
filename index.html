@@ -228,11 +228,6 @@
                         </select>
                     </div>
 
-                    <!-- Database Connect Modal Trigger -->
-                    <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95 cursor-pointer" title="ตั้งค่าเชื่อมต่อฐานข้อมูล Cloud">
-                        <i class="fa-solid fa-database text-amber-300"></i>
-                        <span class="font-extrabold">ฐานข้อมูล Cloud</span>
-                    </button>
 
                     <!-- Member Portal Direct Link Generator -->
                     <button id="copyLinkBtn" onclick="copyMemberPortalLink()" class="admin-only-ctrl bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-1.5 rounded-xl text-xs font-extrabold shadow-md transition flex items-center gap-1.5 active:scale-95 cursor-pointer">
@@ -328,15 +323,12 @@
                     </div>
                     <div>
                         <h3 class="font-extrabold text-sm text-emerald-300 flex items-center gap-2">
-                            สถานะการเชื่อมต่อฐานข้อมูล Google Sheets
+                            สถานะการเชื่อมต่อฐานข้อมูลระบบ Cloud
                             <span id="dashDbStatusBadge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">⚪ Offline / Local Mode</span>
                         </h3>
-                        <p class="text-xs text-emerald-100/80 mt-0.5">ซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นคลาวด์ได้แบบเรียลไทม์ผ่าน Google Apps Script</p>
+                        <p class="text-xs text-emerald-100/80 mt-0.5">ซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นคลาวด์ได้แบบเรียลไทม์อัตโนมัติ</p>
                     </div>
                 </div>
-                <button onclick="openDatabaseModal()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-5 py-2.5 rounded-2xl text-xs font-extrabold shadow-lg transition shrink-0 active:scale-95 cursor-pointer flex items-center gap-2">
-                    <i class="fa-solid fa-plug text-blue-900 text-sm"></i> ตั้งค่าเชื่อมต่อฐานข้อมูล
-                </button>
             </div>
 
             <!-- Stats Grid -->
@@ -1121,8 +1113,9 @@
                             <!-- Name & Event Middle Wrapper -->
                             <div class="my-auto w-full flex flex-col items-center justify-center space-y-6">
                                 <!-- Name Placeholder -->
-                                <div class="w-full text-center">
-                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest border-b-2 border-amber-500 inline-block px-12 pb-2 text-center">นายสมชาย รักดี</h2>
+                                <div class="w-full text-center mb-1 flex flex-col items-center justify-center">
+                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest inline-block px-12 text-center" style="line-height: 1.3; margin-bottom: 4px;">นายสมชาย รักดี</h2>
+                                    <div class="bg-amber-500 w-[70%] max-w-md h-[2px]"></div>
                                 </div>
 
                                 <!-- Official Wording & Line Breaking -->
@@ -1139,13 +1132,7 @@
                             <div class="w-full text-center space-y-3">
                                 <p id="previewCertDate" class="text-base font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
 
-                                <div id="previewCertSignersContainer" class="w-full">
-                                    <!-- Dynamic Rendered Signatures Grid -->
-                                </div>
-                            </div>
-                        </div>
-
-                                <div id="previewCertSignersContainer" class="w-full">
+                                <div id="previewCertSignersContainer" class="w-full flex items-end justify-center">
                                     <!-- Dynamic Rendered Signatures Grid -->
                                 </div>
                             </div>
@@ -1626,132 +1613,6 @@
         </div>
     </div>
 
-    <!-- MODAL: DATABASE CONNECTION GUIDE & LIVE SYNC ENGINE -->
-    <div id="databaseModal" onclick="if(event.target===this) closeModal('databaseModal')" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden relative">
-            <!-- Fixed Sticky Header with Close X Button -->
-            <div class="flex justify-between items-center border-b px-6 py-4 bg-white shrink-0 sticky top-0 z-20">
-                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-amber-500 text-lg"></i> การเชื่อมต่อฐานข้อมูล Google Sheets & Apps Script
-                </h3>
-                <button type="button" onclick="closeModal('databaseModal')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 flex items-center justify-center transition cursor-pointer shrink-0" title="ปิดหน้าต่าง (Esc)">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Scrollable Modal Body -->
-            <div class="p-6 overflow-y-auto space-y-4 text-xs flex-1">
-                <p class="text-slate-600 leading-relaxed">
-                    ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync (ดึงข้อมูลกลับ / บันทึกข้อมูลขึ้น Cloud):
-                </p>
-
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                    <label class="font-extrabold text-blue-950 block">1. วาง Web App URL ที่ได้จาก Google Apps Script</label>
-                    <input type="url" id="gasEndpointUrlInput" class="w-full border rounded-xl p-2.5 font-mono text-xs bg-white focus:ring-2 focus:ring-blue-800" placeholder="https://script.google.com/macros/s/.../exec">
-                    
-                    <div class="flex flex-wrap justify-end gap-2 pt-1">
-                        <button onclick="fetchDataFromDatabase(true)" class="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
-                            <i class="fa-solid fa-cloud-arrow-down text-amber-300"></i> ดึงข้อมูลจาก Cloud
-                        </button>
-                        <button onclick="testDatabaseConnection()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
-                            <i class="fa-solid fa-plug text-amber-300"></i> ทดสอบการเชื่อมต่อ
-                        </button>
-                        <button onclick="saveGasEndpointUrl()" class="bg-blue-900 hover:bg-blue-950 text-white px-4 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 cursor-pointer active:scale-95">
-                            <i class="fa-solid fa-floppy-disk text-amber-400"></i> บันทึก URL & ซิงค์ข้อมูล
-                        </button>
-                    </div>
-                </div>
-
-                <div class="space-y-2 bg-amber-50 p-3.5 rounded-2xl border border-amber-200">
-                    <p class="font-extrabold text-amber-900 flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation text-amber-600"></i> ข้อแนะนำสำหรับการตั้งค่าสิทธิ์ใน Google Apps Script (สำคัญมาก):</p>
-                    <ol class="list-decimal pl-5 space-y-1 text-[11px] text-amber-900 font-medium">
-                        <li>เปิด Google Sheet แล้วไปที่ **ขยาย (Extensions) > Apps Script**</li>
-                        <li>คัดลอกโค้ด `Code.gs` ด้านล่างไปวางแทนที่โค้ดเดิมทั้งหมด</li>
-                        <li>กดปุ่ม **ทำให้ใช้งานได้อย่างเป็นทางการ (Deploy) > การทำให้ใช้งานได้ใหม่ (New deployment)**</li>
-                        <li>ตั้งค่าประเภทเป็น **แอปเว็บ (Web App)**</li>
-                        <li>สิทธิ์การเข้าถึง (Who has access): **เลือก "ทุกคน" (Anyone)** *(หากเลือกเป็น Only myself ระบบจะไม่สามารถดึงข้อมูลได้)*</li>
-                    </ol>
-                </div>
-
-                <div class="space-y-1">
-                    <p class="font-bold text-slate-800">2. โค้ด Google Apps Script (Code.gs) ฉบับสมบูรณ์ (รองรับอ่าน/เขียนข้อมูล):</p>
-                    <textarea readonly rows="8" class="w-full border rounded-xl p-2.5 font-mono text-[11px] bg-slate-900 text-emerald-400">
-function doGet(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Projects');
-    if (!sheet) {
-      sheet = ss.insertSheet('Projects');
-      sheet.appendRow(['Timestamp', 'Project ID', 'Title', 'Fiscal Year', 'Full Data JSON']);
-    }
-    var values = sheet.getDataRange().getValues();
-    var projects = [];
-    for (var i = 1; i < values.length; i++) {
-      if (values[i][4]) {
-        try {
-          var p = JSON.parse(values[i][4]);
-          projects.push(p);
-        } catch(err) {}
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: projects }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doPost(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName('Projects');
-    if (!sheet) {
-      sheet = ss.insertSheet('Projects');
-      sheet.appendRow(['Timestamp', 'Project ID', 'Title', 'Fiscal Year', 'Full Data JSON']);
-    }
-    
-    var payload = JSON.parse(e.postData.contents);
-    var projectsToSave = Array.isArray(payload) ? payload : [payload];
-    var values = sheet.getDataRange().getValues();
-    
-    projectsToSave.forEach(function(proj) {
-      if (!proj || !proj.id) return;
-      var foundRow = -1;
-      for (var i = 1; i < values.length; i++) {
-        if (values[i][1] == proj.id) {
-          foundRow = i + 1;
-          break;
-        }
-      }
-      
-      var rowData = [new Date(), proj.id, proj.title, proj.fiscalYear, JSON.stringify(proj)];
-      if (foundRow > 0) {
-        sheet.getRange(foundRow, 1, 1, rowData.length).setValues([rowData]);
-      } else {
-        sheet.appendRow(rowData);
-      }
-    });
-    
-    return ContentService.createTextOutput(JSON.stringify({ status: 'success' }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}</textarea>
-                </div>
-            </div>
-
-            <!-- Fixed Sticky Footer with Close Button -->
-            <div class="flex justify-end border-t px-6 py-3.5 bg-slate-50 shrink-0 sticky bottom-0 z-20">
-                <button type="button" onclick="closeModal('databaseModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
-                    <i class="fa-solid fa-xmark"></i> ปิดหน้าต่าง
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- PRINT CONTAINER HOLDER FOR DYNAMIC RENDERING -->
     <div id="printAreaContainer" class="hidden"></div>
 
@@ -2055,7 +1916,7 @@ function doPost(e) {
             // Add Escape key listener to close modals safely
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    const visibleModals = ['databaseModal', 'certPreviewModal', 'proposalPrintModal', 'groupedParticipantsModal', 'excelImportModal', 'addParticipantModal', 'newProjectModal', 'adminAuthModal', 'blankSurveyModal', 'addQuestionModal', 'editQuestionModal', 'customConfirmModal'];
+                    const visibleModals = ['certPreviewModal', 'proposalPrintModal', 'groupedParticipantsModal', 'excelImportModal', 'addParticipantModal', 'newProjectModal', 'adminAuthModal', 'blankSurveyModal', 'addQuestionModal', 'editQuestionModal', 'customConfirmModal'];
                     visibleModals.forEach(id => {
                         const el = document.getElementById(id);
                         if (el && !el.classList.contains('hidden')) {
@@ -2403,10 +2264,7 @@ function doPost(e) {
                 });
         }
 
-        function saveGasEndpointUrl() {
-            // เลิกใช้แล้ว - Hardcoded Supabase URL
-            closeModal('databaseModal');
-        }
+
 
         function testDatabaseConnection() {
             showToast('กำลังทดสอบการเชื่อมต่อ Supabase...', 'info');
@@ -3205,12 +3063,12 @@ function doPost(e) {
             const posStyle = getCertFontStyle(proj, 'signerPos');
 
             let signersHtml = signers.map(s => `
-                <div class="text-center space-y-1 flex flex-col items-center justify-center">
-                    <div class="h-16 flex items-center justify-center">
+                <div class="text-center flex flex-col items-center justify-end z-10">
+                    <div class="h-16 flex items-end justify-center mb-[-0.3rem]">
                         ${s.sigImg ? `<img src="${s.sigImg}" class="max-h-16 object-contain" alt="Signature">` : ''}
                     </div>
-                    <p class="font-bold text-lg text-blue-950 text-center">${`(${escapeHtml(s.name || '...................................................')})`}</p>
-                    <div class="text-base text-slate-900 font-bold text-center whitespace-pre-line leading-snug">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
+                    <p class="font-bold text-lg text-blue-950 text-center relative z-20" style="${nameStyle}">${`(${escapeHtml(s.name || '...................................................')})`}</p>
+                    <div class="text-base text-slate-900 font-bold text-center whitespace-pre-line leading-tight" style="${posStyle}">${escapeHtml(s.pos || 'ตำแหน่ง')}</div>
                 </div>
             `).join('');
 
@@ -3692,7 +3550,7 @@ function doPost(e) {
 
             let allCertsHtml = '';
             const cleanDate = formatCertDate(proj.date);
-            const signersHtml = renderCertSignersPreviewHtml(proj.certSigners);
+            const signersHtml = renderCertSignersPreviewHtml(proj);
 
             // Migrate legacy
             if (proj.certLogoUrl && !proj.certLogos) { proj.certLogos = [proj.certLogoUrl]; proj.certLogoUrl = ''; }
@@ -3744,15 +3602,18 @@ function doPost(e) {
                                     <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center" style="${style_orgName}">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
                                     <p class="text-xs font-bold text-amber-800 mt-1 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                                 </div>
-                                <div class="my-auto py-2 w-full text-center">
-                                    <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center" style="${style_partName}">${escapeHtml(part.name)}</h2>
-                                </div>
-                                <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                    <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
-                                    <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
-                                    <p class="text-center" style="${style_dateText}">วัน<span class="font-bold">${escapeHtml(proj.date)}</span></p>
-                                    ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
-                                    <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                <div class="my-auto w-full flex flex-col items-center justify-center space-y-4">
+                                    <div class="w-full text-center flex flex-col items-center justify-center">
+                                        <h2 class="text-3xl font-black text-blue-950 tracking-wider inline-block px-10 text-center" style="line-height: 1.3; margin-bottom: 4px; ${style_partName}">${escapeHtml(part.name)}</h2>
+                                        <div class="bg-amber-500 w-[70%] max-w-md h-[2px]"></div>
+                                    </div>
+                                    <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                        <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
+                                        <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
+                                        <p class="text-center" style="${style_dateText}">วัน<span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                        ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
+                                        <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+                                    </div>
                                 </div>
                                 <div class="pt-4 space-y-3 w-full text-center">
                                     <p class="text-xs font-extrabold text-slate-800 text-center" style="${style_issueDate}">ให้ไว้ ณ วันที่ ${cleanDate}</p>

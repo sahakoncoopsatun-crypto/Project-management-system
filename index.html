@@ -1129,7 +1129,7 @@
                                 <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                     <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                    <p id="previewCert_dateText" class="text-center">วันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                    <p id="previewCert_dateText" class="text-center">วัน<span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
                                     <p id="previewCert_locationText" class="text-center" style="display:none;">ณ <span id="previewCertProjLocationInline" class="font-bold"></span></p>
                                     <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -3750,7 +3750,7 @@ function doPost(e) {
                                 <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                     <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
                                     <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
-                                    <p class="text-center" style="${style_dateText}">วันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    <p class="text-center" style="${style_dateText}">วัน<span class="font-bold">${escapeHtml(proj.date)}</span></p>
                                     ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                     <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -4346,22 +4346,22 @@ function doPost(e) {
             document.getElementById('previewCertNo').innerText = part.certNo;
             document.getElementById('previewCertName').innerText = part.name;
             
-            // Temporary reveal for html2canvas to work correctly
-            const cardEl = document.getElementById('certPreviewCard');
-            const adminPanel = document.getElementById('adminPanel');
-            const wasHidden = adminPanel.classList.contains('hidden');
-            if (wasHidden) {
-                adminPanel.classList.remove('hidden');
-                adminPanel.style.position = 'absolute';
-                adminPanel.style.opacity = '0';
-                adminPanel.style.pointerEvents = 'none';
-                cardEl.style.transform = 'scale(1)'; // reset scale for clear image
-            }
+            const originalCard = document.getElementById('certPreviewCard');
+            const clone = originalCard.cloneNode(true);
+            
+            // Setup clone to be rendered off-screen
+            clone.style.position = 'absolute';
+            clone.style.top = '-9999px';
+            clone.style.left = '0';
+            clone.style.zIndex = '-9999';
+            clone.style.transform = 'scale(1)';
+            clone.style.display = 'flex'; // Ensure it's not display:none if parent cascaded
+            document.body.appendChild(clone);
 
             showToast('กำลังประมวลผลรูปภาพเกียรติบัตร...', 'info');
 
             setTimeout(() => {
-                html2canvas(cardEl, {
+                html2canvas(clone, {
                     scale: 2, // High resolution
                     useCORS: true,
                     backgroundColor: '#ffffff'
@@ -4384,14 +4384,7 @@ function doPost(e) {
                     console.error(err);
                     showToast('เกิดข้อผิดพลาดในการสร้างรูปภาพ', 'error');
                 }).finally(() => {
-                    // Restore
-                    if (wasHidden) {
-                        adminPanel.classList.add('hidden');
-                        adminPanel.style.position = '';
-                        adminPanel.style.opacity = '';
-                        adminPanel.style.pointerEvents = '';
-                        cardEl.style.transform = '';
-                    }
+                    clone.remove();
                 });
             }, 300);
         }

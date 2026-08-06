@@ -2347,7 +2347,7 @@ function doPost(e) {
                                 const currentProj = projectsState.find(p => p.id === activeProjectId);
                                 if (!currentProj) activeProjectId = projectsState[0].id;
                             }
-                            saveStateToLocalStorage(false);
+                            saveStateToLocalStorage(true);
                             renderDashboard();
                             renderActiveProjectUI();
                             updateDbSyncBadgeStatus(true);

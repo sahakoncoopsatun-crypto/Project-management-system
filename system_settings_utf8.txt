@@ -1,0 +1,84 @@
+﻿
+  index.html:206:                <!-- Header Actions -->
+  index.html:207:                <div class="flex items-center gap-2 sm:gap-3">
+  index.html:208:                    <!-- System Settings Trigger -->
+> index.html:209:                    <button onclick="openSystemSettingsModal()" class="admin-only-ctrl bg-blue-900/80 
+hover:bg-blue-800 text-blue-100 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm flex 
+items-center gap-1.5 cursor-pointer transition active:scale-95" title="ตั้งค่าหน่วยงานระบบ">
+  index.html:210:                        <i class="fa-solid fa-gear text-amber-400"></i>
+  index.html:211:                        <span class="hidden xl:inline">ตั้งค่าระบบ</span>
+  index.html:212:                    </button>
+  index.html:213:
+  index.html:214:                    <!-- Cloud Sync Indicator -->
+  index.html:215:                    <div id="dbSyncBadge" class="admin-only-ctrl flex items-center gap-1.5 px-3 py-1 
+rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300">
+  index.html:216:                        <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
+  index.html:217:                    </div>
+  index.html:218:
+  index.html:219:                    <!-- Fiscal Year Selector -->
+  index.html:220:                    <div id="fiscalYearBox" class="admin-only-ctrl flex items-center gap-1.5 
+bg-blue-900/90 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm">
+  index.html:221:                        <i class="fa-solid fa-calendar-days text-amber-400"></i>
+  index.html:222:                        <span class="hidden md:inline">ปีงบประมาณ:</span>
+  index.html:223:                        <select id="fiscalYearSelect" onchange="changeFiscalYear(this.value)" 
+class="bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+  index.html:224:                            <option value="2569" class="text-slate-900" selected>2569 (1 ต.ค. 68 - 30 
+ก.ย. 69)</option>
+  index.html:225:                            <option value="2568" class="text-slate-900">2568 (1 ต.ค. 67 - 30 ก.ย. 
+68)</option>
+  index.html:226:                            <option value="2570" class="text-slate-900">2570 (1 ต.ค. 69 - 30 ก.ย. 
+70)</option>
+  index.html:227:                        </select>
+  index.html:228:                    </div>
+  index.html:229:
+  index.html:230:                    <!-- Database Connect Modal Trigger -->
+  index.html:231:                    <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl 
+bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex 
+items-center gap-1.5 active:scale-95 cursor-pointer" title="ตั้งค่าเชื่อมต่อฐานข้อมูล Cloud">
+  index.html:232:                        <i class="fa-solid fa-database text-amber-300"></i>
+  index.html:233:                        <span class="font-extrabold">ฐานข้อมูล Cloud</span>
+  index.html:234:                    </button>
+  index.html:235:
+  index.html:236:                    <!-- Member Portal Direct Link Generator -->
+  index.html:237:                    <button id="copyLinkBtn" onclick="copyMemberPortalLink()" class="admin-only-ctrl 
+bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-1.5 rounded-xl text-xs font-extrabold shadow-md transition flex 
+items-center gap-1.5 active:scale-95 cursor-pointer">
+  index.html:238:                        <i class="fa-solid fa-link"></i>
+  index.html:239:                        <span class="hidden lg:inline">ลิงก์สมาชิก</span>
+  index.html:2095:
+  index.html:2096:        let tempSysOrgLogoUrl = '';
+  index.html:2097:
+> index.html:2098:        function openSystemSettingsModal() {
+  index.html:2099:            const name = localStorage.getItem('coop_system_name') || 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล 
+จำกัด';
+  index.html:2100:            document.getElementById('sysOrgNameInput').value = name;
+  index.html:2101:            tempSysOrgLogoUrl = systemOrgLogoUrl;
+  index.html:2102:            updateSysOrgLogoPreviewUI();
+  index.html:2103:            document.getElementById('systemSettingsModal').classList.remove('hidden');
+  index.html:2104:        }
+  index.html:2105:
+  index.html:2106:        function handleSysOrgLogoPreview(input) {
+  index.html:2107:            const file = input.files[0];
+  index.html:2108:            if (!file) return;
+  index.html:2109:            compressImage(file, 300, 300, 0.8, function(base64) {
+  index.html:2110:                tempSysOrgLogoUrl = base64;
+  index.html:2111:                updateSysOrgLogoPreviewUI();
+  index.html:2112:            });
+  index.html:2113:        }
+  index.html:2114:
+  index.html:2115:        function updateSysOrgLogoPreviewUI() {
+  index.html:2116:            const img = document.getElementById('sysOrgLogoPreviewImg');
+  index.html:2117:            const icon = document.getElementById('sysOrgLogoPreviewIcon');
+  index.html:2118:            if (tempSysOrgLogoUrl) {
+  index.html:2119:                img.src = tempSysOrgLogoUrl;
+  index.html:2120:                img.classList.remove('hidden');
+  index.html:2121:                icon.classList.add('hidden');
+  index.html:2122:            } else {
+  index.html:2123:                img.classList.add('hidden');
+  index.html:2124:                icon.classList.remove('hidden');
+  index.html:2125:            }
+  index.html:2126:        }
+  index.html:2127:
+  index.html:2128:        function saveSystemSettings() {
+
+

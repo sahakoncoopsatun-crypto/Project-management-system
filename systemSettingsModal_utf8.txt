@@ -1,0 +1,59 @@
+﻿
+  index.html:1182:    <!-- STREAMING_CHUNK:Building Dialog Modals and Overlays... -->
+  index.html:1183:    <!-- MODAL: SYSTEM SETTINGS -->
+> index.html:1184:    <div id="systemSettingsModal" class="fixed inset-0 bg-black/60 z-50 flex items-center 
+justify-center hidden p-4 no-print">
+  index.html:1185:        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+  index.html:1186:            <div class="flex justify-between items-center border-b pb-3">
+  index.html:1187:                <h3 class="text-base font-bold text-blue-950 flex items-center gap-2">
+  index.html:1188:                    <i class="fa-solid fa-gear text-amber-500"></i> ตั้งค่าหน่วยงานระบบ
+  index.html:1189:                </h3>
+  index.html:1190:                <button onclick="closeModal('systemSettingsModal')" class="text-slate-400 
+hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+  index.html:1191:            </div>
+  index.html:1192:            
+  index.html:1193:            <div class="space-y-4 text-xs">
+  index.html:1194:                <div class="space-y-1">
+  index.html:1195:                    <label class="font-bold text-slate-700">ชื่อหน่วยงาน (แสดงบน Header)</label>
+  index.html:1196:                    <input type="text" id="sysOrgNameInput" class="w-full border rounded-xl p-2.5 
+font-bold text-slate-800 focus:ring-2 focus:ring-blue-800" placeholder="สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด">
+  index.html:1197:                </div>
+  index.html:1198:                
+  index.html:1199:                <div class="space-y-2">
+  index.html:1200:                    <label class="font-bold text-slate-700 flex items-center justify-between">
+  index.html:1201:                        <span>ตราหน่วยงานระบบ (มุมซ้ายบน)</span>
+  index.html:1202:                        <span class="text-[10px] text-slate-500 
+font-normal">ไม่มีผลกับตราบนเกียรติบัตร</span>
+  index.html:1203:                    </label>
+  index.html:1204:                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border">
+  index.html:1205:                        <div id="sysOrgLogoPreviewBox" class="w-12 h-12 rounded-full bg-slate-200 
+flex items-center justify-center overflow-hidden border border-slate-300 shadow-sm shrink-0">
+  index.html:1206:                            <img id="sysOrgLogoPreviewImg" src="" class="w-full h-full 
+object-contain hidden" alt="Preview">
+  index.html:1207:                            <i id="sysOrgLogoPreviewIcon" class="fa-solid fa-image text-slate-400 
+text-lg"></i>
+  index.html:1208:                        </div>
+  index.html:1209:                        <div class="flex-1 space-y-1">
+  index.html:1210:                            <label class="inline-block bg-blue-900 hover:bg-blue-950 text-white px-3 
+py-1.5 rounded-lg text-[11px] font-bold shadow-sm cursor-pointer active:scale-95 transition">
+  index.html:1211:                                <i class="fa-solid fa-upload"></i> อัปโหลดรูปภาพใหม่
+  index.html:1212:                                <input type="file" accept="image/*" 
+onchange="handleSysOrgLogoPreview(this)" class="hidden">
+  index.html:1213:                            </label>
+  index.html:1214:                            <p class="text-[10px] text-slate-500">แนะนำ: ไฟล์ PNG/SVG 
+พื้นหลังโปร่งใส อัตราส่วน 1:1</p>
+  index.html:1215:                        </div>
+  index.html:1216:                    </div>
+  index.html:1217:                </div>
+  index.html:1218:            </div>
+  index.html:1219:            
+  index.html:1220:            <div class="flex justify-end gap-2 border-t pt-3">
+  index.html:1221:                <button type="button" onclick="closeModal('systemSettingsModal')" 
+class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl font-semibold cursor-pointer">ยกเลิก</button>
+  index.html:1222:                <button type="button" onclick="saveSystemSettings()" class="bg-blue-900 
+hover:bg-blue-950 text-white px-5 py-2 rounded-xl font-bold shadow cursor-pointer 
+active:scale-95">บันทึกการตั้งค่า</button>
+  index.html:1223:            </div>
+  index.html:1224:        </div>
+
+

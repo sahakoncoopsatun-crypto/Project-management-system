@@ -1,0 +1,81 @@
+﻿
+  index.html:1149:                </div>
+  index.html:1150:            </div>
+  index.html:1151:        </section>
+  index.html:1152:
+  index.html:1153:        <!-- VIEW 9: PUBLIC MEMBER PORTAL -->
+> index.html:1154:        <section id="view-member-portal" class="space-y-6 hidden">
+  index.html:1155:            <div class="bg-[#111a3a] text-white p-8 sm:p-12 rounded-[2rem] shadow-2xl border 
+border-blue-900/50 max-w-5xl mx-auto space-y-6 text-center">
+  index.html:1156:                <div class="space-y-3">
+  index.html:1157:                    <h2 class="text-xl sm:text-2xl font-black text-amber-400 tracking-wide">
+  index.html:1158:                        ระบบสืบค้นประวัติกิจกรรม & เกียรติบัตรออนไลน์สำหรับสมาชิก
+  index.html:1159:                    </h2>
+  index.html:1160:                    <p class="text-xs sm:text-sm text-slate-300 font-light max-w-2xl mx-auto 
+leading-relaxed">
+  index.html:1161:                        พิมพ์เลขที่สมาชิกสหกรณ์ 5 หลัก หรือเลขบัตรประชาชน 13 หลัก 
+เพื่อค้นหาประวัติการเข้าร่วมโครงการ และสั่งพิมพ์เกียรติบัตร PDF ย้อนหลัง
+  index.html:1162:                    </p>
+  index.html:1163:                </div>
+  index.html:1164:
+  index.html:2073:                if (nav) nav.classList.add('hidden');
+  index.html:2074:                adminCtrls.forEach(el => el.classList.add('hidden'));
+  index.html:2075:                document.getElementById('adminAuthLabel').innerText = 'เข้าสู่ระบบผู้ดูแลระบบ';
+  index.html:2076:
+  index.html:2077:                document.querySelectorAll('main > section').forEach(sec => 
+sec.classList.add('hidden'));
+> index.html:2078:                const memberView = document.getElementById('view-member-portal');
+  index.html:2079:                if (memberView) memberView.classList.remove('hidden');
+  index.html:2080:            } else {
+  index.html:2081:                isPublicMemberMode = false;
+  index.html:2082:                if (nav) nav.classList.remove('hidden');
+  index.html:2083:                adminCtrls.forEach(el => el.classList.remove('hidden'));
+  index.html:2084:                document.getElementById('adminAuthLabel').innerText = 'ผู้ดูแลระบบ (ออกจากระบบ)';
+  index.html:2085:            }
+  index.html:2086:        }
+  index.html:2087:
+  index.html:2088:        function handleHeaderLogoClick() {
+
+
+
+  index.html:1161:                        พิมพ์เลขที่สมาชิกสหกรณ์ 5 หลัก หรือเลขบัตรประชาชน 13 หลัก 
+เพื่อค้นหาประวัติการเข้าร่วมโครงการ และสั่งพิมพ์เกียรติบัตร PDF ย้อนหลัง
+  index.html:1162:                    </p>
+  index.html:1163:                </div>
+  index.html:1164:
+  index.html:1165:                <div class="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-xl 
+mx-auto pt-2">
+> index.html:1166:                    <input type="text" id="memberSearchQuery" onkeyup="if(event.key==='Enter') 
+searchMemberCertificates()" placeholder="พิมพ์เลขที่สมาชิก หรือ เลขบัตรประชาชน..." class="w-full bg-white 
+text-slate-900 rounded-full px-5 py-3 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 
+focus:ring-amber-400 placeholder-slate-400 font-medium">
+  index.html:1167:                    <button onclick="searchMemberCertificates()" class="w-full sm:w-auto 
+bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold px-8 py-3 rounded-full text-xs sm:text-sm shadow-lg 
+transition duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95">
+  index.html:1168:                        <i class="fa-solid fa-magnifying-glass"></i> ค้นหา
+  index.html:1169:                    </button>
+  index.html:1170:                </div>
+  index.html:1171:            </div>
+  index.html:1172:
+  index.html:1173:            <!-- Search Results Display Area -->
+  index.html:1174:            <div class="max-w-5xl mx-auto">
+  index.html:1175:                <div id="memberSearchResultBox" class="space-y-3">
+  index.html:1176:                    <!-- Dynamic Search Results Rendered Here -->
+  index.html:4173:            saveStateToLocalStorage();
+  index.html:4174:            showToast('ลบภาพกิจกรรมแล้ว', 'info');
+  index.html:4175:        }
+  index.html:4176:
+  index.html:4177:        function searchMemberCertificates() {
+> index.html:4178:            const query = document.getElementById('memberSearchQuery').value.trim().toLowerCase();
+  index.html:4179:            const box = document.getElementById('memberSearchResultBox');
+  index.html:4180:            if (!box) return;
+  index.html:4181:
+  index.html:4182:            if (!query) {
+  index.html:4183:                showToast('กรุณากรอกเลขที่สมาชิก หรือเลขบัตรประชาชนเพื่อค้นหา', 'error');
+  index.html:4184:                return;
+  index.html:4185:            }
+  index.html:4186:
+  index.html:4187:            let results = [];
+  index.html:4188:            projectsState.forEach(proj => {
+
+

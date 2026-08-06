@@ -1162,11 +1162,19 @@
                     </p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-xl mx-auto pt-2">
+                <div id="memberPortalSearchForm" class="flex flex-col sm:flex-row justify-center items-center gap-3 max-w-xl mx-auto pt-2">
                     <input type="text" id="memberSearchQuery" onkeyup="if(event.key==='Enter') searchMemberCertificates()" placeholder="พิมพ์เลขที่สมาชิก หรือ เลขบัตรประชาชน..." class="w-full bg-white text-slate-900 rounded-full px-5 py-3 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder-slate-400 font-medium">
                     <button onclick="searchMemberCertificates()" class="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold px-8 py-3 rounded-full text-xs sm:text-sm shadow-lg transition duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95">
                         <i class="fa-solid fa-magnifying-glass"></i> ค้นหา
                     </button>
+                </div>
+                
+                <div id="memberPortalClosedMsg" class="hidden py-4 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-900/30 text-red-500 mb-4">
+                        <i class="fa-solid fa-lock text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-red-400">ระบบปิดให้บริการชั่วคราว</h3>
+                    <p class="text-sm text-slate-400 mt-2">ขณะนี้ผู้ดูแลระบบได้ปิดระบบสืบค้นประวัติและพิมพ์เกียรติบัตรชั่วคราว<br>กรุณาติดต่อเจ้าหน้าที่ หากมีข้อสงสัย</p>
                 </div>
             </div>
 
@@ -1214,6 +1222,17 @@
                             <p class="text-[10px] text-slate-500">แนะนำ: ไฟล์ PNG/SVG พื้นหลังโปร่งใส อัตราส่วน 1:1</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="space-y-2 border-t pt-3 mt-3">
+                    <label class="font-bold text-slate-700 flex items-center justify-between cursor-pointer">
+                        <span>สถานะระบบสืบค้นสำหรับสมาชิก</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] text-slate-500" id="memberPortalStatusText">เปิดใช้งาน</span>
+                            <input type="checkbox" id="memberPortalEnableToggle" onchange="document.getElementById('memberPortalStatusText').innerText = this.checked ? 'เปิดใช้งาน' : 'ปิดชั่วคราว'; document.getElementById('memberPortalStatusText').className = this.checked ? 'text-[11px] font-bold text-emerald-600' : 'text-[11px] font-bold text-red-500';" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        </div>
+                    </label>
+                    <p class="text-[10px] text-slate-500">หากปิด ผู้เข้าร่วมจะไม่สามารถสืบค้นประวัติและพิมพ์เกียรติบัตรด้วยตนเองได้ (ผู้ดูแลระบบยังใช้งานได้ปกติ)</p>
                 </div>
             </div>
             
@@ -1628,6 +1647,12 @@
                 <p class="text-slate-600 leading-relaxed">
                     ท่านสามารถเชื่อมต่อระบบเข้ากับ **Google Sheets** เพื่อซิงค์ข้อมูลโครงการ และรายชื่อผู้เข้าร่วมขึ้นระบบคลาวด์ได้แบบเรียลไทม์ 2-Way Sync (ดึงข้อมูลกลับ / บันทึกข้อมูลขึ้น Cloud):
                 </p>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3 mb-4">
+                    <label class="font-extrabold text-blue-950 block"><i class="fa-solid fa-image text-amber-500"></i> เปลี่ยนตราหน่วยงาน (Logo ระบบ)</label>
+                    <p class="text-[11px] text-slate-600">อัปโหลดรูปภาพตราหน่วยงานของคุณ (PNG, JPG) เพื่อใช้แสดงที่แถบเมนูด้านบนของโปรแกรม (ไม่มีผลกับตราของเกียรติบัตร)</p>
+                    <input type="file" id="systemOrgLogoInput" accept="image/png, image/jpeg, image/jpg" class="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="handleSystemOrgLogoUpload(this)">
+                </div>
 
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                     <label class="font-extrabold text-blue-950 block">1. วาง Web App URL ที่ได้จาก Google Apps Script</label>
@@ -2077,6 +2102,22 @@ function doPost(e) {
                 document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
                 const memberView = document.getElementById('view-member-portal');
                 if (memberView) memberView.classList.remove('hidden');
+
+                // Member Portal Status Check
+                const isEnabled = localStorage.getItem('coop_member_portal_enabled') !== 'false';
+                const searchForm = document.getElementById('memberPortalSearchForm');
+                const closedMsg = document.getElementById('memberPortalClosedMsg');
+                if (searchForm && closedMsg) {
+                    if (isEnabled) {
+                        searchForm.classList.remove('hidden');
+                        closedMsg.classList.add('hidden');
+                    } else {
+                        searchForm.classList.add('hidden');
+                        closedMsg.classList.remove('hidden');
+                        const resBox = document.getElementById('memberSearchResultBox');
+                        if (resBox) resBox.innerHTML = '';
+                    }
+                }
             } else {
                 isPublicMemberMode = false;
                 if (nav) nav.classList.remove('hidden');
@@ -2100,6 +2141,16 @@ function doPost(e) {
             document.getElementById('sysOrgNameInput').value = name;
             tempSysOrgLogoUrl = systemOrgLogoUrl;
             updateSysOrgLogoPreviewUI();
+
+            const isEnabled = localStorage.getItem('coop_member_portal_enabled') !== 'false';
+            const toggle = document.getElementById('memberPortalEnableToggle');
+            const statusText = document.getElementById('memberPortalStatusText');
+            if (toggle && statusText) {
+                toggle.checked = isEnabled;
+                statusText.innerText = isEnabled ? 'เปิดใช้งาน' : 'ปิดชั่วคราว';
+                statusText.className = isEnabled ? 'text-[11px] font-bold text-emerald-600' : 'text-[11px] font-bold text-red-500';
+            }
+
             document.getElementById('systemSettingsModal').classList.remove('hidden');
         }
 
@@ -2109,6 +2160,23 @@ function doPost(e) {
             compressImage(file, 300, 300, 0.8, function(base64) {
                 tempSysOrgLogoUrl = base64;
                 updateSysOrgLogoPreviewUI();
+            });
+        }
+
+        function handleSystemOrgLogoUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            compressImage(file, 300, 300, 0.8, function(base64) {
+                systemOrgLogoUrl = base64;
+                const img = document.getElementById('headerOrgLogoImg');
+                const svg = document.getElementById('headerOrgLogoSvg');
+                if (img && svg) {
+                    img.src = systemOrgLogoUrl;
+                    img.classList.remove('hidden');
+                    svg.classList.add('hidden');
+                }
+                saveStateToLocalStorage(true);
+                showToast('อัปเดตตราหน่วยงานสำเร็จ', 'success');
             });
         }
 
@@ -2210,15 +2278,17 @@ function doPost(e) {
             }
         }
 
-        function saveStateToLocalStorage(shouldSyncRemote = true) {
+        function saveStateToLocalStorage(shouldSyncRemote = true, modifiedProjectIds = [activeProjectId]) {
             try {
-                // Add lastModified timestamp for merge strategy
                 const now = Date.now();
-                projectsState.forEach(p => {
-                    if (!p._lastModified || p._lastModified < _lastSyncTimestamp) {
-                        p._lastModified = now;
-                    }
-                });
+                if (modifiedProjectIds && Array.isArray(modifiedProjectIds)) {
+                    modifiedProjectIds.forEach(id => {
+                        if (id) {
+                            const proj = projectsState.find(p => p.id === id);
+                            if (proj) proj._lastModified = now;
+                        }
+                    });
+                }
                 localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
                 localStorage.setItem('coop_gas_url', gasEndpointUrl);
                 localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
@@ -2297,6 +2367,13 @@ function doPost(e) {
                         if (cloudData.length > 0) {
                             // Timestamp-based merge strategy
                             const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');
+                            
+                            // BUG FIX: If projectsState contains ONLY the unmodified mock project, discard it before merging
+                            const isNewMachineMockState = projectsState.length === 1 && projectsState[0].id === 'proj-2569-001' && !projectsState[0]._lastModified && localLastModified === 0;
+                            if (isNewMachineMockState) {
+                                projectsState = [];
+                            }
+
                             const cloudHasTimestamps = cloudData.some(p => p._lastModified);
                             
                             if (cloudHasTimestamps) {
@@ -2341,7 +2418,7 @@ function doPost(e) {
                                 const currentProj = projectsState.find(p => p.id === activeProjectId);
                                 if (!currentProj) activeProjectId = projectsState[0].id;
                             }
-                            saveStateToLocalStorage(false);
+                            saveStateToLocalStorage(false, []);
                             renderDashboard();
                             renderActiveProjectUI();
                             updateDbSyncBadgeStatus(true);
@@ -3976,14 +4053,16 @@ function doPost(e) {
         function extractExcelRowData(row) {
             if (!row || typeof row !== 'object') return { name: '', code: '', pos: '', org: '', type: 'สมาชิกสามัญ', remark: '' };
 
-            let name = '', surname = '', code = '', pos = '', org = '', type = '', remark = '';
+            let name = '', surname = '', prefix = '', code = '', pos = '', org = '', type = '', remark = '';
             const keys = Object.keys(row);
 
             keys.forEach(key => {
                 const kLower = key.trim().toLowerCase();
                 const val = String(row[key] || '').trim();
 
-                if (!surname && (kLower === 'นามสกุล' || kLower.includes('surname') || kLower.includes('lastname') || kLower.includes('last name') || kLower === 'สกุล')) {
+                if (!prefix && (kLower.includes('คำนำหน้า') || kLower.includes('prefix') || kLower === 'ยศ' || kLower === 'คำนำ')) {
+                    prefix = val;
+                } else if (!surname && (kLower === 'นามสกุล' || kLower.includes('surname') || kLower.includes('lastname') || kLower.includes('last name') || kLower === 'สกุล')) {
                     surname = val;
                 } else if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
                     name = val;
@@ -4002,6 +4081,9 @@ function doPost(e) {
 
             if (surname) {
                 name = name ? (name + ' ' + surname) : surname;
+            }
+            if (prefix) {
+                name = prefix + name;
             }
 
             if (!type) type = 'สมาชิกสามัญ';

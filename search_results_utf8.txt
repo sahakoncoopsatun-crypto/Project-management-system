@@ -1,0 +1,581 @@
+﻿
+index.html:6:    <title>ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ - สอ.สธสต.</title>
+index.html:87:            /* Single landscape certificate page */
+index.html:88:            .cert-print-wrapper {
+index.html:100:            .cert-print-wrapper .cert-canvas-frame {
+index.html:110:            .cert-print-wrapper .cert-inner-border {
+index.html:130:        /* Certificate Executive Frame Styling */
+index.html:134:        .cert-canvas-frame {
+index.html:142:        .cert-inner-border {
+index.html:202:                        <p class="text-[11px] text-blue-200 hidden sm:block">ระบบบริหารจัดการโครงการ 
+สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ (สอ.สธสต.)</p>
+index.html:209:                    <button onclick="openSystemSettingsModal()" class="admin-only-ctrl bg-blue-900/80 
+hover:bg-blue-800 text-blue-100 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm flex 
+items-center gap-1.5 cursor-pointer transition active:scale-95" title="ตั้งค่าหน่วยงานระบบ">
+index.html:215:                    <div id="dbSyncBadge" class="admin-only-ctrl flex items-center gap-1.5 px-3 py-1 
+rounded-full text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300">
+index.html:220:                    <div id="fiscalYearBox" class="admin-only-ctrl flex items-center gap-1.5 
+bg-blue-900/90 px-3 py-1.5 rounded-xl border border-blue-700/80 text-xs font-semibold shadow-sm">
+index.html:231:                    <button id="dbModalBtn" onclick="openDatabaseModal()" class="admin-only-ctrl 
+bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex 
+items-center gap-1.5 active:scale-95 cursor-pointer" title="ตั้งค่าเชื่อมต่อฐานข้อมูล Cloud">
+index.html:237:                    <button id="copyLinkBtn" onclick="copyMemberPortalLink()" class="admin-only-ctrl 
+bg-amber-500 hover:bg-amber-600 text-blue-950 px-3 py-1.5 rounded-xl text-xs font-extrabold shadow-md transition flex 
+items-center gap-1.5 active:scale-95 cursor-pointer">
+index.html:242:                    <!-- Admin Auth Button / Session Status -->
+index.html:243:                    <button id="adminAuthBtn" onclick="toggleAdminAuthAction()" class="bg-blue-800 
+hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 
+active:scale-95 cursor-pointer">
+index.html:245:                        <span id="adminAuthLabel">ผู้ดูแลระบบ</span>
+index.html:276:                <!-- Reports & Certificates Dropdown -->
+index.html:279:                        <i class="fa-solid fa-file-contract text-amber-400"></i> รายงาน & เกียรติบัตร 
+<i class="fa-solid fa-chevron-down text-[10px]"></i>
+index.html:291:                        <button type="button" onclick="switchTab('cert-config'); closeNavDropdowns();" 
+class="w-full text-left px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 font-semibold flex items-center gap-2.5 
+cursor-pointer">
+index.html:292:                            <i class="fa-solid fa-award text-amber-500"></i> ตั้งค่าเกียรติบัตร & 
+ผู้ลงนาม
+index.html:356:                        <p class="text-[11px] text-emerald-600 font-medium mt-1"><i class="fa-solid 
+fa-user-check"></i> ออกเกียรติบัตรได้ทันที</p>
+index.html:372:                        <p class="text-xs font-semibold text-slate-500">เกียรติบัตรที่ออกแล้ว</p>
+index.html:373:                        <h3 id="statTotalCertsIssued" class="text-2xl font-black text-amber-600 
+mt-1">0</h3>
+index.html:430:                        <span class="w-5 h-5 rounded-full bg-slate-300 text-slate-800 flex items-center 
+justify-center text-[10px] font-black">4</span> ออกรายงาน & เกียรติบัตร
+index.html:576:                            <p class="text-xs text-slate-500">* 
+สมาชิกสามารถรับเกียรติบัตรได้เมื่อโครงการขึ้นสถานะ **เสร็จสิ้นโครงการ** แล้วเท่านั้น</p>
+index.html:593:                            <button onclick="printAllCertificatesForProject()" class="bg-amber-600 
+hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 
+active:scale-95 cursor-pointer">
+index.html:594:                                <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
+index.html:617:                                    <th class="p-3">เลขที่เกียรติบัตร (สอ.สธสต.)</th>
+index.html:621:                                    <th class="p-3 text-center">สถานะเกียรติบัตร</th>
+index.html:781:            <!-- UNIFIED STEP 4: PRINT REPORTS & CERTIFICATES -->
+index.html:785:                        <i class="fa-solid fa-print text-amber-500"></i> ศูนย์ออกรายงานสารบรรณ 6 ส่วน 
+และพิมพ์เกียรติบัตรออนไลน์
+index.html:798:                            <h4 class="font-bold text-xs text-amber-950 flex items-center gap-2"><i 
+class="fa-solid fa-award text-amber-600 text-base"></i> เกียรติบัตรออนไลน์ (A4 แนวนอน)</h4>
+index.html:799:                            <p class="text-[11px] text-slate-600 
+leading-relaxed">พิมพ์เกียรติบัตรพร้อมรันเลขอ้างอิง สอ.สธสต. มุมซ้ายบน และลายเซ็นผู้ลงนาม</p>
+index.html:800:                            <button onclick="switchTab('cert-config')" class="w-full bg-amber-600 
+hover:bg-amber-700 text-white p-2.5 rounded-xl text-xs font-bold shadow transition flex items-center justify-center 
+gap-2 active:scale-95 cursor-pointer">
+index.html:801:                                <i class="fa-solid fa-sliders"></i> พิมพ์ / ตั้งค่าเกียรติบัตร
+index.html:841:                            <i class="fa-solid fa-users-gear text-blue-600"></i> 
+รายชื่อผู้เข้าร่วมโครงการ & พิมพ์เกียรติบัตร
+index.html:860:                        <button onclick="printAllCertificatesForProject()" class="bg-amber-600 
+hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5 
+active:scale-95 cursor-pointer">
+index.html:861:                            <i class="fa-solid fa-award"></i> พิมพ์เกียรติบัตรยกโครงการ
+index.html:883:                                <th class="p-3">เลขที่เกียรติบัตร</th>
+index.html:957:        <!-- VIEW 8: CERTIFICATE CONFIGURATION WITH SEPARATE EMBLEM & DYNAMIC SIGNERS -->
+index.html:958:        <section id="view-cert-config" class="space-y-6 hidden">
+index.html:966:                        <p class="text-[10px] font-bold text-amber-700 uppercase 
+tracking-widest">กำลังตั้งค่าเกียรติบัตรสำหรับโครงการ</p>
+index.html:967:                        <p id="certConfigProjectTitle" class="text-sm font-extrabold text-amber-950 
+leading-snug line-clamp-1">-</p>
+index.html:970:                <span id="certConfigStatusBadge" class="text-[10px] font-extrabold px-3 py-1 
+rounded-full border bg-slate-100 text-slate-600 border-slate-300">-</span>
+index.html:974:                <!-- Cert Config Controls -->
+index.html:978:                            <i class="fa-solid fa-sliders text-amber-500"></i> ตั้งค่าเกียรติบัตร & 
+ผู้ลงนาม
+index.html:980:                        <button type="button" onclick="addCertSigner()" class="bg-emerald-700 
+hover:bg-emerald-800 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1 
+cursor-pointer active:scale-95">
+index.html:986:                        <!-- Dedicated Certificate Emblems Control Card (Multi Logo) -->
+index.html:990:                                    <i class="fa-solid fa-award text-amber-600 text-sm"></i> 
+ตราหน่วยงานบนเกียรติบัตร
+index.html:992:                                <span id="certLogoStatusBadge" class="px-2.5 py-0.5 rounded-full 
+text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-300">
+index.html:1001:                            <div id="certLogosManagerBox" class="space-y-2">
+index.html:1008:                                <input type="file" accept="image/*" multiple 
+onchange="uploadCertLogos(this)" class="hidden">
+index.html:1012:                        <!-- Certificate Background Control -->
+index.html:1016:                                    <i class="fa-solid fa-image text-blue-600 text-sm"></i> 
+ภาพพื้นหลังเกียรติบัตร
+index.html:1022:                                    <input type="radio" name="bgStyleMode" value="cover" 
+onchange="updateCertBgStyle(this.value)" class="w-3.5 h-3.5 text-blue-600">
+index.html:1026:                                    <input type="radio" name="bgStyleMode" value="watermark" 
+onchange="updateCertBgStyle(this.value)" class="w-3.5 h-3.5 text-blue-600">
+index.html:1031:                            <div id="certBgPreviewBox" class="hidden flex items-center justify-between 
+bg-white p-2.5 rounded-xl border border-blue-200 shadow-sm mt-2">
+index.html:1033:                                    <img id="certBgImgPreview" src="" class="w-12 h-12 object-cover 
+rounded shadow-sm border">
+index.html:1036:                                <button type="button" onclick="removeCertBg()" class="bg-red-600 
+hover:bg-red-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg cursor-pointer active:scale-95">
+index.html:1044:                                <input type="file" accept="image/*" onchange="uploadCertBg(this)" 
+class="hidden">
+index.html:1049:                        <div id="certSignersConfigList" class="space-y-4 pt-2 border-t 
+border-slate-200">
+index.html:1060:                    <div id="certConfigAlertPanel" class="hidden bg-amber-50 border border-amber-200 
+rounded-3xl p-10 flex flex-col items-center justify-center text-center space-y-4 h-full min-h-[400px]">
+index.html:1064:                        <h3 class="text-lg font-bold 
+text-amber-900">ยังไม่สามารถดูตัวอย่างเกียรติบัตรได้</h3>
+index.html:1065:                        <p class="text-sm text-amber-700 
+max-w-md">หน้าต่างพรีวิวและการพิมพ์เกียรติบัตร จะไม่แสดงจนกว่าโครงการจะถูก <strong>"อนุมัติเสร็จสิ้นโครงการ"</strong> 
+เรียบร้อยแล้วเท่านั้น</p>
+index.html:1069:                    <div id="certConfigPreviewPanel" class="space-y-4">
+index.html:1072:                            <span class="font-extrabold text-xs text-slate-800">พรีวิวเกียรติบัตร (A4 
+แนวนอน)</span>
+index.html:1076:                            <button onclick="openCertPreviewModal(null)" class="bg-blue-900 
+hover:bg-blue-950 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-1.5 active:scale-95 
+cursor-pointer">
+index.html:1079:                            <button onclick="triggerPrint('certPreviewCard', true)" 
+class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow flex items-center 
+gap-2 active:scale-95 cursor-pointer">
+index.html:1080:                                <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร (A4)
+index.html:1085:                    <!-- Certificate Scaled Preview Wrapper -->
+index.html:1088:                            <!-- The actual cert card, scaled to fit the preview box -->
+index.html:1089:                            <div id="certPreviewScaleOuter" style="transform-origin: top center; 
+width: 297mm;">
+index.html:1090:                                <div id="certPreviewCard" class="cert-canvas-frame relative flex 
+flex-col justify-between text-center bg-white print-area official-font" style="width: 297mm; height: 210mm;">
+index.html:1091:                    <div class="cert-inner-border p-10 flex flex-col justify-between h-full relative 
+items-center text-center text-shadow-white">
+index.html:1092:                            <!-- Top Left Cert Reference No -->
+index.html:1094:                                เลขที่เกียรติบัตร: <span id="previewCertNo" 
+class="text-blue-900">สอ.สธสต. 0001/2569</span>
+index.html:1099:                                <div id="previewCertLogoBox" class="flex items-center justify-center 
+gap-3 mx-auto">
+index.html:1100:                                    <svg id="previewCertLogoSvg" class="h-24 w-auto mx-auto 
+drop-shadow-sm" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+index.html:1108:                                <h3 id="previewCert_orgName" class="font-black text-2xl text-blue-950 
+mt-3 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+index.html:1109:                                <p id="previewCert_grantText" class="text-lg font-bold text-amber-800 
+mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+index.html:1116:                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 
+tracking-widest border-b-2 border-amber-500 inline-block px-12 pb-2 text-center">นายสมชาย รักดี</h2>
+index.html:1121:                                    <p id="previewCert_actText" 
+class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
+index.html:1122:                                    <p class="text-2xl font-extrabold text-blue-900 text-center" 
+id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
+index.html:1123:                                    <p id="previewCert_dateText" 
+class="text-center">จัดขึ้นเมื่อวันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 
+2569</span></p>
+index.html:1124:                                    <p id="previewCert_locationText" class="text-center" 
+style="display:none;">ณ <span id="previewCertProjLocationInline" class="font-bold"></span></p>
+index.html:1125:                                    <p id="previewCert_quoteText" class="font-bold text-amber-900 
+italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
+index.html:1131:                                <p id="previewCertDate" class="text-base font-extrabold text-slate-800 
+text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
+index.html:1133:                                <div id="previewCertSignersContainer" class="w-full">
+index.html:1139:                                <div id="previewCertSignersContainer" class="w-full">
+index.html:1146:                    </div> <!-- end certPreviewScaleOuter -->
+index.html:1147:                        </div> <!-- end certPreviewScaleWrapper -->
+index.html:1148:                    </div> <!-- end certConfigPreviewPanel -->
+index.html:1158:                        ระบบสืบค้นประวัติกิจกรรม & เกียรติบัตรออนไลน์สำหรับสมาชิก
+index.html:1161:                        พิมพ์เลขที่สมาชิกสหกรณ์ 5 หลัก หรือเลขบัตรประชาชน 13 หลัก 
+เพื่อค้นหาประวัติการเข้าร่วมโครงการ และสั่งพิมพ์เกียรติบัตร PDF ย้อนหลัง
+index.html:1166:                    <input type="text" id="memberSearchQuery" onkeyup="if(event.key==='Enter') 
+searchMemberCertificates()" placeholder="พิมพ์เลขที่สมาชิก หรือ เลขบัตรประชาชน..." class="w-full bg-white 
+text-slate-900 rounded-full px-5 py-3 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 
+focus:ring-amber-400 placeholder-slate-400 font-medium">
+index.html:1167:                    <button onclick="searchMemberCertificates()" class="w-full sm:w-auto bg-amber-400 
+hover:bg-amber-500 text-slate-950 font-extrabold px-8 py-3 rounded-full text-xs sm:text-sm shadow-lg transition 
+duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95">
+index.html:1202:                        <span class="text-[10px] text-slate-500 
+font-normal">ไม่มีผลกับตราบนเกียรติบัตร</span>
+index.html:1227:    <!-- MODAL: CERTIFICATE FULLSCREEN PREVIEW -->
+index.html:1228:    <div id="certPreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center 
+hidden p-4 no-print overflow-y-auto">
+index.html:1232:                    <i class="fa-solid fa-award text-amber-500"></i> 
+ตรวจสอบตัวอย่างเกียรติบัตรก่อนสั่งพิมพ์ (A4 Landscape)
+index.html:1234:                <button onclick="closeModal('certPreviewModal')" class="text-slate-400 
+hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+index.html:1237:            <!-- Certificate Frame Target Container -->
+index.html:1238:            <div id="certModalFrameHolder" class="w-full flex justify-center py-2 bg-slate-100 
+rounded-2xl overflow-x-auto p-4">
+index.html:1239:                <!-- Dynamic Cloned Cert Frame -->
+index.html:1243:                <button onclick="closeModal('certPreviewModal')" class="bg-slate-200 text-slate-700 
+px-5 py-2 rounded-xl text-xs font-semibold cursor-pointer">ปิดหน้าต่าง</button>
+index.html:1244:                <button onclick="triggerPrint('certPreviewCard', true)" class="bg-amber-600 
+hover:bg-amber-700 text-white px-6 py-2 rounded-xl text-xs font-bold shadow flex items-center gap-2 active:scale-95 
+cursor-pointer">
+index.html:1245:                    <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตรฉบับนี้ (A4)
+index.html:1254:    <!-- MODAL: ADMIN AUTHENTICATION LOGIN -->
+index.html:1255:    <div id="adminAuthModal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center 
+hidden p-4 no-print">
+index.html:1261:                <h3 class="text-base font-black text-blue-950">เข้าสู่ระบบผู้ดูแลระบบ</h3>
+index.html:1264:            <form onsubmit="verifyAdminAuth(event)" class="space-y-3 text-xs">
+index.html:1267:                    <input type="text" id="adminUserInput" required autocomplete="username"
+index.html:1273:                    <input type="password" id="adminPassInput" required autocomplete="current-password"
+index.html:1278:                    <button type="button" onclick="closeModal('adminAuthModal')"
+index.html:1748:            <p class="text-blue-200 text-[11px]">ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ 
+และเกียรติบัตรออนไลน์ © 2569 สงวนลิขสิทธิ์</p>
+index.html:1759:        let isAdminLoggedIn = false; // Public Member Portal default
+index.html:1797:                certLogoUrl: '', // Dedicated Certificate Emblem URL
+index.html:1798:                certSigners: [
+index.html:1829:                    { id: 'p1', certNo: 'สอ.สธสต. 0001/2569', name: 'นายสมชาย รักดี', code: 
+'05500123', pos: 'นักวิชาการสาธารณสุข', org: 'รพ.สต.บ้านควน', type: 'สมาชิกสามัญ', remark: '', selected: false },
+index.html:1830:                    { id: 'p2', certNo: 'สอ.สธสต. 0002/2569', name: 'นางสาววิไล พรประเสริฐ', code: 
+'05500124', pos: 'พยาบาลวิชาชีพชำนาญการ', org: 'โรงพยาบาลสตูล', type: 'สมาชิกสามัญ', remark: '', selected: false }
+index.html:1937:        function formatCertDate(dateStr) {
+index.html:2012:            // Restore admin session from sessionStorage
+index.html:2014:                if (sessionStorage.getItem('coop_admin_session') === 'active') {
+index.html:2015:                    isAdminLoggedIn = true;
+index.html:2020:            // Migrate certNo เดิม (สอ.สธสต.69/XXXX) เป็นรูปแบบใหม่ (สอ.สธสต. XXXX/YYYY)
+index.html:2021:            migrateLegacyCertNos();
+index.html:2042:                    const visibleModals = ['databaseModal', 'certPreviewModal', 'proposalPrintModal', 
+'groupedParticipantsModal', 'excelImportModal', 'addParticipantModal', 'newProjectModal', 'adminAuthModal', 
+'blankSurveyModal', 'addQuestionModal', 'editQuestionModal', 'customConfirmModal'];
+index.html:2062:                isAdminLoggedIn = false;
+index.html:2069:            const adminCtrls = document.querySelectorAll('.admin-only-ctrl');
+index.html:2071:            if (!isAdminLoggedIn) {
+index.html:2074:                adminCtrls.forEach(el => el.classList.add('hidden'));
+index.html:2075:                document.getElementById('adminAuthLabel').innerText = 'เข้าสู่ระบบผู้ดูแลระบบ';
+index.html:2083:                adminCtrls.forEach(el => el.classList.remove('hidden'));
+index.html:2084:                document.getElementById('adminAuthLabel').innerText = 'ผู้ดูแลระบบ (ออกจากระบบ)';
+index.html:2089:            if (isAdminLoggedIn) {
+index.html:2156:        function uploadCertSpecificLogo(input) {
+index.html:2158:            uploadCertLogos(input);
+index.html:2161:        function uploadCertLogos(input) {
+index.html:2164:            if (!proj.certLogos) proj.certLogos = [];
+index.html:2169:                    proj.certLogos.push(base64);
+index.html:2173:                        renderCertSignersConfigUI();
+index.html:2180:        function removeCertLogoByIndex(idx) {
+index.html:2182:            if (!proj.certLogos) return;
+index.html:2183:            proj.certLogos.splice(idx, 1);
+index.html:2185:            renderCertSignersConfigUI();
+index.html:2189:        function removeCertSpecificLogo() {
+index.html:2192:                proj.certLogos = [];
+index.html:2193:                proj.certLogoUrl = '';
+index.html:2195:                renderCertSignersConfigUI();
+index.html:2200:        function toggleAdminAuthAction() {
+index.html:2201:            if (isAdminLoggedIn) {
+index.html:2202:                showConfirm('คุณต้องการออกจากระบบผู้ดูแลระบบใช่หรือไม่?', function() {
+index.html:2203:                    isAdminLoggedIn = false;
+index.html:2204:                    try { sessionStorage.removeItem('coop_admin_session'); } catch(e) {}
+index.html:2206:                    showToast('ออกจากระบบผู้ดูแลระบบแล้ว', 'info');
+index.html:2209:                openAdminAuthModal();
+index.html:2279:                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full 
+text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
+index.html:2393:                if (p.certBgUrl) p.certBgUrl = '__IMG_STRIPPED__';
+index.html:2394:                if (p.certLogoUrl) p.certLogoUrl = '__IMG_STRIPPED__';
+index.html:2395:                if (p.certLogos && p.certLogos.length > 0) {
+index.html:2396:                    p.certLogos = p.certLogos.map(() => '__IMG_STRIPPED__');
+index.html:2399:                if (p.certSigners && Array.isArray(p.certSigners)) {
+index.html:2400:                    p.certSigners = p.certSigners.map(s => {
+index.html:2417:                badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 rounded-full 
+text-[11px] font-bold bg-amber-950/80 border border-amber-700 text-amber-300';
+index.html:2493:                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 
+rounded-full text-[11px] font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-300 cursor-pointer';
+index.html:2506:                    badge.className = 'admin-only-ctrl flex items-center gap-1.5 px-3 py-1 
+rounded-full text-[11px] font-bold bg-red-950/80 border border-red-700 text-red-300 cursor-pointer';
+index.html:2597:            if (!isAdminLoggedIn && tabId !== 'member-portal') {
+index.html:2598:                showToast('ท่านจำเป็นต้องเข้าสู่ระบบผู้ดูแลระบบก่อน', 'error');
+index.html:2599:                openAdminAuthModal();
+index.html:2617:            else if (tabId === 'cert-config') renderCertSignersConfigUI();
+index.html:2649:            let certsIssued = 0;
+index.html:2657:                certsIssued += (p.participants || []).filter(item => item.checked).length;
+index.html:2663:            document.getElementById('statTotalCertsIssued').innerText = certsIssued;
+index.html:2687:            if (!proj.certSigners || !Array.isArray(proj.certSigners) || proj.certSigners.length === 
+0) {
+index.html:2688:                proj.certSigners = [
+index.html:2752:            updateCertPreview();
+index.html:2755:        function renderCertSignersConfigUI() {
+index.html:2757:            const container = document.getElementById('certSignersConfigList');
+index.html:2761:            if (proj.certLogoUrl && !proj.certLogos) {
+index.html:2762:                proj.certLogos = [proj.certLogoUrl];
+index.html:2763:                proj.certLogoUrl = '';
+index.html:2765:            if (!proj.certLogos) proj.certLogos = [];
+index.html:2768:            const logosBox = document.getElementById('certLogosManagerBox');
+index.html:2769:            const certLogoStatusBadge = document.getElementById('certLogoStatusBadge');
+index.html:2773:                if (proj.certLogos.length === 0) {
+index.html:2775:                    if (certLogoStatusBadge) {
+index.html:2776:                        certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] 
+font-extrabold bg-blue-100 text-blue-800 border border-blue-300';
+index.html:2777:                        certLogoStatusBadge.innerText = '🔵 ตรามาตรฐานระบบ';
+index.html:2780:                    if (certLogoStatusBadge) {
+index.html:2781:                        certLogoStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] 
+font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
+index.html:2782:                        certLogoStatusBadge.innerText = `🟢 ตรากำหนดเอง ${proj.certLogos.length} 
+รายการ`;
+index.html:2784:                    proj.certLogos.forEach((logoUrl, idx) => {
+index.html:2790:                            <button type="button" onclick="removeCertLogoByIndex(${idx})"
+index.html:2800:            if (!proj.certSigners || !Array.isArray(proj.certSigners) || proj.certSigners.length === 
+0) {
+index.html:2801:                proj.certSigners = [
+index.html:2808:            proj.certSigners.forEach((signer, idx) => {
+index.html:2814:                        ${proj.certSigners.length > 1 ? `
+index.html:2815:                            <button type="button" onclick="removeCertSigner(${idx})" 
+class="text-red-500 hover:text-red-700 text-xs font-bold cursor-pointer flex items-center gap-1">
+index.html:2821:                        <input type="text" value="${escapeHtml(signer.name)}" 
+oninput="updateCertSignerData(${idx}, 'name', this.value)" class="w-full border rounded-xl p-2 font-semibold text-xs 
+bg-white" placeholder="ชื่อ-นามสกุล ผู้ลงนาม">
+index.html:2822:                        <textarea rows="2" oninput="updateCertSignerData(${idx}, 'pos', this.value)" 
+class="w-full border rounded-xl p-2 text-slate-800 font-semibold text-xs bg-white" 
+placeholder="ตำแหน่ง">${escapeHtml(signer.pos)}</textarea>
+index.html:2833:            const bgBox = document.getElementById('certBgPreviewBox');
+index.html:2834:            const bgImg = document.getElementById('certBgImgPreview');
+index.html:2836:                if (proj.certBgUrl) {
+index.html:2837:                    bgImg.src = proj.certBgUrl;
+index.html:2845:                radio.checked = (radio.value === (proj.certBgStyle || 'cover'));
+index.html:2849:            const previewPanel = document.getElementById('certConfigPreviewPanel');
+index.html:2850:            const alertPanel = document.getElementById('certConfigAlertPanel');
+index.html:2851:            if (isAdminLoggedIn) {
+index.html:2852:                // Admin เห็น preview เต็มๆ ทันที พิมพ์ได้ตลอด ไม่มี alert block
+index.html:2856:                // Non-admin: hide preview if project not completed
+index.html:2866:            renderCertFontsConfigUI();
+index.html:2867:            updateCertPreview();
+index.html:2871:            { id: 'certNo', label: 'เลขที่เกียรติบัตร' },
+index.html:2873:            { id: 'grantText', label: 'ข้อความมอบเกียรติบัตร' },
+index.html:2895:        function initCertFonts(proj) {
+index.html:2897:            if (proj.certFonts && proj.certFonts._version !== 1) {
+index.html:2898:                proj.certFonts = null;
+index.html:2901:            if (!proj.certFonts) proj.certFonts = { _version: 1 };
+index.html:2904:                'certNo': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 
+100 },
+index.html:2917:                if (!proj.certFonts[f.id]) {
+index.html:2918:                    proj.certFonts[f.id] = Object.assign({}, defaults[f.id]);
+index.html:2923:        function resetCertFonts() {
+index.html:2927:            proj.certFonts = null; // clear it
+index.html:2928:            initCertFonts(proj);
+index.html:2931:            renderCertFontsConfigUI();
+index.html:2932:            updateCertPreview();
+index.html:2937:            if (!proj || !proj.certFonts) return;
+index.html:2939:            Object.values(proj.certFonts).forEach(f => {
+index.html:2956:        function renderCertFontsConfigUI() {
+index.html:2958:            const container = document.getElementById('certFontsConfigBox');
+index.html:2961:            initCertFonts(proj);
+index.html:2966:                const config = proj.certFonts[field.id];
+index.html:2971:                            <select class="border p-1 rounded text-xs bg-white flex-1 min-w-[120px]" 
+onchange="updateCertFont('${field.id}', 'family', this.value)">
+index.html:2975:                                <input type="text" class="border p-1 rounded text-xs w-full bg-white 
+mt-1 placeholder-slate-400" placeholder="ชื่อ Google Font เช่น 'Mali'" value="${config.customFont || ''}" 
+onchange="updateCertFont('${field.id}', 'customFont', this.value)">
+index.html:2977:                            <select class="border p-1 rounded text-xs bg-white w-24" 
+onchange="updateCertFont('${field.id}', 'weight', this.value)">
+index.html:2983:                                <input type="checkbox" ${config.italic ? 'checked' : ''} 
+onchange="updateCertFont('${field.id}', 'italic', this.checked)">
+index.html:2988:                                <input type="range" min="50" max="200" step="5" 
+value="${config.scale}" oninput="document.getElementById('scale-val-${field.id}').innerText=this.value+'%'" 
+onchange="updateCertFont('${field.id}', 'scale', parseInt(this.value))" class="flex-1 h-1.5 bg-slate-300 rounded-lg 
+appearance-none cursor-pointer">
+index.html:2998:        function updateCertFont(fieldId, prop, value) {
+index.html:3000:            if (!proj || !proj.certFonts) return;
+index.html:3001:            proj.certFonts[fieldId][prop] = value;
+index.html:3004:            renderCertFontsConfigUI();
+index.html:3005:            updateCertPreview();
+index.html:3008:        function uploadCertBg(input) {
+index.html:3013:                proj.certBgUrl = base64;
+index.html:3014:                if (!proj.certBgStyle) proj.certBgStyle = 'cover';
+index.html:3016:                renderCertSignersConfigUI();
+index.html:3021:        function removeCertBg() {
+index.html:3023:            proj.certBgUrl = '';
+index.html:3025:            renderCertSignersConfigUI();
+index.html:3029:        function updateCertBgStyle(style) {
+index.html:3031:            proj.certBgStyle = style;
+index.html:3033:            updateCertPreview();
+index.html:3036:        function addCertSigner() {
+index.html:3038:            if (!proj.certSigners) proj.certSigners = [];
+index.html:3039:            if (proj.certSigners.length >= 4) {
+index.html:3040:                showToast('สามารถเพิ่มผู้ลงนามได้สูงสุด 4 ท่านต่อเกียรติบัตร', 'error');
+index.html:3044:            proj.certSigners.push({
+index.html:3052:            renderCertSignersConfigUI();
+index.html:3056:        function removeCertSigner(idx) {
+index.html:3058:            if (!proj.certSigners || proj.certSigners.length <= 1) {
+index.html:3064:                proj.certSigners.splice(idx, 1);
+index.html:3066:                renderCertSignersConfigUI();
+index.html:3073:        function updateCertSignerData(idx, field, value) {
+index.html:3075:            if (proj.certSigners && proj.certSigners[idx]) {
+index.html:3076:                proj.certSigners[idx][field] = value;
+index.html:3077:                updateCertPreview();
+index.html:3091:                if (proj.certSigners && proj.certSigners[idx]) {
+index.html:3092:                    proj.certSigners[idx].sigImg = base64;
+index.html:3094:                    updateCertPreview();
+index.html:3099:        function getCertFontStyle(proj, fieldId) {
+index.html:3100:            if (!proj || !proj.certFonts || !proj.certFonts[fieldId]) return '';
+index.html:3101:            const f = proj.certFonts[fieldId];
+index.html:3106:        function applyCertFontsToPreview(proj) {
+index.html:3108:                'certNo': 'previewCertNo',
+index.html:3109:                'orgName': 'previewCert_orgName',
+index.html:3110:                'grantText': 'previewCert_grantText',
+index.html:3111:                'partName': 'previewCertName',
+index.html:3112:                'actText': 'previewCert_actText',
+index.html:3113:                'projTitle': 'previewCertProjTitle',
+index.html:3114:                'dateText': 'previewCert_dateText',
+index.html:3115:                'quoteText': 'previewCert_quoteText',
+index.html:3116:                'issueDate': 'previewCertDate'
+index.html:3120:                if (el) el.setAttribute('style', getCertFontStyle(proj, key));
+index.html:3124:        function renderCertSignersPreviewHtml(proj) {
+index.html:3125:            let signers = proj.certSigners;
+index.html:3139:            const nameStyle = getCertFontStyle(proj, 'signerName');
+index.html:3140:            const posStyle = getCertFontStyle(proj, 'signerPos');
+index.html:3155:        function updateCertPreview() {
+index.html:3159:            document.getElementById('previewCertProjTitle').innerText = proj.title;
+index.html:3160:            document.getElementById('previewCertProjDateInline').innerText = proj.date;
+index.html:3162:            const locTextEl = document.getElementById('previewCert_locationText');
+index.html:3165:                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+index.html:3170:            const cleanDate = formatCertDate(proj.date);
+index.html:3171:            document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
+index.html:3174:            if (proj.certLogoUrl && !proj.certLogos) { proj.certLogos = [proj.certLogoUrl]; 
+proj.certLogoUrl = ''; }
+index.html:3175:            if (!proj.certLogos) proj.certLogos = [];
+index.html:3178:            const logoBox = document.getElementById('previewCertLogoBox');
+index.html:3180:                const svgEl = document.getElementById('previewCertLogoSvg');
+index.html:3181:                if (proj.certLogos.length > 0) {
+index.html:3185:                    logoBox.querySelectorAll('img.cert-custom-logo').forEach(e => e.remove());
+index.html:3186:                    proj.certLogos.forEach(url => {
+index.html:3189:                        img.className = 'cert-custom-logo h-24 w-auto object-contain drop-shadow-sm';
+index.html:3197:                    logoBox.querySelectorAll('img.cert-custom-logo').forEach(e => e.remove());
+index.html:3201:            const container = document.getElementById('previewCertSignersContainer');
+index.html:3203:                container.innerHTML = renderCertSignersPreviewHtml(proj);
+index.html:3206:            // applyCertFontsToPreview(proj);
+index.html:3209:            const cardEl = document.getElementById('certPreviewCard');
+index.html:3211:                const innerBorder = cardEl.querySelector('.cert-inner-border');
+index.html:3213:                    if (proj.certBgUrl) {
+index.html:3214:                        innerBorder.style.backgroundImage = `url('${proj.certBgUrl}')`;
+index.html:3216:                        if (proj.certBgStyle === 'watermark') {
+index.html:3230:        function openCertPreviewModal(partId) {
+index.html:3232:            const modal = document.getElementById('certPreviewModal');
+index.html:3233:            const holder = document.getElementById('certModalFrameHolder');
+index.html:3236:            // Non-admin (member portal): block preview if project not completed
+index.html:3237:            if (!isAdminLoggedIn && proj.status !== 'completed') {
+index.html:3238:                showToast('โครงการยังไม่เสร็จสิ้น ไม่สามารถดูเกียรติบัตรได้ในขณะนี้', 'error');
+index.html:3245:                    document.getElementById('previewCertNo').innerText = part.certNo;
+index.html:3246:                    document.getElementById('previewCertName').innerText = part.name;
+index.html:3250:            updateCertPreview();
+index.html:3251:            const cardEl = document.getElementById('certPreviewCard');
+index.html:3253:            openModal('certPreviewModal');
+index.html:3265:                showToast('อนุมัติเสร็จสิ้นโครงการเรียบร้อยแล้ว! สามารถพิมพ์เกียรติบัตรได้ทันที', 
+'success');
+index.html:3362:        // เลขที่เกียรติบัตร: สอ.สธสต. XXXX/YYYY (รันตามโครงการ เริ่มใหม่ทุกโครงการ)
+index.html:3363:        function generateNextCertNo(fiscalYear) {
+index.html:3371:        function reindexParticipantCertNos() {
+index.html:3375:                p.certNo = `สอ.สธสต. ${(idx + 1).toString().padStart(4, '0')}/${fy}`;
+index.html:3380:        // Migrate certNo รูปแบบเก่า (สอ.สธสต.69/0001) ให้เป็นรูปแบบใหม่ (สอ.สธสต. 0001/2569)
+index.html:3381:        function migrateLegacyCertNos() {
+index.html:3387:                    if (oldPattern.test(p.certNo || '')) {
+index.html:3388:                        p.certNo = `สอ.สธสต. ${(idx + 1).toString().padStart(4, '0')}/${fy}`;
+index.html:3395:                console.log('✅ migrated legacy certNo format');
+index.html:3454:                reindexParticipantCertNos();
+index.html:3495:                    <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
+index.html:3504:                            '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold 
+bg-emerald-100 text-emerald-800 border border-emerald-300"><i class="fa-solid fa-circle-check"></i> 
+พร้อมพิมพ์เกียรติบัตร</span>' : 
+index.html:3505:                            (isAdminLoggedIn ? '<span class="px-2.5 py-1 rounded-full text-[10px] 
+font-extrabold bg-blue-100 text-blue-800 border border-blue-300"><i class="fa-solid fa-eye"></i> ดูตัวอย่างได้ 
+(Admin)</span>' : '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border 
+border-amber-300"><i class="fa-solid fa-clock"></i> รอเสร็จสิ้นโครงการ</span>')}
+index.html:3512:                            <button type="button" onclick="openCertPreviewModal('${p.id}')" 
+class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition 
+active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
+index.html:3515:                            <button type="button" onclick="printSingleCertificate('${p.id}')" 
+class="${(isCompleted || isAdminLoggedIn) ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 
+text-slate-500 cursor-not-allowed'} font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
+index.html:3541:                    <td class="p-3 font-mono font-bold text-blue-900">${escapeHtml(p.certNo)}</td>
+index.html:3551:                            (isAdminLoggedIn ? '<span class="px-2.5 py-1 rounded-full text-[10px] 
+font-extrabold bg-blue-100 text-blue-800 border border-blue-300"><i class="fa-solid fa-eye"></i> ดูตัวอย่างได้ 
+(Admin)</span>' : '<span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border 
+border-amber-300"><i class="fa-solid fa-clock"></i> รอเสร็จสิ้นโครงการ</span>')}
+index.html:3558:                            <button type="button" onclick="openCertPreviewModal('${p.id}')" 
+class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded-lg text-[11px] shadow transition 
+active:scale-95" title="พรีวิวตรวจสอบก่อนพิมพ์">
+index.html:3561:                            <button type="button" onclick="printSingleCertificate('${p.id}')" 
+class="${(isCompleted || isAdminLoggedIn) ? 'bg-amber-500 hover:bg-amber-600 text-blue-950' : 'bg-slate-300 
+text-slate-500 cursor-not-allowed'} font-bold px-2 py-1 rounded-lg text-[11px] shadow transition active:scale-95">
+index.html:3572:        function printSingleCertificate(partId) {
+index.html:3574:            // Admin สามารถพิมพ์ตัวอย่างได้ก่อนเสร็จสิ้นโครงการ
+index.html:3575:            if (!isAdminLoggedIn && proj.status !== 'completed') {
+index.html:3576:                showToast('โครงการนี้ยังไม่เสร็จสิ้น! กรุณากดปุ่ม "อนุมัติเสร็จสิ้นโครงการ" 
+ก่อนจึงจะออกเกียรติบัตรได้', 'error');
+index.html:3583:            document.getElementById('previewCertNo').innerText = part.certNo;
+index.html:3584:            document.getElementById('previewCertName').innerText = part.name;
+index.html:3585:            document.getElementById('previewCertProjTitle').innerText = proj.title;
+index.html:3586:            document.getElementById('previewCertProjDateInline').innerText = proj.date;
+index.html:3588:            const locTextEl = document.getElementById('previewCert_locationText');
+index.html:3591:                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+index.html:3596:            const cleanDate = formatCertDate(proj.date);
+index.html:3597:            document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
+index.html:3599:            updateCertPreview();
+index.html:3600:            triggerPrint('certPreviewCard', true);
+index.html:3603:        function printAllCertificatesForProject() {
+index.html:3605:            // Admin สามารถพิมพ์ยกโครงการได้ก่อนเสร็จสิ้น
+index.html:3606:            if (!isAdminLoggedIn && proj.status !== 'completed') {
+index.html:3607:                showToast('โครงการนี้ยังไม่เสร็จสิ้น! กรุณากดปุ่ม "อนุมัติเสร็จสิ้นโครงการ" 
+ก่อนจึงจะออกเกียรติบัตรได้', 'error');
+index.html:3616:            let allCertsHtml = '';
+index.html:3617:            const cleanDate = formatCertDate(proj.date);
+index.html:3618:            const signersHtml = renderCertSignersPreviewHtml(proj.certSigners);
+index.html:3621:            if (proj.certLogoUrl && !proj.certLogos) { proj.certLogos = [proj.certLogoUrl]; 
+proj.certLogoUrl = ''; }
+index.html:3622:            if (!proj.certLogos) proj.certLogos = [];
+index.html:3625:            const certLogoSource = proj.certLogos.length > 0
+index.html:3626:                ? proj.certLogos.map(url =>
+index.html:3639:            if (proj.certBgUrl) {
+index.html:3640:                const bgSize = proj.certBgStyle === 'watermark' ? '50%' : 'cover';
+index.html:3641:                bgStyleInline = `style="background-image: url('${proj.certBgUrl}'); background-repeat: 
+no-repeat; background-size: ${bgSize}; background-position: center center;"`;
+index.html:3644:            const style_certNo = getCertFontStyle(proj, 'certNo');
+index.html:3645:            const style_orgName = getCertFontStyle(proj, 'orgName');
+index.html:3646:            const style_grantText = getCertFontStyle(proj, 'grantText');
+index.html:3647:            const style_partName = getCertFontStyle(proj, 'partName');
+index.html:3648:            const style_actText = getCertFontStyle(proj, 'actText');
+index.html:3649:            const style_projTitle = getCertFontStyle(proj, 'projTitle');
+index.html:3650:            const style_dateText = getCertFontStyle(proj, 'dateText');
+index.html:3651:            const style_quoteText = getCertFontStyle(proj, 'quoteText');
+index.html:3652:            const style_issueDate = getCertFontStyle(proj, 'issueDate');
+index.html:3656:                allCertsHtml += `
+index.html:3657:                    <div class="cert-print-wrapper ${pageBreakClass}">
+index.html:3658:                        <div class="cert-canvas-frame relative flex flex-col justify-between 
+text-center bg-white print-area official-font">
+index.html:3659:                            <div class="cert-inner-border p-10 flex flex-col justify-between h-full 
+relative items-center text-center text-shadow-white" ${bgStyleInline}>
+index.html:3661:                                    เลขที่เกียรติบัตร: <span class="text-blue-900" 
+style="${style_certNo}">${escapeHtml(part.certNo)}</span>
+index.html:3665:                                        ${certLogoSource}
+index.html:3668:                                    <p class="text-xs font-bold text-amber-800 mt-1 text-center" 
+style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+index.html:3701:            printBox.innerHTML = allCertsHtml;
+index.html:3747:                                <td class="p-2 border font-mono font-bold 
+text-blue-900">${escapeHtml(item.code || item.certNo || '-')}</td>
+index.html:3852:                        '2. เลขที่สมาชิก': p.code || p.certNo || '',
+index.html:3873:            reindexParticipantCertNos();
+index.html:3918:                certNo: generateNextCertNo(proj.fiscalYear),
+index.html:3922:            reindexParticipantCertNos();
+index.html:4092:                        certNo: generateNextCertNo(proj.fiscalYear),
+index.html:4108:            reindexParticipantCertNos();
+index.html:4128:                '2. เลขที่สมาชิก': p.code || p.certNo || '',
+index.html:4177:        function searchMemberCertificates() {
+index.html:4198:                box.innerHTML = '<p class="text-center text-xs text-slate-500 py-6 
+italic">ไม่พบข้อมูลประวัติเกียรติบัตร</p>';
+index.html:4208:                        <span class="font-mono font-bold 
+text-blue-900">${escapeHtml(res.part.certNo)}</span>
+index.html:4212:                            สถานะ: ${isCompleted ? '🟢 เสร็จสิ้นโครงการ (พร้อมรับเกียรติบัตร)' : '🟡 
+อยู่ระหว่างดำเนินการ (ยังไม่เปิดพิมพ์)'}
+index.html:4214:                        ${!isCompleted ? '<p class="text-[10px] text-slate-500 mt-1 
+italic">เกียรติบัตรจะพร้อมให้ดูและพิมพ์ได้เมื่อโครงการเสร็จสิ้นแล้ว</p>' : ''}
+index.html:4218:                            <button onclick="openCertPreviewModal('${res.part.id}')" 
+class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition 
+active:scale-95 cursor-pointer">
+index.html:4221:                            <button onclick="printMemberCertificate('${res.part.id}', 
+'${res.proj.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-extrabold px-4 py-2 rounded-xl shrink-0 
+shadow transition active:scale-95 cursor-pointer">
+index.html:4222:                                <i class="fa-solid fa-print"></i> พิมพ์เกียรติบัตร
+index.html:4235:        function printMemberCertificate(partId, projId) {
+index.html:4238:                showToast('โครงการนี้ยังไม่เสร็จสิ้น! 
+เกียรติบัตรจะเปิดให้พิมพ์เมื่อโครงการเสร็จสิ้นสมบูรณ์', 'error');
+index.html:4245:            document.getElementById('previewCertNo').innerText = part.certNo;
+index.html:4246:            document.getElementById('previewCertName').innerText = part.name;
+index.html:4247:            document.getElementById('previewCertProjTitle').innerText = proj.title;
+index.html:4248:            document.getElementById('previewCertProjDateInline').innerText = proj.date;
+index.html:4250:            const locTextEl = document.getElementById('previewCert_locationText');
+index.html:4253:                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
+index.html:4258:            const cleanDate = formatCertDate(proj.date);
+index.html:4259:            document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
+index.html:4261:            triggerPrint('certPreviewCard', true);
+index.html:4269:        function openAdminAuthModal() { openModal('adminAuthModal'); }
+index.html:4289:            if (isLandscape && targetId === 'certPreviewCard') {
+index.html:4290:                 printBox.innerHTML = `<div class="cert-print-wrapper">${targetEl.outerHTML}</div>`;
+index.html:4392:                certLogoUrl: '',
+index.html:4393:                certLogos: [],
+index.html:4394:                certSigners: [],
+index.html:4777:        function verifyAdminAuth(e) {
+index.html:4779:            const u = document.getElementById('adminUserInput').value;
+index.html:4780:            const p = document.getElementById('adminPassInput').value;
+index.html:4783:                isAdminLoggedIn = true;
+index.html:4785:                try { sessionStorage.setItem('coop_admin_session', 'active'); } catch(e) {}
+index.html:4787:                closeModal('adminAuthModal');
+index.html:4788:                showToast('ยินดีต้อนรับผู้ดูแลระบบ สอ.สธสต.', 'success');
+
+

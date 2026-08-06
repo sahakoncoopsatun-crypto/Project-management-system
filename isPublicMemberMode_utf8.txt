@@ -1,0 +1,121 @@
+﻿
+  index.html:1757:        let currentFiscalYear = '2569';
+  index.html:1758:        let activeProjectId = 'proj-2569-001';
+  index.html:1759:        let isAdminLoggedIn = false; // Public Member Portal default
+> index.html:1760:        let isPublicMemberMode = false;
+  index.html:1761:        let systemOrgLogoUrl = '';
+  index.html:1762:        let supabaseUrl = 'https://xsvteyjvfdlkfkivalje.supabase.co';
+  index.html:1763:        let supabaseKey = 'sb_publishable_jDGtQomzBz4LjMUn6ndCyA_9Es-rkPu';
+  index.html:1764:        let excelParsedData = [];
+  index.html:1765:        let _syncDebounceTimer = null;
+  index.html:1766:        let _pendingSyncCount = 0;
+  index.html:1767:        let _lastSyncTimestamp = 0;
+  index.html:1768:
+  index.html:1769:        // Obfuscated Credentials (User: 007 / Pass: Satun055pass@1)
+  index.html:1770:        const _A_U_H = 'MDA3';
+  index.html:1771:        const _A_P_H = 'U2F0dW4wNTVwYXNzQDE=';
+  index.html:1772:
+  index.html:1773:        let projectsState = [
+  index.html:1774:            {
+  index.html:1775:                id: 'proj-2569-001',
+  index.html:1776:                fiscalYear: '2569',
+  index.html:1777:                status: 'completed', // 'completed' or 'in-progress'
+  index.html:1778:                title: 'โครงการอบรมสัมมนาพัฒนาศักยภาพสมาชิกและบุคลากร สอ.สธสต. ประจำปี 2569',
+  index.html:1779:                reason: 'เนื่องด้วยสหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด 
+มีนโยบายส่งเสริมความรู้ความเข้าใจเกี่ยวกับระเบียบและสิทธิประโยชน์ของสมาชิก จึงจัดโครงการนี้ขึ้น',
+  index.html:1780:                objective: '1. เพื่อพัฒนาศักยภาพความรู้ด้านการเงินของสมาชิก\n2. 
+เพื่อสร้างความสัมพันธ์อันดีระหว่างสมาชิกและสหกรณ์',
+  index.html:2013:            try {
+  index.html:2014:                if (sessionStorage.getItem('coop_admin_session') === 'active') {
+  index.html:2015:                    isAdminLoggedIn = true;
+> index.html:2016:                    isPublicMemberMode = false;
+  index.html:2017:                }
+  index.html:2018:            } catch(e) { /* sessionStorage not available */ }
+  index.html:2019:            
+  index.html:2020:            // Migrate certNo เดิม (สอ.สธสต.69/XXXX) เป็นรูปแบบใหม่ (สอ.สธสต. XXXX/YYYY)
+  index.html:2021:            migrateLegacyCertNos();
+  index.html:2022:            // Assign projNo สำหรับโครงการเดิมที่ยังไม่มี
+  index.html:2023:            assignMissingProjNos();
+  index.html:2024:
+  index.html:2025:            checkUrlParameters();
+  index.html:2026:            applySecurityAccessControl();
+  index.html:2027:            renderDashboard();
+  index.html:2028:            renderActiveProjectUI();
+  index.html:2029:            updateDbSyncBadgeStatus();
+  index.html:2030:
+  index.html:2031:            fetchDataFromDatabase(false);
+  index.html:2032:
+  index.html:2033:            document.addEventListener('click', function(e) {
+  index.html:2034:                if (!e.target.closest('.nav-dropdown-container')) {
+  index.html:2035:                    closeNavDropdowns();
+  index.html:2036:                }
+  index.html:2060:            const urlParams = new URLSearchParams(window.location.search);
+  index.html:2061:            if (urlParams.get('mode') === 'member') {
+  index.html:2062:                isAdminLoggedIn = false;
+> index.html:2063:                isPublicMemberMode = true;
+  index.html:2064:            }
+  index.html:2065:        }
+  index.html:2066:
+  index.html:2067:        function applySecurityAccessControl() {
+  index.html:2068:            const nav = document.getElementById('mainNavMenu');
+  index.html:2069:            const adminCtrls = document.querySelectorAll('.admin-only-ctrl');
+  index.html:2070:
+  index.html:2071:            if (!isAdminLoggedIn) {
+> index.html:2072:                isPublicMemberMode = true;
+  index.html:2073:                if (nav) nav.classList.add('hidden');
+  index.html:2074:                adminCtrls.forEach(el => el.classList.add('hidden'));
+  index.html:2075:                document.getElementById('adminAuthLabel').innerText = 'เข้าสู่ระบบผู้ดูแลระบบ';
+  index.html:2076:
+  index.html:2077:                document.querySelectorAll('main > section').forEach(sec => 
+sec.classList.add('hidden'));
+  index.html:2078:                const memberView = document.getElementById('view-member-portal');
+  index.html:2079:                if (memberView) memberView.classList.remove('hidden');
+  index.html:2080:            } else {
+> index.html:2081:                isPublicMemberMode = false;
+  index.html:2082:                if (nav) nav.classList.remove('hidden');
+  index.html:2083:                adminCtrls.forEach(el => el.classList.remove('hidden'));
+  index.html:2084:                document.getElementById('adminAuthLabel').innerText = 'ผู้ดูแลระบบ (ออกจากระบบ)';
+  index.html:2085:            }
+  index.html:2086:        }
+  index.html:2087:
+  index.html:2088:        function handleHeaderLogoClick() {
+  index.html:2089:            if (isAdminLoggedIn) {
+  index.html:2090:                switchTab('dashboard');
+  index.html:2091:            } else {
+  index.html:2092:                switchTab('member-portal');
+  index.html:2093:            }
+  index.html:2094:        }
+  index.html:2095:
+  index.html:2096:        let tempSysOrgLogoUrl = '';
+  index.html:2097:
+  index.html:2098:        function openSystemSettingsModal() {
+  index.html:2099:            const name = localStorage.getItem('coop_system_name') || 'สหกรณ์ออมทรัพย์สาธารณสุขสตูล 
+จำกัด';
+  index.html:2100:            document.getElementById('sysOrgNameInput').value = name;
+  index.html:2101:            tempSysOrgLogoUrl = systemOrgLogoUrl;
+  index.html:4781:
+  index.html:4782:            if (btoa(u) === _A_U_H && btoa(p) === _A_P_H) {
+  index.html:4783:                isAdminLoggedIn = true;
+> index.html:4784:                isPublicMemberMode = false;
+  index.html:4785:                try { sessionStorage.setItem('coop_admin_session', 'active'); } catch(e) {}
+  index.html:4786:                applySecurityAccessControl();
+  index.html:4787:                closeModal('adminAuthModal');
+  index.html:4788:                showToast('ยินดีต้อนรับผู้ดูแลระบบ สอ.สธสต.', 'success');
+  index.html:4789:            } else {
+  index.html:4790:                showToast('รหัสผู้ใช้งาน หรือ รหัสผ่าน ไม่ถูกต้อง!', 'error');
+  index.html:4791:            }
+  index.html:4792:        }
+  index.html:4793:
+  index.html:4794:        function copyMemberPortalLink() {
+  index.html:4795:            const link = `${window.location.origin}${window.location.pathname}?mode=member`;
+  index.html:4796:            navigator.clipboard.writeText(link).then(() => {
+  index.html:4797:                showToast('คัดลอกลิงก์สำหรับสมาชิกเรียบร้อยแล้ว!', 'success');
+  index.html:4798:            }).catch(() => {
+  index.html:4799:                showToast('ลิงก์สมาชิก: ' + link, 'info');
+  index.html:4800:            });
+  index.html:4801:        }
+  index.html:4802:
+  index.html:4803:        // ============================================================
+  index.html:4804:        // MISSING FUNCTIONS: SURVEY MATRIX (Step 3) + RENDER PANEL
+
+

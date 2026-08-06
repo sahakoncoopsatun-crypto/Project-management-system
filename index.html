@@ -2395,20 +2395,19 @@ function doPost(e) {
         function stripImagesForSync(projects) {
             return projects.map(proj => {
                 const p = Object.assign({}, proj);
-                // ล้างภาพพื้นหลัง + logo ใหญ่ (base64 เป็นส่วนใหญ่ที่สุด)
-                if (p.certBgUrl) p.certBgUrl = '__IMG_STRIPPED__';
-                if (p.certLogoUrl) p.certLogoUrl = '__IMG_STRIPPED__';
-                if (p.certLogos && p.certLogos.length > 0) {
-                    p.certLogos = p.certLogos.map(() => '__IMG_STRIPPED__');
-                }
-                // ล้างลายเซ็นผู้ลงนาม
-                if (p.certSigners && Array.isArray(p.certSigners)) {
-                    p.certSigners = p.certSigners.map(s => {
-                        const sc = Object.assign({}, s);
-                        if (sc.sigImg) sc.sigImg = '__IMG_STRIPPED__';
-                        return sc;
-                    });
-                }
+                // อนุญาตให้ซิงค์ภาพเกียรติบัตรขึ้น Cloud เพื่อให้สมาชิกเห็นได้
+                // if (p.certBgUrl) p.certBgUrl = '__IMG_STRIPPED__';
+                // if (p.certLogoUrl) p.certLogoUrl = '__IMG_STRIPPED__';
+                // if (p.certLogos && p.certLogos.length > 0) {
+                //     p.certLogos = p.certLogos.map(() => '__IMG_STRIPPED__');
+                // }
+                // if (p.certSigners && Array.isArray(p.certSigners)) {
+                //     p.certSigners = p.certSigners.map(s => {
+                //         const sc = Object.assign({}, s);
+                //         // if (sc.sigImg) sc.sigImg = '__IMG_STRIPPED__';
+                //         return sc;
+                //     });
+                // }
                 // ล้างภาพ media gallery (ใหญ่มาก)
                 if (p.media && p.media.length > 0) {
                     p.media = p.media.map(m => ({ id: m.id, type: m.type, caption: m.caption, url: '__IMG_STRIPPED__' }));

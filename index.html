@@ -2894,11 +2894,14 @@ function doPost(e) {
 
         function initCertFonts(proj) {
             // Auto-migrate to new aesthetic defaults
-            if (proj.certFonts && proj.certFonts._version !== 1) {
+            if (proj.certFonts && proj._certFontsVersion !== 1) {
                 proj.certFonts = null;
             }
 
-            if (!proj.certFonts) proj.certFonts = { _version: 1 };
+            if (!proj.certFonts) {
+                proj.certFonts = {};
+                proj._certFontsVersion = 1;
+            }
 
             const defaults = {
                 'certNo': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
@@ -2937,8 +2940,10 @@ function doPost(e) {
             if (!proj || !proj.certFonts) return;
             let fontsToLoad = new Set();
             Object.values(proj.certFonts).forEach(f => {
-                if (f.family === 'Custom' && f.customFont) fontsToLoad.add(f.customFont);
-                else if (f.family !== 'Custom') fontsToLoad.add(f.family);
+                if (f && typeof f === 'object') {
+                    if (f.family === 'Custom' && f.customFont) fontsToLoad.add(f.customFont);
+                    else if (f.family && f.family !== 'Custom') fontsToLoad.add(f.family);
+                }
             });
             
             fontsToLoad.forEach(font => {

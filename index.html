@@ -2237,7 +2237,12 @@ function doPost(e) {
         function loadStateFromLocalStorage() {
             try {
                 const savedProjects = localStorage.getItem('coop_projects_state');
-                if (savedProjects) projectsState = JSON.parse(savedProjects);
+                if (savedProjects) {
+                    let parsed = JSON.parse(savedProjects);
+                    if (Array.isArray(parsed)) {
+                        projectsState = parsed.filter(p => p && p.id && p.id !== 'undefined');
+                    }
+                }
                 
                 const savedLogo = localStorage.getItem('coop_system_logo');
                 if (savedLogo) {
@@ -2291,9 +2296,10 @@ function doPost(e) {
                     return res.json();
                 })
                 .then(rows => {
-                    const cloudData = rows.map(r => r.data);
+                    let cloudData = rows.map(r => r.data);
                     
                     if (cloudData && Array.isArray(cloudData)) {
+                        cloudData = cloudData.filter(p => p && p.id && p.id !== 'undefined');
                         if (cloudData.length > 0) {
                             // Timestamp-based merge strategy
                             const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');

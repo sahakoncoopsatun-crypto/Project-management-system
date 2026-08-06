@@ -3163,8 +3163,8 @@ function doPost(e) {
             return `<div class="grid ${gridColsClass} gap-6 mx-auto text-base pt-4">${signersHtml}</div>`;
         }
 
-        function updateCertPreview() {
-            const proj = getActiveProject();
+        function updateCertPreview(projOverride = null) {
+            const proj = projOverride || getActiveProject();
             if (!proj) return;
 
             document.getElementById('previewCertProjTitle').innerText = proj.title;
@@ -3238,8 +3238,8 @@ function doPost(e) {
             }
         }
 
-        function openCertPreviewModal(partId) {
-            const proj = getActiveProject();
+        function openCertPreviewModal(partId, projId) {
+            const proj = (projId ? projectsState.find(p => p.id === projId) : null) || getActiveProject();
             const modal = document.getElementById('certPreviewModal');
             const holder = document.getElementById('certModalFrameHolder');
             if (!modal || !holder || !proj) return;
@@ -3258,7 +3258,7 @@ function doPost(e) {
                 }
             }
 
-            updateCertPreview();
+            updateCertPreview(proj);
             const cardEl = document.getElementById('certPreviewCard');
             holder.innerHTML = cardEl.outerHTML;
             openModal('certPreviewModal');
@@ -4226,7 +4226,7 @@ function doPost(e) {
                     </div>
                     <div class="flex items-center gap-2">
                         ${isCompleted ? `
-                            <button onclick="openCertPreviewModal('${res.part.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
+                            <button onclick="openCertPreviewModal('${res.part.id}', '${res.proj.id}')" class="bg-blue-900 hover:bg-blue-950 text-white font-bold px-3 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
                                 <i class="fa-solid fa-eye"></i> พรีวิว
                             </button>
                             <button onclick="printMemberCertificate('${res.part.id}', '${res.proj.id}')" class="bg-amber-500 hover:bg-amber-600 text-blue-950 font-extrabold px-4 py-2 rounded-xl shrink-0 shadow transition active:scale-95 cursor-pointer">
@@ -4253,21 +4253,9 @@ function doPost(e) {
             const part = (proj.participants || []).find(p => p.id === partId);
             if (!part) return;
 
+            updateCertPreview(proj);
             document.getElementById('previewCertNo').innerText = part.certNo;
             document.getElementById('previewCertName').innerText = part.name;
-            document.getElementById('previewCertProjTitle').innerText = proj.title;
-            document.getElementById('previewCertProjDateInline').innerText = proj.date;
-            
-            const locTextEl = document.getElementById('previewCert_locationText');
-            if (proj.location) {
-                locTextEl.style.display = '';
-                document.getElementById('previewCertProjLocationInline').innerText = proj.location;
-            } else {
-                locTextEl.style.display = 'none';
-            }
-
-            const cleanDate = formatCertDate(proj.date);
-            document.getElementById('previewCertDate').innerText = `ให้ไว้ ณ วันที่ ${cleanDate}`;
 
             triggerPrint('certPreviewCard', true);
         }

@@ -3599,24 +3599,24 @@
                                     <div class="flex items-center justify-center gap-3 mx-auto">
                                         ${certLogoSource}
                                     </div>
-                                    <h3 class="font-extrabold text-base text-blue-950 mt-2 tracking-wide text-center" style="${style_orgName}">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                    <p class="text-xs font-bold text-amber-800 mt-1 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                    <h3 class="font-extrabold text-2xl text-blue-950 mt-4 tracking-wide text-center" style="${style_orgName}">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
+                                    <p class="text-base font-bold text-amber-800 mt-2 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                                 </div>
-                                <div class="my-auto w-full flex flex-col items-center justify-center space-y-4">
-                                    <div class="w-full text-center flex flex-col items-center justify-center">
-                                        <h2 class="text-3xl font-black text-blue-950 tracking-wider inline-block px-10 text-center" style="line-height: 1.3; margin-bottom: 4px; ${style_partName}">${escapeHtml(part.name)}</h2>
-                                        <div class="bg-amber-500 w-[70%] max-w-md h-[2px]"></div>
+                                <div class="my-auto w-full flex flex-col items-center justify-center space-y-6">
+                                    <div class="inline-flex flex-col items-center justify-center">
+                                        <h2 class="text-4xl font-black text-blue-950 tracking-widest inline-block px-12 text-center" style="line-height: 1.3; margin-bottom: 4px; ${style_partName}">${escapeHtml(part.name)}</h2>
+                                        <div class="bg-amber-500 w-full h-[2px]"></div>
                                     </div>
-                                    <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                    <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                         <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
-                                        <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
+                                        <p class="text-2xl font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
                                         <p class="text-center" style="${style_dateText}">วัน<span class="font-bold">${escapeHtml(proj.date)}</span></p>
                                         ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                         <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                     </div>
                                 </div>
                                 <div class="pt-4 space-y-3 w-full text-center">
-                                    <p class="text-xs font-extrabold text-slate-800 text-center" style="${style_issueDate}">ให้ไว้ ณ วันที่ ${cleanDate}</p>
+                                    <p class="text-sm font-extrabold text-slate-800 text-center" style="${style_issueDate}">ให้ไว้ ณ วันที่ ${cleanDate}</p>
                                     ${signersHtml}
                                 </div>
                             </div>

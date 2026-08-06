@@ -1129,7 +1129,7 @@
                                 <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
                                     <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-2xl font-extrabold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
-                                    <p id="previewCert_dateText" class="text-center"><span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
+                                    <p id="previewCert_dateText" class="text-center">วันที่ <span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
                                     <p id="previewCert_locationText" class="text-center" style="display:none;">ณ <span id="previewCertProjLocationInline" class="font-bold"></span></p>
                                     <p id="previewCert_quoteText" class="font-bold text-amber-900 italic pt-2 text-center">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -2320,9 +2320,19 @@ function doPost(e) {
                         localStorage.setItem('coop_system_logo', sysSettings.systemSettings.coop_system_logo);
                         loadStateFromLocalStorage(); // Update UI immediately
                     }
+
+                    // Handle deleted projects tombstones
+                    const sysDel = cloudData.find(p => p && p.id === '__DELETED_PROJECTS__');
+                    let cloudDelIds = (sysDel && sysDel.systemSettings && sysDel.systemSettings.ids) || [];
+                    let localDelIds = JSON.parse(localStorage.getItem('coop_deleted_projects') || '[]');
+                    let mergedDelIds = [...new Set([...cloudDelIds, ...localDelIds])];
+                    if (mergedDelIds.length > 0) {
+                        localStorage.setItem('coop_deleted_projects', JSON.stringify(mergedDelIds));
+                    }
                     
                     if (cloudData && Array.isArray(cloudData)) {
-                        cloudData = cloudData.filter(p => p && p.id && p.id !== 'undefined' && p.id !== '__SYSTEM_SETTINGS__');
+                        cloudData = cloudData.filter(p => p && p.id && p.id !== 'undefined' && p.id !== '__SYSTEM_SETTINGS__' && p.id !== '__DELETED_PROJECTS__' && !mergedDelIds.includes(p.id));
+                        projectsState = projectsState.filter(p => !mergedDelIds.includes(p.id));
                         if (cloudData.length > 0) {
                             // Timestamp-based merge strategy
                             const localLastModified = parseInt(localStorage.getItem('coop_last_modified') || '0');
@@ -2455,6 +2465,15 @@ function doPost(e) {
                 stripped.push({
                     id: '__SYSTEM_SETTINGS__',
                     systemSettings: { coop_system_logo: sysLogo }
+                });
+            }
+
+            // Inject deleted projects tombstones
+            const delIds = JSON.parse(localStorage.getItem('coop_deleted_projects') || '[]');
+            if (delIds.length > 0) {
+                stripped.push({
+                    id: '__DELETED_PROJECTS__',
+                    systemSettings: { ids: delIds }
                 });
             }
 
@@ -3215,7 +3234,8 @@ function doPost(e) {
 
             const actTextEl = document.getElementById('previewCert_actText');
             if (actTextEl) {
-                if (proj.projectType === 'activity') {
+                const pType = proj.projectType || (proj.title && proj.title.includes('อบรม') ? 'training' : 'activity');
+                if (pType === 'activity') {
                     actTextEl.innerText = 'ได้เข้าร่วมโครงการ';
                 } else {
                     actTextEl.innerText = 'ได้ผ่านการอบรม';
@@ -3728,9 +3748,9 @@ function doPost(e) {
                                     <h2 class="text-3xl font-black text-blue-950 tracking-wider border-b-2 border-amber-500 inline-block px-10 pb-1.5 text-center" style="${style_partName}">${escapeHtml(part.name)}</h2>
                                 </div>
                                 <div class="space-y-1.5 text-xs text-slate-900 px-6 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
-                                    <p class="text-center" style="${style_actText}">${proj.projectType === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
+                                    <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
                                     <p class="text-sm font-extrabold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
-                                    <p class="text-center" style="${style_dateText}"><span class="font-bold">${escapeHtml(proj.date)}</span></p>
+                                    <p class="text-center" style="${style_dateText}">วันที่ <span class="font-bold">${escapeHtml(proj.date)}</span></p>
                                     ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                     <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                 </div>
@@ -4346,11 +4366,20 @@ function doPost(e) {
                     useCORS: true,
                     backgroundColor: '#ffffff'
                 }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `เกียรติบัตร_${part.name.replace(/\\s+/g, '_')}.jpg`;
-                    link.href = canvas.toDataURL('image/jpeg', 0.9);
-                    link.click();
-                    showToast('ดาวน์โหลดรูปภาพสำเร็จ!', 'success');
+                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                    
+                    // Create a modal to show the image so mobile users can long-press to save
+                    const modalHtml = `
+                    <div id="imageDownloadModal" class="fixed inset-0 bg-slate-900/95 z-[9999] flex flex-col items-center justify-center p-4">
+                        <button onclick="this.parentElement.remove()" class="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl transition"><i class="fa-solid fa-xmark"></i></button>
+                        <p class="text-white mb-6 text-center font-bold text-lg px-4"><i class="fa-solid fa-download text-emerald-400 mr-2"></i>แตะค้างที่รูปภาพด้านล่างแล้วเลือก <br><span class="text-emerald-400">"บันทึกรูปภาพ"</span> หรือ <span class="text-emerald-400">"Share"</span></p>
+                        <div class="relative max-w-full max-h-[75vh] overflow-hidden rounded-lg shadow-2xl ring-4 ring-white/10">
+                            <img src="${imgData}" class="max-w-full max-h-[75vh] object-contain">
+                        </div>
+                    </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                    showToast('สร้างรูปภาพสำเร็จ!', 'success');
                 }).catch(err => {
                     console.error(err);
                     showToast('เกิดข้อผิดพลาดในการสร้างรูปภาพ', 'error');
@@ -4520,10 +4549,16 @@ function doPost(e) {
             }
             showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
                 const idToDelete = proj.id;
+                
+                let delIds = JSON.parse(localStorage.getItem('coop_deleted_projects') || '[]');
+                if (!delIds.includes(idToDelete)) delIds.push(idToDelete);
+                localStorage.setItem('coop_deleted_projects', JSON.stringify(delIds));
+
                 projectsState = projectsState.filter(p => p.id !== idToDelete);
-                activeProjectId = projectsState[0].id;
+                if (projectsState.length > 0) activeProjectId = projectsState[0].id;
                 deleteProjectFromCloud(idToDelete);
                 saveStateToLocalStorage();
+                syncToRemoteDatabaseDirect();
                 renderDashboard();
                 renderActiveProjectUI();
                 showToast('ลบโครงการเรียบร้อยแล้ว', 'info');
@@ -4537,10 +4572,15 @@ function doPost(e) {
             }
             const proj = projectsState.find(p => p.id === id);
             showConfirm(`คุณต้องการลบโครงการ "${proj.title}" ใช่หรือไม่?`, function() {
+                let delIds = JSON.parse(localStorage.getItem('coop_deleted_projects') || '[]');
+                if (!delIds.includes(id)) delIds.push(id);
+                localStorage.setItem('coop_deleted_projects', JSON.stringify(delIds));
+
                 projectsState = projectsState.filter(p => p.id !== id);
-                if (activeProjectId === id) activeProjectId = projectsState[0].id;
+                if (activeProjectId === id && projectsState.length > 0) activeProjectId = projectsState[0].id;
                 deleteProjectFromCloud(id);
                 saveStateToLocalStorage();
+                syncToRemoteDatabaseDirect();
                 renderDashboard();
                 renderProjectsList();
                 showToast('ลบโครงการเรียบร้อยแล้ว', 'info');

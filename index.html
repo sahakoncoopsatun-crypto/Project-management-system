@@ -1633,6 +1633,8 @@
     <script>
         let currentFiscalYear = '2569';
         let activeProjectId = 'proj-2569-001';
+        let activeTabId = 'dashboard';
+        let activeStepNum = 1;
         let isAdminLoggedIn = false; // Public Member Portal default
         let isPublicMemberMode = false;
         let systemOrgLogoUrl = '';
@@ -1901,8 +1903,19 @@
 
             checkUrlParameters();
             applySecurityAccessControl();
-            renderDashboard();
-            renderActiveProjectUI();
+            
+            if (typeof activeTabId !== 'undefined' && activeTabId && activeTabId !== 'dashboard') {
+                renderDashboard();
+                renderActiveProjectUI();
+                switchTab(activeTabId);
+                if (activeTabId === 'unified-cycle' && typeof activeStepNum !== 'undefined') {
+                    switchUnStep(activeStepNum || 1);
+                }
+            } else {
+                renderDashboard();
+                renderActiveProjectUI();
+            }
+            
             updateDbSyncBadgeStatus();
 
             fetchDataFromDatabase(false);
@@ -2100,6 +2113,9 @@
                 localStorage.setItem('coop_gas_url', gasEndpointUrl);
                 localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
                 localStorage.setItem('coop_last_modified', String(now));
+                if (typeof activeProjectId !== 'undefined' && activeProjectId) localStorage.setItem('coop_active_project_id', activeProjectId);
+                if (typeof activeTabId !== 'undefined') localStorage.setItem('coop_active_tab_id', activeTabId);
+                if (typeof activeStepNum !== 'undefined') localStorage.setItem('coop_active_step_num', activeStepNum.toString());
             } catch(e) {
                 console.warn('LocalStorage Quota Error:', e);
                 if (e.name === 'QuotaExceededError' || e.code === 22) {
@@ -2120,6 +2136,15 @@
                         projectsState = parsed.filter(p => p && p.id && p.id !== 'undefined');
                     }
                 }
+                
+                const savedActiveId = localStorage.getItem('coop_active_project_id');
+                if (savedActiveId && projectsState.some(p => p.id === savedActiveId)) {
+                    activeProjectId = savedActiveId;
+                }
+                const savedTabId = localStorage.getItem('coop_active_tab_id');
+                if (savedTabId) activeTabId = savedTabId;
+                const savedStepNum = localStorage.getItem('coop_active_step_num');
+                if (savedStepNum) activeStepNum = parseInt(savedStepNum) || 1;
                 
                 const savedLogo = localStorage.getItem('coop_system_logo');
                 if (savedLogo) {
@@ -2509,6 +2534,7 @@
         }
 
         function switchTab(tabId) {
+            if (typeof activeTabId !== 'undefined') activeTabId = tabId;
             closeNavDropdowns();
             if (!isAdminLoggedIn && tabId !== 'member-portal') {
                 showToast('ท่านจำเป็นต้องเข้าสู่ระบบผู้ดูแลระบบก่อน', 'error');
@@ -2535,6 +2561,7 @@
         }
 
         function switchUnStep(stepNum) {
+            if (typeof activeStepNum !== 'undefined') activeStepNum = stepNum;
             document.querySelectorAll('.un-step-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById(`un-step-panel-${stepNum}`);
             if (panel) panel.classList.remove('hidden');
@@ -4093,13 +4120,24 @@
                 }
             });
 
-            reindexParticipantCertNos();
-            saveStateToLocalStorage();
-            closeModal('excelImportModal');
-            renderUnStep2Participants();
-            renderParticipantsList();
-            renderDashboard();
-            
+            try {
+                reindexParticipantCertNos();
+                saveStateToLocalStorage();
+                closeModal('excelImportModal');
+            } catch(e) {
+                console.error('Error during data save:', e);
+            }
+
+            try {
+                renderUnStep2Participants();
+                renderParticipantsList();
+                renderDashboard();
+            } catch(e) {
+                console.error('Error rendering participants:', e);
+                // If it fails to render, at least the modal is closed and data is saved.
+                showToast('เกิดข้อผิดพลาดในการแสดงผล กรุณารีเฟรชหน้าจอ (F5)', 'error');
+            }
+
             let msg = `นำเข้าผู้เข้าร่วมสำเร็จจำนวน ${importedCount} รายการ`;
             if (duplicateCount > 0) {
                 msg += ` (ข้ามรายชื่อซ้ำ ${duplicateCount} รายการ)`;

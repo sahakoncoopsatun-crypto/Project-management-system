@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบริหารจัดการโครงการ สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ - สอ.สธสต.</title>
+    <title>ระบบบริหารจัดการโครงการ V2 - สรุปยุทธศาสตร์ และเกียรติบัตรออนไลน์ - สอ.สธสต.</title>
     
     <!-- STREAMING_CHUNK:Loading styles and libraries... -->
     <!-- Tailwind CSS CDN -->
@@ -1051,7 +1051,7 @@
                             <!-- Dynamic Render JS -->
                         </div>
 
-                        <!-- Font Settings UI Removed -->
+                        <!-- Font Settings UI --><div class="bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200/90 space-y-3 mt-4"><div class="flex justify-between items-center border-b border-indigo-200/70 pb-2"><label class="font-extrabold text-xs text-indigo-950 flex items-center gap-1.5"><i class="fa-solid fa-font text-indigo-600 text-sm"></i> ตั้งค่ารูปแบบอักษร (เกียรติบัตร)</label><button type="button" onclick="resetCertFonts()" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow transition flex items-center gap-1 cursor-pointer active:scale-95"><i class="fa-solid fa-rotate-left"></i> รีเซ็ตค่ามาตรฐาน</button></div><div id="certFontsConfigBox" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"></div></div>
                     </div>
                 </div>
 
@@ -1107,19 +1107,16 @@
                                     <!-- Custom logos appended here by JS -->
                                 </div>
                                 <h3 id="previewCert_orgName" class="font-bold text-2xl text-blue-950 mt-3 tracking-wide text-center">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                <p id="previewCert_grantText" class="text-lg font-bold text-amber-800 mt-1 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                <p id="previewCert_grantText" class="text-lg font-bold text-amber-800 mt-4 text-center">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                             </div>
 
                             <!-- Name & Event Middle Wrapper -->
-                            <div class="my-auto w-full flex flex-col items-center justify-center space-y-6">
+                            <div class="my-auto w-full flex flex-col items-center justify-center space-y-8">
                                 <!-- Name Placeholder -->
-                                <div class="w-full text-center mb-1 flex flex-col items-center justify-center">
-                                    <h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest inline-block px-12 text-center" style="line-height: 1.3; margin-bottom: 4px;">นายสมชาย รักดี</h2>
-                                    <div class="bg-amber-500 w-[70%] max-w-md h-[2px]"></div>
-                                </div>
+                                <div class="w-full text-center mb-1 flex flex-col items-center justify-center"><div class="inline-flex flex-col items-center justify-center"><h2 id="previewCertName" class="text-4xl font-black text-blue-950 tracking-widest inline-block px-12 text-center leading-[1.3] mb-1">นายสมชาย รักดี</h2><div class="bg-amber-500 w-full h-[2px]"></div></div></div>
 
                                 <!-- Official Wording & Line Breaking -->
-                                <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                <div class="space-y-1 text-lg text-slate-900 px-8 leading-snug font-semibold w-full text-center flex flex-col items-center justify-center">
                                     <p id="previewCert_actText" class="text-center">ได้เข้าร่วมและผ่านการอบรม</p>
                                     <p class="text-[1.35rem] leading-snug font-bold text-blue-900 text-center" id="previewCertProjTitle">โครงการพัฒนาศักยภาพสมาชิกและบุคลากร</p>
                                     <p id="previewCert_dateText" class="text-center">วัน<span id="previewCertProjDateInline" class="font-bold">11 กรกฎาคม พ.ศ. 2569</span></p>
@@ -1129,7 +1126,7 @@
                             </div>
 
                             <!-- Footer Date & Dynamic Signatures Preview Holder -->
-                            <div class="w-full text-center space-y-3">
+                            <div class="w-full text-center space-y-6">
                                 <p id="previewCertDate" class="text-base font-extrabold text-slate-800 text-center">ให้ไว้ ณ วันที่ 11 กรกฎาคม พ.ศ. 2569</p>
 
                                 <div id="previewCertSignersContainer" class="w-full flex items-end justify-center">
@@ -2818,7 +2815,8 @@
             { id: 'partName', label: 'ชื่อ-สกุล ผู้รับ' },
             { id: 'actText', label: 'ข้อความเข้าร่วมกิจกรรม' },
             { id: 'projTitle', label: 'ชื่อโครงการ' },
-            { id: 'dateText', label: 'วันที่จัดกิจกรรม' },
+            
+            { id: 'locationText', label: 'สถานที่จัดกิจกรรม' },
             { id: 'quoteText', label: 'คำอวยพร (ถ้ามี)' },
             { id: 'issueDate', label: 'วันที่ให้ไว้ ณ' },
             { id: 'signerName', label: 'ชื่อผู้ลงนาม' },
@@ -2854,7 +2852,8 @@
                 'partName': { family: 'Sarabun', customFont: '', weight: '900', italic: false, scale: 115 },
                 'actText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
                 'projTitle': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 105 },
-                'dateText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
+                
+                'locationText': { family: 'Sarabun', customFont: '', weight: 'normal', italic: false, scale: 100 },
                 'quoteText': { family: 'Sarabun', customFont: '', weight: 'bold', italic: true, scale: 100 },
                 'issueDate': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
                 'signerName': { family: 'Sarabun', customFont: '', weight: 'bold', italic: false, scale: 100 },
@@ -3051,10 +3050,10 @@
             const family = (f.family === 'Custom' && f.customFont) ? f.customFont : f.family;
             
             const baseSizes = {
-                'certNo': 0.875, 'orgName': 1.5, 'grantText': 1.125,
-                'partName': 2.2, 'actText': 1.125, 'projTitle': 1.35,
-                'dateText': 1.125, 'quoteText': 1.125, 'issueDate': 1,
-                'signerName': 1.125, 'signerPos': 1
+                'certNo': 1.1, 'orgName': 1.8, 'grantText': 1.4,
+                'partName': 4.0, 'actText': 1.4, 'projTitle': 2.2,
+                'dateText': 1.4, 'locationText': 1.4, 'quoteText': 1.4, 'issueDate': 1.4,
+                'signerName': 1.4, 'signerPos': 1.2
             };
             const baseRem = baseSizes[fieldId] || 1;
             const finalSize = baseRem * (f.scale / 100);
@@ -3070,7 +3069,8 @@
                 'partName': 'previewCertName',
                 'actText': 'previewCert_actText',
                 'projTitle': 'previewCertProjTitle',
-                'dateText': 'previewCert_dateText',
+                
+                'locationText': 'previewCert_locationText',
                 'quoteText': 'previewCert_quoteText',
                 'issueDate': 'previewCertDate'
             };
@@ -3114,6 +3114,8 @@
         function updateCertPreview(projOverride = null) {
             const proj = projOverride || getActiveProject();
             if (!proj) return;
+            
+            initCertFonts(proj);
 
             document.getElementById('previewCertProjTitle').innerText = proj.title;
             document.getElementById('previewCertProjDateInline').innerText = proj.date;
@@ -3172,7 +3174,7 @@
                 container.innerHTML = renderCertSignersPreviewHtml(proj);
             }
 
-            // applyCertFontsToPreview(proj);
+            applyCertFontsToPreview(proj);
 
             // Apply Background Image to Preview Card
             const cardEl = document.getElementById('certPreviewCard');
@@ -3618,7 +3620,8 @@
             const style_partName = getCertFontStyle(proj, 'partName');
             const style_actText = getCertFontStyle(proj, 'actText');
             const style_projTitle = getCertFontStyle(proj, 'projTitle');
-            const style_dateText = getCertFontStyle(proj, 'dateText');
+            
+            const style_locationText = getCertFontStyle(proj, 'locationText');
             const style_quoteText = getCertFontStyle(proj, 'quoteText');
             const style_issueDate = getCertFontStyle(proj, 'issueDate');
 
@@ -3636,18 +3639,13 @@
                                         ${certLogoSource}
                                     </div>
                                     <h3 class="font-bold text-2xl text-blue-950 mt-4 tracking-wide text-center" style="${style_orgName}">สหกรณ์ออมทรัพย์สาธารณสุขสตูล จำกัด</h3>
-                                    <p class="text-lg font-bold text-amber-800 mt-2 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
+                                    <p class="text-lg font-bold text-amber-800 mt-4 text-center" style="${style_grantText}">ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า</p>
                                 </div>
-                                <div class="my-auto w-full flex flex-col items-center justify-center space-y-6">
-                                    <div class="inline-flex flex-col items-center justify-center">
-                                        <h2 class="text-[2.2rem] font-black text-blue-950 tracking-widest inline-block px-12 text-center" style="line-height: 1.3; margin-bottom: 4px; ${style_partName}">${escapeHtml(part.name)}</h2>
-                                        <div class="bg-amber-500 w-full h-[2px]"></div>
-                                    </div>
-                                    <div class="space-y-1.5 text-lg text-slate-900 px-8 leading-relaxed font-semibold w-full text-center flex flex-col items-center justify-center">
+                                <div class="w-full text-center mt-10 mb-2 flex flex-col items-center justify-center"><div class="inline-flex flex-col items-center justify-center"><h2 class="text-[2.2rem] font-black text-blue-950 tracking-widest inline-block px-12 text-center" style="line-height: 1.3; margin-bottom: 4px; ${style_partName}">${escapeHtml(part.name)}</h2><div class="bg-amber-500 w-full h-[2px]"></div></div></div><div class="space-y-1 text-lg text-slate-900 px-8 leading-snug font-semibold w-full text-center flex flex-col items-center justify-center mt-12">
                                         <p class="text-center" style="${style_actText}">${(proj.projectType || ((proj.title && proj.title.includes('อบรม')) ? 'training' : 'activity')) === 'activity' ? 'ได้เข้าร่วมโครงการ' : 'ได้ผ่านการอบรม'}</p>
                                         <p class="text-[1.35rem] leading-snug font-bold text-blue-900 text-center" style="${style_projTitle}">${escapeHtml(proj.title)}</p>
                                         <p class="text-center" style="${style_dateText}">วัน<span class="font-bold">${escapeHtml(proj.date)}</span></p>
-                                        ${proj.location ? `<p class="text-center" style="${style_dateText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
+                                        ${proj.location ? `<p class="text-center" style="${style_locationText}">ณ <span class="font-bold">${escapeHtml(proj.location)}</span></p>` : ''}
                                         <p class="font-bold text-amber-900 italic pt-2 text-center" style="${style_quoteText}">"ขอให้มีความสุข ความเจริญรุ่งเรือง และประสบความสำเร็จในหน้าที่การงาน สืบไป"</p>
                                     </div>
                                 </div>
@@ -5200,3 +5198,9 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+

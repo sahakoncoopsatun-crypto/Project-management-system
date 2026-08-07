@@ -2110,7 +2110,6 @@
                     }
                 });
                 localStorage.setItem('coop_projects_state', JSON.stringify(projectsState));
-                localStorage.setItem('coop_gas_url', gasEndpointUrl);
                 localStorage.setItem('coop_system_logo', systemOrgLogoUrl);
                 localStorage.setItem('coop_last_modified', String(now));
                 if (typeof activeProjectId !== 'undefined' && activeProjectId) localStorage.setItem('coop_active_project_id', activeProjectId);
@@ -2417,7 +2416,7 @@
 
         function updatePendingSyncBadge() {
             const dashBadge = document.getElementById('dashDbStatusBadge');
-            if (dashBadge && _pendingSyncCount > 0 && gasEndpointUrl) {
+            if (dashBadge && _pendingSyncCount > 0 && supabaseUrl) {
                 dashBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40';
                 dashBadge.innerHTML = `🟡 รอซิงค์ (${_pendingSyncCount} รายการ)`;
             }

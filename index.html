@@ -3925,7 +3925,7 @@
                     surname = val;
                 } else if (!name && (kLower.includes('ชื่อ') || kLower.includes('name') || kLower.includes('ผู้เข้าร่วม'))) {
                     name = val;
-                } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก'))) {
+                } else if (!code && (kLower.includes('เลข') || kLower.includes('code') || kLower.includes('id') || kLower.includes('บัตร') || kLower.includes('สมาชิก') || kLower.includes('รหัส') || kLower.includes('ประชาชน') || kLower.includes('ประจำตัว') || kLower.includes('passport') || kLower.includes('cid'))) {
                     code = val;
                 } else if (!pos && (kLower.includes('ตำแหน่ง') || kLower.includes('pos') || kLower.includes('role'))) {
                     pos = val;
@@ -3949,6 +3949,56 @@
                 if (keys.length > 1 && !code) code = String(row[keys[1]] || '').trim();
                 if (keys.length > 2 && !pos) pos = String(row[keys[2]] || '').trim();
                 if (keys.length > 3 && !org) org = String(row[keys[3]] || '').trim();
+            }
+
+            // Auto-extract logic if name and code are mixed in the same cell
+            const codePattern = /(^|\s|-)((?:\d[\s-]*){5,13})(\s|-|$)/;
+            
+            if (code && name && code === name) {
+                if (!/[a-zA-Zก-๙]/.test(name)) {
+                    name = ''; // It's just a code
+                } else if (!/\d/.test(code)) {
+                    code = ''; // It's just a name
+                } else {
+                    const match = name.match(codePattern);
+                    if (match) {
+                        const remainder = name.replace(match[0], ' ').trim();
+                        if (/[a-zA-Zก-๙]/.test(remainder)) {
+                            code = match[2].trim();
+                            name = remainder;
+                        }
+                    }
+                }
+            }
+
+            if (!code && name) {
+                if (!/[a-zA-Zก-๙]/.test(name)) {
+                    code = name;
+                    name = '';
+                } else {
+                    const match = name.match(codePattern);
+                    if (match) {
+                        const remainder = name.replace(match[0], ' ').trim();
+                        if (/[a-zA-Zก-๙]/.test(remainder)) {
+                            code = match[2].trim();
+                            name = remainder;
+                        }
+                    }
+                }
+            } else if (code && !name) {
+                if (!/\d/.test(code)) {
+                    name = code;
+                    code = '';
+                } else {
+                    const match = code.match(codePattern);
+                    if (match) {
+                        const remainder = code.replace(match[0], ' ').trim();
+                        if (/[a-zA-Zก-๙]/.test(remainder)) {
+                            name = remainder;
+                            code = match[2].trim();
+                        }
+                    }
+                }
             }
 
             if (code) {
